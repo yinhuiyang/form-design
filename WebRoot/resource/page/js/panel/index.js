@@ -25,6 +25,8 @@
 	};
 
 	Panel.prototype.initView = function() {
+		var panel = this.panel;
+		this.$panel.find('.panel-header').append(panel.title);
 		this.initContent();
 	};
 
@@ -32,8 +34,31 @@
 
 	};
 
+	Panel.prototype.initInput = function() {
+		var page = this.page;
+		var pageObject = this.pageObject;
+		var panel = this.panel;
+		var data = this.data;
+		var this_ = this;
+		$(panel.inputs).each(function(index, input) {
+			var inputObject = Panel.Input.create({
+				page : page,
+				panel : panel,
+				pageObject : pageObject,
+				panelObject : this_,
+				input : input,
+				data : data
+			});
+
+			var $group = inputObject.build();
+
+			this_.$inputContainer.append($group);
+		});
+	};
+
 	Panel.prototype.build = function() {
 		this.initView();
+		this.initInput();
 
 		return this.$panel;
 	};

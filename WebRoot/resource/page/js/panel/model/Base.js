@@ -1,6 +1,6 @@
 (function() {
-	var Panel = function(config) {
-		PageApi.Panel.call(this, config);
+	var Panel = function(settings) {
+		PageApi.Panel.call(this, settings);
 	};
 	(function() {
 		var Super = function() {
@@ -10,7 +10,6 @@
 	})();
 
 	Panel.prototype.initContent = function() {
-		this.$panel.append('这个是基础面板');
 	};
 
 	Panel.config = {

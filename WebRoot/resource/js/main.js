@@ -13,8 +13,11 @@
 	app.appendCSS('./resource/page/css/index.css');
 	app.appendJS('./resource/page/js/index.js');
 	app.appendJS('./resource/page/js/panel/index.js');
-	app.appendJS('./resource/page/js/panel/model/BasePanel.js');
-	app.appendJS('./resource/page/js/panel/model/TablePanel.js');
+	app.appendJS('./resource/page/js/panel/model/Base.js');
+	app.appendJS('./resource/page/js/panel/model/Table.js');
+
+	app.appendJS('./resource/page/js/panel/input/index.js');
+	app.appendJS('./resource/page/js/panel/input/model/Text.js');
 
 	app.appendCSS('./resource/design/css/design.css');
 	app.appendJS('./resource/design/js/design.js');
@@ -26,10 +29,28 @@ $(function() {
 		title : "费用申请",
 		panels : [ {
 			type : "BASE",
-			title : "基本信息填写"
+			title : "基本信息填写",
+			inputs : [ {
+				type : "TEXT",
+				label : "姓名",
+				name : "name"
+			}, {
+				type : "TEXT",
+				label : "姓名",
+				name : "name"
+			} ]
 		}, {
 			type : "TABLE",
-			title : "费用明细填写"
+			title : "费用明细填写",
+			inputs : [ {
+				type : "TEXT",
+				label : "姓名",
+				name : "name"
+			}, {
+				type : "TEXT",
+				label : "姓名",
+				name : "name"
+			} ]
 		} ]
 	};
 

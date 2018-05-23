@@ -4,7 +4,7 @@
 	html += '	<div class="page-header">';
 	html += '	</div>';
 	html += '	<div class="page-body">';
-	html += '		<div class="panel-box">';
+	html += '		<div class="panel-container">';
 	html += '		</div>';
 	html += '	</div>';
 	html += '</div>';
@@ -18,7 +18,7 @@
 		this.page = settings.page;
 		this.data = settings.data;
 		this.$page = $(html);
-		this.$panelBox = this.$page.find('.panel-box');
+		this.$panelContainer = this.$page.find('.panel-container');
 
 	};
 
@@ -42,7 +42,7 @@
 
 			var $panel = panelObject.build();
 
-			this_.$panelBox.append($panel);
+			this_.$panelContainer.append($panel);
 		});
 	};
 
