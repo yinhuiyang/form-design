@@ -17,10 +17,13 @@
 	Input.settings = {
 		name : "文本输入框",
 		columns : [ {
-			title : {
-				label : "标题",
-				type : 'text'
-			}
+			name : "label",
+			label : "标签",
+			type : 'text'
+		}, {
+			name : "name",
+			label : "名称",
+			type : 'text'
 		} ]
 	};
 

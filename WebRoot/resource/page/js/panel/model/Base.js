@@ -10,15 +10,23 @@
 	})();
 
 	Panel.prototype.initContent = function() {
+		
+		var panel = this.panel;
+		var subtitle = panel.subtitle;
+		
+		
 	};
 
 	Panel.settings = {
 		name : "基础面板",
 		columns : [ {
-			title : {
-				label : "标题",
-				type : 'text'
-			}
+			name : "title",
+			label : "标题",
+			type : 'text'
+		}, {
+			name : "subtitle",
+			label : "子标题",
+			type : 'text'
 		} ]
 	};
 
