@@ -12,7 +12,8 @@
 	Panel.prototype.initContent = function() {
 	};
 
-	Panel.config = {
+	Panel.settings = {
+		name : "基础面板",
 		columns : [ {
 			title : {
 				label : "标题",

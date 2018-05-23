@@ -20,6 +20,8 @@
 		this.panel = settings.panel;
 		this.data = settings.data;
 		this.$panel = $(html);
+
+		this.$panel.attr('panelid', this.panel.id);
 		this.$inputContainer = this.$panel.find('.input-container');
 
 	};

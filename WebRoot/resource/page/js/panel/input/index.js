@@ -20,6 +20,7 @@
 		this.input = settings.input;
 		this.data = settings.data;
 		this.$group = $(html);
+		this.$group.attr('inputid', this.input.id);
 		this.$inputBox = this.$group.find('.input-box');
 
 	};

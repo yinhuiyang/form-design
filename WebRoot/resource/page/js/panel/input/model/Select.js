@@ -10,12 +10,12 @@
 	})();
 
 	Input.prototype.initContent = function() {
-		this.$inputBox.append('<input/>');
+		this.$inputBox.append('<select/>');
 
 	};
 
 	Input.settings = {
-		name : "文本输入框",
+		name : "下拉框",
 		columns : [ {
 			title : {
 				label : "标题",
@@ -24,6 +24,6 @@
 		} ]
 	};
 
-	PageApi.Panel.Input.add('TEXT', Input);
+	PageApi.Panel.Input.add('SELECT', Input);
 
 })();
