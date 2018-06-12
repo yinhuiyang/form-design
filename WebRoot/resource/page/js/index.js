@@ -19,9 +19,8 @@
 		this.data = settings.data;
 		this.$page = $(html);
 		this.$panelContainer = this.$page.find('.panel-container');
-
 	};
-
+	console.log(Page)
 	Page.prototype.initView = function() {
 		var page = this.page;
 		var data = this.data;

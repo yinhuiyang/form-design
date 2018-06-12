@@ -1,17 +1,16 @@
+// import m from './resource/js/tool.js'
 (function() {
-	var app = new Object();
+	let app = new Object();
 	window.app = app;
 
 	app.appendCSS = function(css) {
 		document.writeln('<link rel="stylesheet" type="text/css" href="' + css + '" />');
 	};
-
+	
 	app.appendJS = function(js) {
 		document.writeln('<script type="text/javascript" src="' + js + '"></script>');
 	};
-
 	app.appendJS('./resource/js/tool.js');
-
 	app.appendCSS('./resource/page/css/index.css');
 	app.appendJS('./resource/page/js/index.js');
 	app.appendJS('./resource/page/js/panel/index.js');
