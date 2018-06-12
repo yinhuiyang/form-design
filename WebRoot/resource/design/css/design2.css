@@ -2,6 +2,9 @@
 	margin: 0px;
 	padding: 0px;
 }
+.am-ucheck-icons{
+	top: 3px
+}
 .view-content{
 	width: 100%;
 	height: 100%;
@@ -281,4 +284,10 @@ h3{
 	height: 12px;
 	border-left: 1px solid #333;
 	margin-right: 5px;
+}
+.group{
+	padding: 10px;
+}
+.group.active{
+	background: #EBF8FB;
 }

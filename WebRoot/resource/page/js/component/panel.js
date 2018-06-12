@@ -5,13 +5,13 @@ Object.assign(design, {
     id: '1000',
     content: []
   },
-  panelHtml: `<div class="am-panel am-panel-default" id='' ">
+  panelHtml: `<div class="group"><div class="am-panel am-panel-default" id='' ">
             <header class="am-panel-hd">
               <h3 class="am-panel-title"></h3>
             </header>
             <div class="am-panel-bd input-content"  style="min-height: 100px;height: auto;">
             </div>
-          </div>`,
+          </div></div>`,
   panelLoad (page) {
     this.paneldata.id = app.getNumber()
     if (!page.id) {

@@ -1,8 +1,8 @@
 Object.assign(design, {
-  textHtml: `<div class="am-form-group">
+  textHtml: `<div class="group"><div class="am-form-group">
       <label for="doc-vld-name"></label>
       <input type="text" id="doc-vld-name" placeholder="" class="am-form-field"/>
-    </div>`,
+    </div></div>`,
   textData: {
     title: '新输入框',
     id: '100',

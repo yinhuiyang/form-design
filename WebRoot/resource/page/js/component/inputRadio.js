@@ -1,6 +1,6 @@
 Object.assign(design,{
-  radioHtml: `<div class="am-form-group">
-    <h3> <sup class="am-text-danger">*</sup></h3>
+  radioHtml: `<div class="group"><div class="am-form-group">
+    <h3><span></span><sup class="am-text-danger">*</sup></h3>
     <div class="subhead"></div>
     <label class="am-radio">
       <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
@@ -11,7 +11,7 @@ Object.assign(design,{
     <label class="am-radio">
       <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
     </label>
-  </div>`,
+  </div></div>`,
   radioData: {
     name: '单选组',
     title: '单选组',
@@ -28,7 +28,7 @@ Object.assign(design,{
       page = this.radioData  
     }
     let html = $(this.radioHtml).attr('id', page.id)
-    html.find('h3').prepend(page.title)
+    html.find('h3 span').text(page.title)
     html.find('label').each((i, data) => {
       $(data).prepend(page.data.value[i].name)
       $(data).find('input').attr({'name': page.data.name, 'value': page.data.value[i].value})

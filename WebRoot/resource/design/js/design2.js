@@ -98,8 +98,26 @@ var design = {
     });
   },
   designSet () {
+    $('.design-view').on('click','.group',function (e) {
+      e.stopPropagation()
+      $('.group').removeClass('active')
+      $(this).addClass('active')
+      $('#selecd-ul').sortable({
+        placeholder: "li",
+		    handle: '#arrows',
+		    cursor: 'move',
+        start : function(e, t) {
+        },
+        change : function(e, t) {
+        },
+        stop : function(e, t) {
+        },
+        update (event, ui) {
+        }
+      })
+    })
     $('#title').on('input', function () {
-      $("#100012").find('h3').text($(this).val())
+      $("#100012").find('h3 span').text($(this).val())
     })
     $('.input_subhead').on('input', function () {
       $("#100012").find('.subhead').text($(this).val())
