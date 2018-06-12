@@ -13,12 +13,11 @@
 	};
 
 	Panel.settings = {
-		name : "列表面板",
+		name : "基础面板",
 		columns : [ {
-			title : {
-				label : "标题",
-				type : 'text'
-			}
+			name : "title",
+			label : "标题",
+			type : 'text'
 		} ]
 	};
 

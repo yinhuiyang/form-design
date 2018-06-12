@@ -67,6 +67,9 @@
 		});
 
 		page.panels = panels;
+		
+		
+		console.log(page);
 
 		app.design.initView();
 	};
