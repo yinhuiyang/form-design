@@ -5,7 +5,7 @@ Object.assign(design, {
     id: '1000',
     content: []
   },
-  panelHtml: `<div class="group"><div class="am-panel am-panel-default" id='' ">
+  panelHtml: `<div class="group" data-xhtml="panel"><div class="am-panel am-panel-default" id='' ">
             <header class="am-panel-hd">
               <h3 class="am-panel-title"></h3>
             </header>

@@ -1,5 +1,5 @@
 Object.assign(design, {
-  textHtml: `<div class="group"><div class="am-form-group">
+  textHtml: `<div class="group" data-xhtml="text"><div class="am-form-group">
       <label for="doc-vld-name"></label>
       <input type="text" id="doc-vld-name" placeholder="" class="am-form-field"/>
     </div></div>`,

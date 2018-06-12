@@ -1,5 +1,5 @@
 Object.assign(design,{
-  radioHtml: `<div class="group"><div class="am-form-group">
+  radioHtml: `<div class="group" data-xhtml="radio"><div class="am-form-group">
     <h3><span></span><sup class="am-text-danger">*</sup></h3>
     <div class="subhead"></div>
     <label class="am-radio">
