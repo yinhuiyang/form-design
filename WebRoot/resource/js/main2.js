@@ -7,6 +7,7 @@ var app = {
   }
 }
 app.appendJS('./resource/js/tool.js')
+app.appendJS('./resource/page/js/setData.js')
 app.appendJS('./resource/design/js/design2.js')
 app.appendJS('./resource/page/js/component/panel.js')
 app.appendJS('./resource/page/js/component/inputRadio.js')
@@ -24,8 +25,9 @@ var from = {
           title: '费用用途',
           id: '100012',
           type: 'radio',
+          name: 'money',
+          subhead: '费用',
           data: {
-            name: '100012',
             value: [{value:'聚餐', name: '聚餐', checked: 'checked'}, {value:'车费', name: '车费', checked: false},{value:'住宿', name: '住宿', checked: false}],
             ifWrite: true,
             ifShow: true,

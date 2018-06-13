@@ -100,59 +100,16 @@ var design = {
   },
   setdata: {
     radio: function () {
-      let html = `<li>
-        <i class="am-icon-circle-o circle"></i>
-        <a>
-          <input type="text" value="">
-        </a>
-        <i class="am-icon-arrows arrows"></i>
-        <i class="am-icon-minus-circle minus"></i>
-      </li>`
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
-      $('#ifWrite').attr('checked', condition.ifWrite)
-      $('#ifShow').attr('checked', condition.ifShow)
-      $('#ifEditor').attr('checked', condition.ifEditor)
-      $('#ifWrite').on('change',function () {
-        if (this.checked && !$(`#${id} h3 sup`)[0]) { 
-          $(`#${id} h3`).append('<sup class="am-text-danger">*</sup>')
-        } else {
-          $(`#${id} h3 sup`).remove()
-        }
-        conditionFn()
-      })
-      $('#ifShow').on('change',function () {
-        conditionFn()
-      })
-      $('#ifEditor').on('change',function () {
-        conditionFn()
-      })
-      $('#title').val($(`#${id}`).find('h3 span').text())
-      $('.input_subhead').val($(`#${id}`).find('.subhead').text())
-      let ul = ''
-      $(`#${id}`).find('label').each(function (i , em) {
-          let li= `<li>
-            <i class="am-icon-circle-o circle"></i>
-            <a>
-              <input type="text" value="${$(em).find('input').val()}">
-            </a>
-            <i class="am-icon-arrows arrows"></i>
-            <i class="am-icon-minus-circle minus"></i>
-          </li>`
-          let $li = $(li)
-          if ($(em).find('input').attr('checked')) {
-            $li.find('.circle').removeClass('am-icon-circle-o')
-            $li.find('.circle').addClass('am-icon-dot-circle-o')
-          }
-          ul += $li[0].outerHTML
-      })
-      $('#selecd-ul').html(ul)
-      $('#title').on('input', function () {
-        $(`#${id}`).find('h3 span').text($(this).val())
-      })
-      $('.input_subhead').on('input', function () {
-        $(`#${id}`).find('.subhead').text($(this).val())
-      })
+      let html = setData.title(id,'单选', $(`#${id}`).find('h3 span').text()) +
+                setData.underline()+
+                setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+                setData.underline()+
+                setData.radio(id)+
+                setData.underline()+
+                setData.ifField(id, condition)
+      $('.set-content').html(html)
       $('#selecd-ul').on('click', '.minus',function () {
         $(this).parent().remove()
         radioData()
@@ -196,11 +153,7 @@ var design = {
             <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
           </label>`
         })
-        // console.log(label)
         $(`#${id} .label`).html(label)
-      }
-      function conditionFn () {
-        $(`#${id}`).attr('data-xdata', JSON.stringify({ifWrite: ifWrite.checked,ifShow: ifShow.checked, ifEditor: ifEditor.checked}))
       }
     }
   },
