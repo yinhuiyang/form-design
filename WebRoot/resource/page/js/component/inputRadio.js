@@ -25,9 +25,9 @@ Object.assign(design,{
     }
     let html = $(this.radioHtml).attr('id', page.id)
     html.find('.subhead').html(page.subhead)
-    html.find('h3 span').text(page.title)
+    html.find('.title span').text(page.title)
     if (page.data.ifWrite){
-      html.find('h3').append('<sup class="am-text-danger">*</sup>')
+      html.find('.title').append('<sup class="am-text-danger">*</sup>')
     }
     html.attr('data-xdata', JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor}))
     page.data.value.forEach(element => {
