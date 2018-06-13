@@ -12,6 +12,10 @@ app.appendJS('./resource/design/js/design2.js')
 app.appendJS('./resource/page/js/component/panel.js')
 app.appendJS('./resource/page/js/component/inputRadio.js')
 app.appendJS('./resource/page/js/component/text.js')
+app.appendJS('./resource/page/js/component/textarea.js')
+app.appendJS('./resource/page/js/component/select.js')
+app.appendJS('./resource/page/js/component/checkbox.js')
+app.appendJS('./resource/page/js/component/datetimepicker.js')
 var from = {
   title: '新表单',
   id:'01',
