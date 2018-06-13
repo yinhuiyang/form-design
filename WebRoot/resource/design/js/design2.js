@@ -48,6 +48,7 @@ var design = {
   },
   updateSortable (e,ui) {
     let fn = ui.item[0].dataset.xhtml
+    if (ui.item[0].id) {return}
     let str = this.updata[fn]({})
     this.step.push($(str).attr('id'))
     ui.item.replaceWith(str)
@@ -97,12 +98,119 @@ var design = {
       }
     });
   },
+  setdata: {
+    radio: function () {
+      let html = `<li>
+        <i class="am-icon-circle-o circle"></i>
+        <a>
+          <input type="text" value="">
+        </a>
+        <i class="am-icon-arrows arrows"></i>
+        <i class="am-icon-minus-circle minus"></i>
+      </li>`
+      let id = $(this).attr('id')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      $('#ifWrite').attr('checked', condition.ifWrite)
+      $('#ifShow').attr('checked', condition.ifShow)
+      $('#ifEditor').attr('checked', condition.ifEditor)
+      $('#ifWrite').on('change',function () {
+        if (this.checked && !$(`#${id} h3 sup`)[0]) { 
+          $(`#${id} h3`).append('<sup class="am-text-danger">*</sup>')
+        } else {
+          $(`#${id} h3 sup`).remove()
+        }
+        conditionFn()
+      })
+      $('#ifShow').on('change',function () {
+        conditionFn()
+      })
+      $('#ifEditor').on('change',function () {
+        conditionFn()
+      })
+      $('#title').val($(`#${id}`).find('h3 span').text())
+      $('.input_subhead').val($(`#${id}`).find('.subhead').text())
+      let ul = ''
+      $(`#${id}`).find('label').each(function (i , em) {
+          let li= `<li>
+            <i class="am-icon-circle-o circle"></i>
+            <a>
+              <input type="text" value="${$(em).find('input').val()}">
+            </a>
+            <i class="am-icon-arrows arrows"></i>
+            <i class="am-icon-minus-circle minus"></i>
+          </li>`
+          let $li = $(li)
+          if ($(em).find('input').attr('checked')) {
+            $li.find('.circle').removeClass('am-icon-circle-o')
+            $li.find('.circle').addClass('am-icon-dot-circle-o')
+          }
+          ul += $li[0].outerHTML
+      })
+      $('#selecd-ul').html(ul)
+      $('#title').on('input', function () {
+        $(`#${id}`).find('h3 span').text($(this).val())
+      })
+      $('.input_subhead').on('input', function () {
+        $(`#${id}`).find('.subhead').text($(this).val())
+      })
+      $('#selecd-ul').on('click', '.minus',function () {
+        $(this).parent().remove()
+        radioData()
+      })
+      $('#selecd-ul').on('input', 'input', function () {
+        radioData()
+      })
+      $('#selecd-ul').on('click', '.circle', function () {
+        $('#selecd-ul .circle').addClass('am-icon-circle-o')
+        $('#selecd-ul .circle').removeClass('am-icon-dot-circle-o')
+        $(this).removeClass('am-icon-circle-o')
+        $(this).addClass('am-icon-dot-circle-o')
+        radioData()
+      })
+      $('.add_btn_group ').on('click','.add_item',function () {
+        let ul =`<li>
+          <i class="am-icon-circle-o circle"></i>
+          <a>
+            <input type="text" value="">
+          </a>
+          <i class="am-icon-arrows arrows"></i>
+          <i class="am-icon-minus-circle minus"></i>
+        </li>`
+        $('#selecd-ul').append(ul)
+        radioData()
+      })
+      $('#selecd-ul').sortable({ 
+        placeholder: "li",
+		    handle: '.arrows',
+		    cursor: 'move',
+        update (event, ui) {
+          radioData(ui)
+        }
+      })
+      function radioData () {
+        let label = ''
+        $('#selecd-ul li').each((i, elemt) => {
+          label += `<label class="am-radio">
+            <input type="radio" name="${id}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
+            ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>0? 'checked': ''} class="am-ucheck-radio">${$(elemt).find('input').val()}
+            <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
+          </label>`
+        })
+        // console.log(label)
+        $(`#${id} .label`).html(label)
+      }
+      function conditionFn () {
+        $(`#${id}`).attr('data-xdata', JSON.stringify({ifWrite: ifWrite.checked,ifShow: ifShow.checked, ifEditor: ifEditor.checked}))
+      }
+    }
+  },
   designSet () {
-    $('#title').on('input', function () {
-      $("#100012").find('h3').text($(this).val())
-    })
-    $('.input_subhead').on('input', function () {
-      $("#100012").find('.subhead').text($(this).val())
+    var _this = this
+    $('.design-view').on('click','.group',function (e) {
+      e.stopPropagation()
+      _this.setdata[$(this).attr('data-xhtml')].call(this)
+      $('.group').removeClass('active')
+      $(this).addClass('active')
     })
   }
 }

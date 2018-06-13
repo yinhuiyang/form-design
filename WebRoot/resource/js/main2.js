@@ -25,8 +25,11 @@ var from = {
           id: '100012',
           type: 'radio',
           data: {
-            name: 'purpose',
-            value: [{value:'dineTogether', name: '聚餐'}, {value:'fare', name: '车费'},{value:'accommodation', name: '住宿'}]
+            name: '100012',
+            value: [{value:'聚餐', name: '聚餐', checked: 'checked'}, {value:'车费', name: '车费', checked: false},{value:'住宿', name: '住宿', checked: false}],
+            ifWrite: true,
+            ifShow: true,
+            ifEditor: true
           }
         }
       ]
