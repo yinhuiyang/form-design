@@ -32,8 +32,7 @@ Object.assign(design,{
     html.attr('data-xdata', JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor}))
     page.data.value.forEach(element => {
       let label = `<label class="am-radio">
-          <input type="radio" name="${page.name}" value="${element.value}" data-am-ucheck  disabled class="am-ucheck-radio">${element.name}
-          <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
+          <input type="radio" name="${page.name}" value="${element.value}" data-am-ucheck  disabled>${element.name}
         </label>`
       let $label = $(label)
       $label.find('input').attr('checked', element.checked)

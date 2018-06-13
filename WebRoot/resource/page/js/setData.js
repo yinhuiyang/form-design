@@ -23,6 +23,22 @@ var setData = {
       }
     return subhead
   },
+  text (id) {
+    let textHtml = `<div class="setElementTitle">
+          <span>格式</span>
+        </div>
+        <div>
+        <select data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+            <option value="text" selected>文本</option>
+            <option value="^((\(\d{2,3}\))|(\d{3}\-))?1\d{10}$" >手机号码</option>
+            <option value="^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$">电话号码</option>
+            <option value="^\d{6}$">邮政编码</option>
+            <option value="(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)" >身份号码</option>
+            <option value="^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$" >邮箱</option>
+        </select>
+        </div>`
+    return textHtml
+  },
   radio (id) {
     let radioHtml =`<div class="setElementTitle">
           <span>选项</span>

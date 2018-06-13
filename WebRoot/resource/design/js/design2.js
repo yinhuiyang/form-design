@@ -106,7 +106,7 @@ var design = {
     radio: function () {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
-      let html = setData.title(id,'单选', $(`#${id}`).find('h3 span').text()) +
+      let html = setData.title(id,'单选', $(`#${id}`).find('.title span').text()) +
                 setData.underline()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
@@ -151,14 +151,26 @@ var design = {
       function radioData () {
         let label = ''
         $('#selecd-ul li').each((i, elemt) => {
+          // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
           label += `<label class="am-radio">
             <input type="radio" name="${id}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
-            ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>0? 'checked': ''} class="am-ucheck-radio">${$(elemt).find('input').val()}
-            <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
+            ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>0? 'checked': ''} >${$(elemt).find('input').val()}
           </label>`
         })
         $(`#${id} .label`).html(label)
       }
+    },
+    text () {
+      let id = $(this).attr('id')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'单选', $(`#${id}`).find('.title span').text()) +
+      setData.underline()+
+      setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+      setData.underline()+
+      setData.text(id)+
+      setData.underline()+
+      setData.ifField(id, condition)
+      $('.set-content').html(html)
     }
   },
   designSet () {
