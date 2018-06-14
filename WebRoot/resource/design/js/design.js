@@ -178,6 +178,11 @@ var design = {
       setData.underline()+
       setData.ifField(id, condition)
       $('.set-content').html(html)
+      let reg = (JSON.parse($('#'+id).attr('data-option'))).reg
+      $('#text-option').val(reg)
+      if (reg) {
+        $('#textBox').hide()
+      }
       $('#text-option').change(function (){
         if($(this).val() === 'text') {
           $('#textBox').show()
