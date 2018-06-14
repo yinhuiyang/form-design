@@ -287,6 +287,7 @@ h3{
 }
 .group{
 	padding: 10px;
+	position: relative;
 }
 .group.active{
 	background: #EBF8FB;
@@ -295,4 +296,26 @@ h3{
 	margin-top: 15px;
   height: 30px;
   font-size: 14px;
+}
+.delete{
+	position: absolute;
+  right: 21px;
+  bottom: -15px;
+}
+.delete i{
+	background: #fff;
+	-webkit-box-shadow: 0 2px 4px 0 rgba(163,163,163,.5);
+	box-shadow: 0 2px 4px 0 rgba(163,163,163,.5); 
+	width: 35px;
+	height: 35px;
+	font-size: 18px;
+	-webkit-border-radius: 18px;
+	-moz-border-radius: 18px;
+	border-radius: 18px;
+	line-height: 35px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: red;
 }

@@ -6,9 +6,23 @@ var setData = {
       </div>
       <input type="text" id="title" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${value}">`
       function fn (id) {
-        $(`#${id}`).find('.title span').text($(this).val())
+        if($(`#${id}`).attr('data-xhtml') == 'panel') {
+          $(`#${id}`).find('#title span').text($(this).val())
+        } else {
+          $(`#${id}`).find('.title span').text($(this).val())
+        }
       }
     return titleHtml
+  },
+  setNmae (id, value) {
+    let setNmaeHtml = `<div class="setElementTitle">
+        <span>字段名称</span>
+      </div>
+      <input type="text" id="name" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${value}">`
+    function fn (id) {
+      $(`#${id}`).find('.nameValue').attr('name', $(this).val())
+    }
+    return setNmaeHtml
   },
   underline () {
     return `<div class="cfg_split"></div>`

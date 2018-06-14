@@ -19,7 +19,7 @@ var design = {
     let html = this.updataload(from)
     this.$page.find('.view-content').html(html)
     this.initModel()
-    let _this = this
+    // let _this = this
     // $('.design-page-model ul li a').on('click', function (e){
     //   console.log(this)
     //   let fn = $(this).attr('data-xhtml')
@@ -105,13 +105,15 @@ var design = {
   setdata: {
     panel () {
       let id = $(this).attr('id')
-      let html = setData.title(id,'基础面板', $(`#${id}`).find('.title span').text())
+      let html = setData.title(id,'基础面板', $(`#${id}`).find('#title span').text())
       $('.set-content').html(html)
     },
     radio: function () {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'单选', $(`#${id}`).find('.title span').text()) +
+                setData.underline()+
+                setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
                 setData.underline()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
@@ -158,7 +160,7 @@ var design = {
         $('#selecd-ul li').each((i, elemt) => {
           // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
           label += `<label class="am-radio">
-            <input type="radio" name="${id}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
+            <input type="radio" name="${$('#'+id).find('.nameValue').attr('name')}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
             ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>0? 'checked': ''} >${$(elemt).find('input').val()}
           </label>`
         })
@@ -169,6 +171,8 @@ var design = {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'输入框', $(`#${id}`).find('.title span').text()) +
+      setData.underline()+
+      setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
       setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
@@ -212,6 +216,8 @@ var design = {
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'输入框', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
+      setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.textInput(id)+
@@ -223,6 +229,8 @@ var design = {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'多选', $(`#${id}`).find('.title span').text()) +
+                setData.underline()+
+                setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
                 setData.underline()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
@@ -284,6 +292,8 @@ var design = {
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'下拉', $(`#${id}`).find('.title span').text()) +
                 setData.underline()+
+                setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+                setData.underline()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
                 setData.select(id)+
@@ -343,6 +353,17 @@ var design = {
       _this.setdata[$(this).attr('data-xhtml')].call(this)
       $('.group').removeClass('active')
       $(this).addClass('active')
+      $('.delete').hide()
+      $(this).find('.delete').show()
+    })
+    $('.design-view').on('click','.delete',function (e) {
+      e.stopPropagation()
+      $(this).parent().remove()
+      if ($('.group').length){
+        $('.group').eq($('.group').length-1).click()
+      } else {
+        $('.set-content').html('')
+      }
     })
   }
 }
