@@ -6,7 +6,7 @@ var app = {
     document.writeln('<script type="text/javascript" src="' + js + '"></script>')
   }
 }
-app.appendJS('./resource/js/tool.js')
+app.appendJS('./resource/js/designtool.js')
 app.appendJS('./resource/page/js/setData.js')
 app.appendJS('./resource/design/js/design.js')
 app.appendJS('./resource/page/js/component/panel.js')

@@ -101,6 +101,64 @@ var setData = {
       </div>`
       return radioHtml
   },
+  checkbox (id) {
+    let checkHtml =`<div class="setElementTitle">
+          <span>选项</span>
+        </div>
+        <div class="selecd-box">
+        <ul id="selecd-ul">`
+        $(`#${id}`).find('label').each(function (i , em) {
+          let li= `<li>
+            <i class="am-icon-square-o square"></i>
+            <a>
+              <input type="text" value="${$(em).find('input').val()}">
+            </a>
+            <i class="am-icon-arrows arrows"></i>
+            <i class="am-icon-minus-circle minus"></i>
+          </li>`
+          let $li = $(li)
+          if ($(em).find('input').attr('checked')) {
+            $li.find('.square').removeClass('am-icon-square-o')
+            $li.find('.square').addClass('am-icon-check-square-o')
+          }
+          checkHtml += $li[0].outerHTML
+      })    
+      checkHtml +=`</ul>
+        <div class="add_btn_group">
+          <div class="add_item">添加选项</div>
+        </div>
+      </div>`
+      return checkHtml
+  },
+  select (id) {
+    let selectHtml =`<div class="setElementTitle">
+          <span>选项</span>
+        </div>
+        <div class="selecd-box">
+        <ul id="selecd-ul">`
+        $(`#${id}`).find('option').each(function (i , em) {
+          let li= `<li>
+            <i class="am-icon-circle-o circle"></i>
+            <a>
+              <input type="text" value="${$(em).val()}">
+            </a>
+            <i class="am-icon-arrows arrows"></i>
+            <i class="am-icon-minus-circle minus"></i>
+          </li>`
+          let $li = $(li)
+          if ($(em).find('option').attr('selected')) {
+            $li.find('.circle').removeClass('am-icon-circle-o')
+            $li.find('.circle').addClass('am-icon-dot-circle-o')
+          }
+          selectHtml += $li[0].outerHTML
+      })    
+      selectHtml +=`</ul>
+        <div class="add_btn_group">
+          <div class="add_item">添加选项</div>
+        </div>
+      </div>`
+      return selectHtml
+  },
   ifField (id, condition) {
     let ifField = `<div class="setElementTitle">
           <span>校验</span>

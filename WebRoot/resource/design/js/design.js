@@ -213,6 +213,122 @@ var design = {
       setData.underline()+
       setData.ifField(id, condition)
       $('.set-content').html(html)
+    },
+    checkbox: function () {
+      let id = $(this).attr('id')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'多选', $(`#${id}`).find('.title span').text()) +
+                setData.underline()+
+                setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+                setData.underline()+
+                setData.checkbox(id)+
+                setData.underline()+
+                setData.ifField(id, condition)
+      $('.set-content').html(html)
+      $('#selecd-ul').on('click', '.minus',function () {
+        $(this).parent().remove()
+        checkData()
+      })
+      $('#selecd-ul').on('input', 'input', function () {
+        checkData()
+      })
+      $('#selecd-ul').on('click', '.square', function () {
+        if ($(this).attr('class').indexOf('am-icon-check-square-o')>0){
+          $(this).removeClass('am-icon-check-square-o')
+          $(this).addClass('am-icon-square-o')
+        } else {
+          $(this).removeClass('am-icon-square-o')
+          $(this).addClass('am-icon-check-square-o')
+        }
+        checkData()
+      })
+      $('.add_btn_group ').on('click','.add_item',function () {
+        let ul =`<li>
+          <i class="am-icon-square-o square"></i>
+          <a>
+            <input type="text" value="">
+          </a>
+          <i class="am-icon-arrows arrows"></i>
+          <i class="am-icon-minus-circle minus"></i>
+        </li>`
+        $('#selecd-ul').append(ul)
+        checkData()
+      })
+      $('#selecd-ul').sortable({ 
+        placeholder: "li",
+		    handle: '.arrows',
+		    cursor: 'move',
+        update (event, ui) {
+          checkData(ui)
+        }
+      })
+      function checkData () {
+        let label = ''
+        $('#selecd-ul li').each((i, elemt) => {
+          // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
+          label += `<label class="am-checkbox">
+            <input type="checkbox" name="${id}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
+            ${$(elemt).find('.square').attr('class').indexOf('am-icon-check-square-o')>0? 'checked': ''} >${$(elemt).find('input').val()}
+          </label>`
+        })
+        $(`#${id} .label`).html(label)
+      } 
+    },
+    select: function () {
+      let id = $(this).attr('id')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'下拉', $(`#${id}`).find('.title span').text()) +
+                setData.underline()+
+                setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+                setData.underline()+
+                setData.select(id)+
+                setData.underline()+
+                setData.ifField(id, condition)
+      $('.set-content').html(html)
+      $('#selecd-ul').on('click', '.minus',function () {
+        $(this).parent().remove()
+        selectData()
+      })
+      $('#selecd-ul').on('input', 'input', function () {
+        selectData()
+      })
+      $('#selecd-ul').on('click', '.circle', function () {
+        $('#selecd-ul .circle').addClass('am-icon-circle-o')
+        $('#selecd-ul .circle').removeClass('am-icon-dot-circle-o')
+        $(this).removeClass('am-icon-circle-o')
+        $(this).addClass('am-icon-dot-circle-o')
+        selectData()
+      })
+      $('.add_btn_group ').on('click','.add_item',function () {
+        let ul =`<li>
+          <i class="am-icon-circle-o circle"></i>
+          <a>
+            <input type="text" value="">
+          </a>
+          <i class="am-icon-arrows arrows"></i>
+          <i class="am-icon-minus-circle minus"></i>
+        </li>`
+        $('#selecd-ul').append(ul)
+        selectData()
+      })
+      $('#selecd-ul').sortable({ 
+        placeholder: "li",
+		    handle: '.arrows',
+		    cursor: 'move',
+        update (event, ui) {
+          selectData(ui)
+        }
+      })
+      function selectData () {
+        let label = ''
+        $('#selecd-ul li').each((i, elemt) => {
+          //<option value="${element.value}" >${element.name}</option>
+          label += `<option value="${$(elemt).find('input').val()}" disabled
+           ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>0? 'selected': ''} >${$(elemt).find('input').val()}
+           </option>`
+        })
+        $(`#${id} select`).html(label)
+      }
     }
   },
   designSet () {
