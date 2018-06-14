@@ -1,34 +1,318 @@
-<!DOCTYPE html>
 <html>
-<head>
-<title>Form Design</title>
-<meta name="keywords" content="keyword1,keyword2,keyword3">
-<meta name="description" content="this is my page">
-<meta name="content-type" content="text/html; charset=UTF-8">
+  <head>
+    <title>表单设计器</title>
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="./resource/plugins/jquery/ui/interactions/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="./resource/plugins/jquery/ui/widgets/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="./resource/plugins/AmazeUI-2.7.2/css/amazeui.min.css">
+    <script type="text/javascript" src="./resource/plugins/jquery/jquery.js"></script>
+    <script type="text/javascript" src="./resource/plugins/jquery/ui/interactions/jquery-ui.min.js"></script>
+    <script src="./resource/plugins/AmazeUI-2.7.2/js/amazeui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./resource/css/main.css">
+  </head>
+  <body>
+    <div class="design-toolbar">
+      <div class="back"><i class="am-icon-angle-left"></i></div>
+      <div class="title">表单在线设计</div>
+      <div class="toolbar">
+        <div class="eyeBtn">
+          <i class="am-icon-eye"></i>
+          <span>预览</span>
+        </div>
+        <div class="eyeBtn" id="refresh">
+          <i class="am-icon-reply-all"></i>
+          <span>还原</span>
+        </div>
+        <div class="eyeBtn" style="width: 50px;" id = "backBtn">
+          <i class="am-icon-rotate-left"></i>
+          <span>上一步</span>
+        </div>
+        <div class="eyeBtn">
+          <i class="am-icon-save"></i>
+          <span>保存</span>
+        </div>
+      </div>
+    </div>
+    <div class="design-content">
+      <div class="design-page">
+        <div class="design-page-model">
+          <div class="design-page-title">布局组件</div>
+          <ul class="panel-component">
+            <li>
+              <a data-xhtml="panel">
+                <i class="am-icon-list-alt"></i>
+                <span>基础面板</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="table">
+                <i class="am-icon-table"></i>
+                <span>表格面板</span>
+              </a>
+            </li>
+          </ul>
+          <div class="design-page-title">基础组件</div>
+          <ul class="input-component">
+            <li>
+              <a data-xhtml="text">
+                <i class="am-icon-text-width"></i>
+                <span>输入框</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="textarea">
+                <i class="am-icon-text-height"></i>
+                <span>文本域</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="select">
+                <i class="am-icon-toggle-down"></i>
+                <span>下拉框</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="radio">
+                <i class="am-icon-dot-circle-o"></i>
+                <span>单选</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="checkbox">
+                <i class="am-icon-check-square-o"></i>
+                <span>多选</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="datetimepicker">
+                <i class="am-icon-calendar"></i>
+                <span>日期时间</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml= 'file'>
+                <i class="am-icon-cloud-upload"></i>
+                <span>附件</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="image">
+                <i class="am-icon-image"></i>
+                <span>图片</span>
+              </a>
+            </li>
+          </ul>
+          <div class="design-page-title">用户选择组件</div>
+          <ul>
+            <li>
+              <a data-xhtml="user">
+                <i class="am-icon-user"></i>
+                <span>选择用户</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="user">
+                <i class="am-icon-users"></i>
+                <span>选择组织</span>
+              </a>
+            </li>
+            <li>
+              <a data-xhtml="user">
+                <i class="am-icon-user-secret"></i>
+                <span>选择角色</span>
+              </a>
+            </li>
+        </div>
+      </div>
+      <!-- <div class="design-centre">
+        <div class="design-view-set">
 
-
-<link rel="stylesheet" type="text/css" href="./resource/css/main.css">
-
-<link rel="stylesheet" type="text/css" href="./resource/plugins/jquery/ui/interactions/jquery-ui.min.css">
-<link rel="stylesheet" type="text/css" href="./resource/plugins/jquery/ui/widgets/jquery-ui.theme.min.css">
-
-<script type="text/javascript" src="./resource/plugins/jquery/jquery.js"></script>
-<script type="text/javascript" src="./resource/plugins/jquery/ui/interactions/jquery-ui.min.js"></script>
-
-<script type="text/javascript" src="./resource/js/main.js"></script>
-</head>
-<body>
-	<div class="design-toolbar"></div>
-	<div class="design-page-model">
-		<div class="panel-model">
-			<h3 class="title">布局组件</h3>
-			<div class="list"></div>
-		</div>
-		<div class="input-model">
-			<h3 class="title">输入框组件</h3>
-			<div class="list"></div>
-		</div>
-	</div>
-	<div class="design-view"></div>
-</body>
+        </div>
+        <div class="design-view"></div>
+      </div> -->
+      <div class="design-view" data-am-observe>
+          <!-- <section class="am-panel am-panel-default" id="328440492066251" style="min-height:200px">
+              <header class="am-panel-hd">
+                <h3 class="am-panel-title">这是新面板</h3>
+              </header>
+              <div class="am-panel-bd view-content ui-sortable">
+              <div data-xhtml="inputRadio">inputRadio</div><section class="am-panel am-panel-default" id="328441752978482" style="min-height:200px">
+              <header class="am-panel-hd">
+                <h3 class="am-panel-title">这是新面板</h3>
+              </header>
+              <div class="am-panel-bd view-content ui-sortable">
+              <div data-xhtml="inputRadio">inputRadio</div><section class="am-panel am-panel-default" id="328441756114973" style="min-height: 200px; opacity: 1;">
+              <header class="am-panel-hd">
+                <h3 class="am-panel-title">这是新面板</h3>
+              </header>
+              <div class="am-panel-bd view-content ui-sortable">
+              <div data-xhtml="inputRadio">inputRadio</div></div>
+            </section></div>
+            </section></div>
+            </section> -->
+        <!-- <section class="am-panel am-panel-default">
+          <header class="am-panel-hd">
+            <h3 class="am-panel-title">面板标题</h3>
+          </header>
+          <div class="am-panel-bd">
+            面板内容
+          </div>
+        </section> -->
+        <!-- <table class="am-table am-table-bordered am-table-bordered am-table-radius am-table-striped am-table-hover">
+          <thead>
+              <tr>
+                <th>网站名称</th>
+                <th>网址</th>
+                <th>创建时间</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td>Amaze UI</td>
+                  <td>http://amazeui.org</td>
+                  <td>2012-10-01</td>
+              </tr>
+              <tr>
+                <td>Amaze UI</td>
+                  <td>http://amazeui.org</td>
+                  <td>2012-10-01</td>
+              </tr>
+          </tbody>
+        </table> -->
+        <!-- <div class="am-form-group">
+          <label for="doc-vld-name">用户名：</label>
+          <input type="text" id="doc-vld-name" placeholder="输入用户名" class="am-form-field"/>
+        </div>
+        <div class="am-form-group">
+          <label for="doc-vld-ta-2">评论：</label>
+          <textarea id="doc-vld-ta-2" minlength="10" maxlength="100"></textarea>
+        </div> -->
+        <div class="am-form-group">
+            <h3>性别 <sup class="am-text-danger">*</sup></h3>
+            <label class="am-radio">
+              <input type="radio" name="radio10" value="male" data-am-ucheck required> 男
+            </label>
+            <label class="am-radio">
+              <input type="radio" name="radio10" value="female" data-am-ucheck> 女
+            </label>
+            <label class="am-radio">
+              <input type="radio" name="radio10" value="pig" data-am-ucheck> 人妖
+            </label>
+          </div>
+        <!-- <select multiple data-am-selected id="demo-maxchecked" disabled>
+            <option value="a">Apple</option>
+            <option value="b">Banana</option>
+            <option value="o">Orange</option>
+            <option value="m">Mango</option>
+        </select> -->
+        <!-- <select data-am-selected id="demo-maxchecked" disabled>
+              <option value="a">Apple</option>
+              <option value="b">Banana</option>
+              <option value="o">Orange</option>
+              <option value="m">Mango</option>
+        </select> -->
+        <!-- <div class="am-form-group">
+            <h3>装备<sup class="am-text-danger">*</sup> （至少 2 项，至多 4 项）</h3>
+            <label class="am-checkbox">
+              <input type="checkbox" name="cbx" value="ip" data-am-ucheck required minchecked="2" maxchecked="4"> iPhone
+            </label>
+            <label class="am-checkbox">
+              <input type="checkbox" name="cbx" value="im" data-am-ucheck> iMac
+            </label>
+            <label class="am-checkbox">
+              <input type="checkbox" name="cbx" value="mbp" data-am-ucheck> Macbook Pro
+            </label>
+            <label class="am-checkbox">
+              <input type="checkbox" name="cbx" value="sf" data-am-ucheck> 苏菲·麻索
+            </label>
+            <label class="am-checkbox">
+              <input type="checkbox" name="cbx" value="sur" data-am-ucheck> Surface
+            </label>
+            <label class="am-checkbox">
+              <input type="checkbox" name="cbx" value="rb" data-am-ucheck> Razer Blade
+            </label>
+          </div> -->
+      </div>
+      <div class="design-set">
+        <div class="set-title">属性配置</div>
+        <div class="set-box">
+          <div class="set-content" data-am-observe>
+              <!-- <div class="setElementTitle">
+                <span>标题</span>
+                <span class="setNmae">单选</span>
+              </div>
+              <input type="text" id="title" class="input_title">
+              <div class="cfg_split"></div>
+              <div class="setElementTitle">
+                <span>描述信息</span>
+              </div>
+              <textarea class="input_subhead"></textarea>
+              <div class="cfg_split"></div>
+              <div class="setElementTitle">
+                <span>选项</span>
+              </div>
+              <div class="selecd-box">
+                <ul id="selecd-ul"> -->
+                  <!-- <li>
+                    <i class="am-icon-circle-o circle"></i>
+                    <a>
+                      <input type="text" value="聚餐">
+                    </a>
+                    <i class="am-icon-arrows arrows"></i>
+                    <i class="am-icon-minus-circle minus"></i>
+                  </li>
+                  <li>
+                      <i class="am-icon-circle-o circle"></i>
+                      <a>
+                        <input type="text" value="车费">
+                      </a>
+                      <i class="am-icon-arrows arrows"></i>
+                      <i class="am-icon-minus-circle minus"></i>
+                    </li>
+                    <li>
+                        <i class="am-icon-circle-o circle"></i>
+                        <a>
+                          <input type="text" value="住宿">
+                        </a>
+                        <i class="am-icon-arrows arrows"></i>
+                        <i class="am-icon-minus-circle minus"></i>
+                      </li> -->
+                <!-- </ul>
+                <div class="add_btn_group">
+                  <div class="add_item">添加选项</div>-->
+                  <!-- <div class="add_item add_other">添加其他</div> -->
+                <!-- </div> 
+              </div>-->
+              <!-- <div class="cfg_split"></div>
+              <div class="setElementTitle">
+                <span>校验</span>
+              </div>
+              <div>
+                <label class="am-checkbox am-secondary am-success">
+                  <input type="checkbox" data-am-ucheck id='ifWrite'> 必填 
+                </label>
+              </div>
+              <div class="cfg_split"></div>
+              <div class="setElementTitle">
+                <span>字段权限</span>
+              </div>
+              <div>
+                <label class="am-checkbox am-secondary am-success">
+                  <input type="checkbox" data-am-ucheck checked id='ifShow'> 可见
+                </label>
+                <label class="am-checkbox am-secondary am-success">
+                  <input type="checkbox" data-am-ucheck checked id="ifEditor"> 可编辑 
+                </label>
+              </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="./resource/js/main.js"></script>
+    <script type="text/javascript">
+      design.init(from)
+    </script>
+  </body>
 </html>

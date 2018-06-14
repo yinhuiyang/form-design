@@ -7,7 +7,7 @@ Object.assign(design, {
   },
   panelHtml: `<div class="group" data-xhtml="panel"><div class="am-panel am-panel-default" id='' ">
             <header class="am-panel-hd">
-              <h3 class="am-panel-title"></h3>
+              <h3 class="am-panel-title title"><span></span></h3>
             </header>
             <div class="am-panel-bd input-content"  style="min-height: 100px;height: auto;">
             </div>

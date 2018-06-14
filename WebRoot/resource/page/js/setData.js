@@ -23,19 +23,52 @@ var setData = {
       }
     return subhead
   },
+  textInput (id) {
+    let inputHtml = `<div class="setElementTitle">
+        <span>默认值</span>
+      </div>
+      <div class="am-form-group">`
+      if ($(`#${id}`).attr('data-xhtml') == 'text') {
+        inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
+      } else {
+        inputHtml += `<textarea  id="default" rows="5" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}" placeholder="" class="am-form-field"/>`
+      }
+    inputHtml += `</div>
+      <div class="cfg_split"></div>
+      <div class="setElementTitle">
+        <span>输入提示</span>
+      </div>
+      <div class="am-form-group">
+        <input type="text" id="prompt" oninput="${iptPlaceholder};iptPlaceholder.call(this, '${id}')" value="${$('#'+id).find('.input').attr('placeholder')}" class="am-form-field custom"/>
+      </div>`
+    
+    function iptvalue (id) {
+      $(`#${id}`).find('.input').val($(this).val())
+    }
+    function iptPlaceholder (id) {
+      $('#'+id).find('.input').attr('placeholder', $(this).val())
+    }
+    return inputHtml
+  },
   text (id) {
     let textHtml = `<div class="setElementTitle">
           <span>格式</span>
         </div>
         <div>
-        <select data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
-            <option value="text" selected>文本</option>
+        <select id="text-option" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+            <option value="text" selected>自定义</option>
             <option value="^((\(\d{2,3}\))|(\d{3}\-))?1\d{10}$" >手机号码</option>
             <option value="^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$">电话号码</option>
             <option value="^\d{6}$">邮政编码</option>
             <option value="(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)" >身份号码</option>
             <option value="^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$" >邮箱</option>
         </select>
+        </div>
+        <div class="am-form-group" id='textBox'>
+          <input type="text" id="text" class="am-form-field custom" value="${(JSON.parse($('#'+id).attr('data-option'))).reg}" placeholder="正则验证"/>
+        </div>
+        <div class="am-form-group" id='errorBox'>
+          <input type="text" id="error" class="am-form-field custom" value="${(JSON.parse($('#'+id).attr('data-option'))).err}" placeholder="验证错误提示"/>
         </div>`
     return textHtml
   },

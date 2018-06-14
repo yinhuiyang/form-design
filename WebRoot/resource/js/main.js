@@ -1,69 +1,45 @@
-// import m from './resource/js/tool.js'
-(function() {
-	let app = new Object();
-	window.app = app;
-
-	app.appendCSS = function(css) {
-		document.writeln('<link rel="stylesheet" type="text/css" href="' + css + '" />');
-	};
-	
-	app.appendJS = function(js) {
-		document.writeln('<script type="text/javascript" src="' + js + '"></script>');
-	};
-	app.appendJS('./resource/js/tool.js');
-	app.appendCSS('./resource/page/css/index.css');
-	app.appendJS('./resource/page/js/index.js');
-	app.appendJS('./resource/page/js/panel/index.js');
-	app.appendJS('./resource/page/js/panel/model/Base.js');
-	app.appendJS('./resource/page/js/panel/model/Table.js');
-
-	app.appendJS('./resource/page/js/panel/input/index.js');
-	app.appendJS('./resource/page/js/panel/input/model/Text.js');
-	app.appendJS('./resource/page/js/panel/input/model/Select.js');
-
-	app.appendCSS('./resource/design/css/design.css');
-	app.appendJS('./resource/design/js/design.js');
-
-})();
-
-$(function() {
-	var page = {
-		title : "费用申请",
-		panels : [ {
-			id : 10001,
-			type : "BASE",
-			title : "基本信息填写",
-			inputs : [ {
-				id : 10011,
-				type : "TEXT",
-				label : "姓名",
-				name : "name"
-			}, {
-				id : 10009,
-				type : "SELECT",
-				label : "姓名",
-				name : "name"
-			} ]
-
-		}, {
-			id : 10002,
-			type : "TABLE",
-			title : "费用明细填写",
-			inputs : [ {
-				id : 10004,
-				type : "TEXT",
-				label : "姓名",
-				name : "name"
-			}, {
-				id : 10007,
-				type : "TEXT",
-				label : "姓名",
-				name : "name"
-			} ]
-		} ]
-	};
-
-	app.design.init({
-		page : page
-	});
-});
+var app = {
+  appendCSS: function (css) {
+    document.writeln('<link rel="stylesheet" type="text/css" href="' + css + '" />');
+  },
+  appendJS: function (js) {
+    document.writeln('<script type="text/javascript" src="' + js + '"></script>')
+  }
+}
+app.appendJS('./resource/js/tool.js')
+app.appendJS('./resource/page/js/setData.js')
+app.appendJS('./resource/design/js/design.js')
+app.appendJS('./resource/page/js/component/panel.js')
+app.appendJS('./resource/page/js/component/inputRadio.js')
+app.appendJS('./resource/page/js/component/text.js')
+app.appendJS('./resource/page/js/component/textarea.js')
+app.appendJS('./resource/page/js/component/select.js')
+app.appendJS('./resource/page/js/component/checkbox.js')
+app.appendJS('./resource/page/js/component/datetimepicker.js')
+var from = {
+  title: '新表单',
+  id:'01',
+  panels: [
+    {
+      title: '费用申请',
+      id: '1000',
+      type: 'panel',
+      content: [
+        {
+          title: '费用用途',
+          id: '100012',
+          type: 'radio',
+          name: 'money',
+          subhead: '费用',
+          data: {
+            value: [{value:'聚餐', name: '聚餐', checked: 'checked'}, {value:'车费', name: '车费', checked: false},{value:'住宿', name: '住宿', checked: false}],
+            ifWrite: true,
+            ifShow: true,
+            ifEditor: true
+          }
+        }
+      ]
+    }
+  ]
+}
+console.log('main')
