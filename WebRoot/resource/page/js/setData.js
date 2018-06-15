@@ -160,7 +160,7 @@ var setData = {
             <i class="am-icon-minus-circle minus"></i>
           </li>`
           let $li = $(li)
-          if ($(em).find('option').attr('selected')) {
+          if ($(em).attr('selected')) {
             $li.find('.circle').removeClass('am-icon-circle-o')
             $li.find('.circle').addClass('am-icon-dot-circle-o')
           }

@@ -7,6 +7,7 @@ var app = {
   }
 }
 app.appendJS('./resource/js/designtool.js')
+app.appendJS('./resource/js/service.js')
 app.appendJS('./resource/page/js/setData.js')
 app.appendJS('./resource/design/js/design.js')
 app.appendJS('./resource/page/js/component/panel.js')
@@ -16,6 +17,7 @@ app.appendJS('./resource/page/js/component/textarea.js')
 app.appendJS('./resource/page/js/component/select.js')
 app.appendJS('./resource/page/js/component/checkbox.js')
 app.appendJS('./resource/page/js/component/datetimepicker.js')
+
 var from = {
   title: '新表单',
   id:'01',
@@ -62,4 +64,4 @@ var from = {
     }
   ]
 }
-//console.log('main')
+// console.log('main')

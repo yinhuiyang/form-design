@@ -7,7 +7,6 @@ Object.assign(design,{
   <div class="delete"><i class="am-icon-trash"></i></div>
   </div>`,
   checkboxData: {
-    name: '多选组',
     title: '多选组',
     id: '100014',
     type: 'checkbox',

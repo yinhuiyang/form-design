@@ -4,7 +4,17 @@ var design = {
   step:[],
   updata: {
   },
-  init (from) {
+  init () {
+    let action = ''
+      // 保存请求
+      let data = JSON.stringify({
+        formId: '117285188051200'
+      })
+    api.POST('http://192.168.114.77:18013/form/get.do', data, function (res) {
+    })
+    this.loadinit(from)
+  },
+  loadinit (from) {
     this.$page = $('.design-view')
     this.$page.html(this.html)
     this.toolbarFn()
@@ -71,6 +81,96 @@ var design = {
     $('#refresh').on('click', function () {
       design.init(from)
     })
+    $('#preserve').click(function () {
+      let from = JSON.stringify(_this.getFrom())
+      let action = ''
+      // 保存请求
+      api.POST(action, from, function (data) {})
+    })
+  },
+  getFrom () {
+    let from ={panels:[]}
+    let _this = this
+    $('.view-content').children('.group').each(function(i, elem) {
+      from.panels[i] = {}
+      from.panels[i].title = $(this).find('#title span').text()
+      from.panels[i].id = this.id
+      from.panels[i].type = 'panel'
+      from.panels[i].content = _this.getElement(elem)
+    })
+    return from
+  },
+  getElement (elem) {
+    let content = []
+    let _this = this
+    $(elem).find('.group').each(function (i,el) {
+      // content.push(_this.getElementData[$(el).attr('data-xhtml')].call(this, el))
+      content[i] = {}
+      let ifField =JSON.parse($(el).attr('data-xdata'))
+      content[i].id = el.id
+      content[i].title = $(el).find('.title span').text()
+      content[i].type = $(el).attr('data-xhtml')
+      content[i].name = $(el).find('.nameValue').attr('name')
+      content[i].subhead = $(el).find('.subhead').text()
+      content[i].data = {
+        ifWrite: ifField.ifWrite,
+        ifShow: ifField.ifShow,
+        ifEditor: ifField.ifEditor
+      }
+      let obj = _this.getElementData[$(el).attr('data-xhtml')].call(this, el)
+      if (obj.data) {
+        obj.data = Object.assign(content[i].data, obj.data)
+      }
+      Object.assign(content[i], obj)
+    })
+    return content
+  },
+  getElementData: {
+    text (el) {
+      let dataObj = {}
+      let option = JSON.parse($(el).attr('data-option'))
+      dataObj.placeholder = $(el).find('input').attr('placeholder')
+      dataObj.data = {option: option}
+      return dataObj
+    },
+    textarea (el) {
+      let dataObj = {}
+      dataObj.placeholder = $(el).find('textarea').attr('placeholder')
+      return dataObj
+    },
+    radio (el) {
+      let dataObj ={}
+      dataObj.data = {value: []}
+      $(el).find('input').each(function (i, val) {
+        dataObj.data.value[i] = {}
+        dataObj.data.value[i].value = $(this).val()
+        dataObj.data.value[i].name = $(this).val()
+        dataObj.data.value[i].checked = this.checked
+      })
+      return  dataObj
+    },
+    checkbox (el) {
+      let dataObj = {}
+      dataObj.data = {value: []}
+      $(el).find('input').each(function (i, val) {
+        dataObj.data.value[i] = {}
+        dataObj.data.value[i].value = $(this).val()
+        dataObj.data.value[i].name = $(this).val()
+        dataObj.data.value[i].checked = this.checked
+      })
+      return  dataObj
+    },
+    select (el) {
+      let dataObj = {}
+      dataObj.data = {value: []}
+      $(el).find('option').each(function (i, val) {
+        dataObj.data.value[i] = {}
+        dataObj.data.value[i].value = $(this).val()
+        dataObj.data.value[i].name = $(this).val()
+        dataObj.data.value[i].selected = this.selected
+      })
+      return  dataObj
+    }
   },
   initModel () {
     var _this = this
@@ -360,7 +460,7 @@ var design = {
       $('.delete').hide()
       $(this).children('.delete').show()
     })
-    $('.design-view').on('click','.delete',function (e) {
+    $('.design-view').off('click','.delete').on('click','.delete',function (e) {
       e.stopPropagation()
       $('#my-confirm .am-modal-hd').html('')
       if ($(this).parent().attr('data-xhtml') == 'panel') {
@@ -368,7 +468,7 @@ var design = {
       } else {
         $('#my-confirm .am-modal-bd').html('若删除该元素，其对应的表单数据也会被清除,且无法通过上一步还原。确定删除？')
       }
-      
+      // console.log(this, '++++++++++')
       $('#my-confirm').modal({
         relatedTarget: $(this).parent().attr('id'),
         onConfirm: function(options) {

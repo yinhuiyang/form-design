@@ -1,13 +1,12 @@
 Object.assign(design, {
   selectHtml: `<div class="group" data-xhtml="select"  data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"> <div class="am-form-group">
-      <label for="doc-select-1" class="title"><span></span></label>
+      <label for="" class="title"><span></span></label>
       <div class="subhead"></div>
-      <select id="doc-select-1" class="am-form-field nameValue" disabled/>
+      <select id="" class="am-form-field nameValue" disabled/>
     </div>
     <div class="delete"><i class="am-icon-trash"></i></div>
     </div>`,
     selectData: {
-      name: '新下拉框',
       title: '新下拉框',
       id: '100013',
       type: 'select',
@@ -35,6 +34,7 @@ Object.assign(design, {
     }
     html.find('.delete').hide()
     html.find('label').attr({'for': page.id+1})
+    html.find('select').attr({'id': page.id+1})
     html.attr('data-xdata', JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor:page.data.ifEditor}))
     page.data.value.forEach(element => {
       let label = `<option value="${element.value}" >${element.name}</option>`
