@@ -6,15 +6,15 @@ var design = {
   },
   init () {
     let _this = this
-    let action = ''
+    let action = '/form/get.do'
       // 保存请求
       let data = {
         formId: '117285188051200'
       }
-    api.POST('http://192.168.114.77:18013/form/get.do', data, function (res) {
+    api.baseURL = 'http://192.168.114.77:18013'
+    api.POST(action, data, function (res) {
       _this.loadinit(JSON.parse(res.value.content))
     })
-    
   },
   loadinit (from) {
     this.$page = $('.design-view')
@@ -29,7 +29,9 @@ var design = {
     this.updatafn('checkbox', this.checkboxLoad)
     this.updatafn('datetimepicker', this.datetimepickerLoad)
     let html = this.updataload(from)
-    this.$page.find('.view-content').html(html)
+    if (html) {
+      this.$page.find('.view-content').html(html)
+    }
     $(`#${$(html).eq(0).attr('id')}`).click()
     this.initModel()
     // let _this = this
@@ -85,6 +87,7 @@ var design = {
     })
     $('#preserve').click(function () {
       let from = JSON.stringify(_this.getFrom())
+      console.log(from)
       let action = ''
       // 保存请求
       api.POST(action, from, function (data) {})
