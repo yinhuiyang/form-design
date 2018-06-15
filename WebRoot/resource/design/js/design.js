@@ -18,6 +18,7 @@ var design = {
     this.updatafn('datetimepicker', this.datetimepickerLoad)
     let html = this.updataload(from)
     this.$page.find('.view-content').html(html)
+    $(`#${$(html).eq(0).attr('id')}`).click()
     this.initModel()
     // let _this = this
     // $('.design-page-model ul li a').on('click', function (e){
@@ -29,15 +30,17 @@ var design = {
   },
   updataload (from) {
     let data = ''
+    let fromHtml = ''
     let _this = this
     from.panels.forEach((value, i) => {
       let html = _this.updata[value.type](value)
-      console.log(html)
+      // console.log(html)
       data =  $(html)
       data.find('.input-content').append(this.updataInput(value))
+      fromHtml += data[0].outerHTML
     })
-    console.log(data[0])
-    return data[0]
+    // console.log(fromHtml)
+    return fromHtml
   },
   updataInput (value) {
     let html = ''
@@ -56,6 +59,7 @@ var design = {
     let str = this.updata[fn]({})
     this.step.push($(str).attr('id'))
     ui.item.replaceWith(str)
+    $(`#${$(str).attr('id')}`).click()
     this.initModel()
   },
   toolbarFn () {
@@ -161,7 +165,7 @@ var design = {
           // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
           label += `<label class="am-radio">
             <input type="radio" name="${$('#'+id).find('.nameValue').attr('name')}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
-            ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>0? 'checked': ''} >${$(elemt).find('input').val()}
+            ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'checked': ''} >${$(elemt).find('input').val()}
           </label>`
         })
         $(`#${id} .label`).html(label)
@@ -246,7 +250,7 @@ var design = {
         checkData()
       })
       $('#selecd-ul').on('click', '.square', function () {
-        if ($(this).attr('class').indexOf('am-icon-check-square-o')>0){
+        if ($(this).attr('class').indexOf('am-icon-check-square-o')>-1){
           $(this).removeClass('am-icon-check-square-o')
           $(this).addClass('am-icon-square-o')
         } else {
@@ -281,7 +285,7 @@ var design = {
           // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
           label += `<label class="am-checkbox">
             <input type="checkbox" name="${id}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
-            ${$(elemt).find('.square').attr('class').indexOf('am-icon-check-square-o')>0? 'checked': ''} >${$(elemt).find('input').val()}
+            ${$(elemt).find('.square').attr('class').indexOf('am-icon-check-square-o')>-1? 'checked': ''} >${$(elemt).find('input').val()}
           </label>`
         })
         $(`#${id} .label`).html(label)
@@ -339,7 +343,7 @@ var design = {
         $('#selecd-ul li').each((i, elemt) => {
           //<option value="${element.value}" >${element.name}</option>
           label += `<option value="${$(elemt).find('input').val()}" disabled
-           ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>0? 'selected': ''} >${$(elemt).find('input').val()}
+           ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'selected': ''} >${$(elemt).find('input').val()}
            </option>`
         })
         $(`#${id} select`).html(label)
@@ -354,16 +358,38 @@ var design = {
       $('.group').removeClass('active')
       $(this).addClass('active')
       $('.delete').hide()
-      $(this).find('.delete').show()
+      $(this).children('.delete').show()
     })
     $('.design-view').on('click','.delete',function (e) {
       e.stopPropagation()
-      $(this).parent().remove()
-      if ($('.group').length){
-        $('.group').eq($('.group').length-1).click()
+      $('#my-confirm .am-modal-hd').html('')
+      if ($(this).parent().attr('data-xhtml') == 'panel') {
+        $('#my-confirm .am-modal-bd').html('若删除该元素，其里面的表单数据也会被清除,且无法通过上一步还原。确定删除？')
       } else {
-        $('.set-content').html('')
+        $('#my-confirm .am-modal-bd').html('若删除该元素，其对应的表单数据也会被清除,且无法通过上一步还原。确定删除？')
       }
+      
+      $('#my-confirm').modal({
+        relatedTarget: $(this).parent().attr('id'),
+        onConfirm: function(options) {
+          console.log(this.relatedTarget)
+          $(`#${this.relatedTarget}`).remove()
+          if ($('.group').length){
+            $('.group').eq($('.group').length-1).click()
+          } else {
+            $('.set-content').html('')
+          }
+          let idx = _this.step.indexOf(this.relatedTarget)
+          if (idx > -1 ) {
+            console.log(idx)
+            _this.step.splice(idx,1)
+          }
+        },
+        // closeOnConfirm: false,
+        onCancel: function() {
+        }
+      });
+      // $(this).parent().remove()
     })
   }
 }

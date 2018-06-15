@@ -39,6 +39,26 @@ var from = {
           }
         }
       ]
+    },
+    {
+      title: '请假申请',
+      id: '1001',
+      type: 'panel',
+      content: [
+        {
+          title: '请假事由',
+          id: '100013',
+          type: 'radio',
+          name: 'leave',
+          subhead: '请假',
+          data: {
+            value: [{value:'调休', name: '调休', checked: 'checked'}, {value:'病假', name: '病假', checked: false},{value:'年假', name: '年假', checked: false}],
+            ifWrite: true,
+            ifShow: true,
+            ifEditor: true
+          }
+        }
+      ]
     }
   ]
 }
