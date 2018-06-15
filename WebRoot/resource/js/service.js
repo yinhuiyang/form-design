@@ -2,7 +2,7 @@ var api = {
   baseURL: '',
   POST (action, data, callback , err, type, async) {
     let url = this.baseURL + action
-    async = async || true
+    async = async || false
     if (async = 'true') {
       async = true
     } 
@@ -16,7 +16,7 @@ var api = {
 			type : 'post',
 			dataType : type,
 			async : async,// 异步请求
-			headers : { 'Content-Type' : 'application/json'},
+			headers : { 'Content-Type' : 'application/x-www-form-urlencoded'},
 			beforeSend : function() {
 			},
 			success : function(o) {

@@ -5,14 +5,16 @@ var design = {
   updata: {
   },
   init () {
+    let _this = this
     let action = ''
       // 保存请求
-      let data = JSON.stringify({
+      let data = {
         formId: '117285188051200'
-      })
+      }
     api.POST('http://192.168.114.77:18013/form/get.do', data, function (res) {
+      _this.loadinit(JSON.parse(res.value.content))
     })
-    this.loadinit(from)
+    
   },
   loadinit (from) {
     this.$page = $('.design-view')
