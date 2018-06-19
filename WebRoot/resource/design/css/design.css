@@ -2,6 +2,9 @@
 	margin: 0px;
 	padding: 0px;
 }
+body {
+	position: unset;
+}
 .am-ucheck-icons{
 	top: 3px
 }
@@ -305,12 +308,10 @@ h3{
 .delete i{
 	background: #fff;
 	-webkit-box-shadow: 0 2px 4px 0 rgba(163,163,163,.5);
-	box-shadow: 0 2px 4px 0 rgba(163,163,163,.5); 
+	box-shadow: 0 2px 4px 0 rgba(163,163,163,.5);
 	width: 35px;
 	height: 35px;
 	font-size: 18px;
-	-webkit-border-radius: 18px;
-	-moz-border-radius: 18px;
 	border-radius: 18px;
 	line-height: 35px;
 	text-align: center;

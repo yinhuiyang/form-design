@@ -13,7 +13,7 @@ Object.assign(design, {
       name: '0select',
       subhead: '',
       data: {
-        value: [{value:'单选一', name: '单选一'}, {value:'单选二', name: '单选二'},{value:'单选三', name: '单选三'}],
+        value: [{value:'单选一', name: '单选一', selected: true}, {value:'单选二', name: '单选二', selected: false},{value:'单选三', name: '单选三', selected: false}],
         ifWrite: true,
         ifShow: true,
         ifEditor: true

@@ -2,6 +2,8 @@ var design = {
   html: '<div class="view-content"><div class="input-content"></div></div>',
   $page: '',
   step:[],
+  param: {}, // 默认值
+  attribute: {}, //字段属性 
   updata: {
   },
   init (id) {
@@ -12,11 +14,12 @@ var design = {
         formId: id
       }
    // api.baseURL = 'http://localhost:18013'
-    api.baseURL = basePath;
-    api.POST(action, data, function (res) {
-      _this.loadinit(JSON.parse(res.value.content))
-      $("#formTypeId").val(res.value.formTypeId)
-    })
+    // api.baseURL = basePath;
+    // api.POST(action, data, function (res) {
+    //   _this.loadinit(JSON.parse(res.value.content))
+    //   $("#formTypeId").val(res.value.formTypeId)
+    // })
+    this.loadinit()
   },
   loadinit (from) {
     this.$page = $('.design-view')
@@ -48,6 +51,7 @@ var design = {
     let data = ''
     let fromHtml = ''
     let _this = this
+    if (!from) { return }
     from.panels.forEach((value, i) => {
       let html = _this.updata[value.type](value)
       // console.log(html)
@@ -88,6 +92,7 @@ var design = {
       design.init(from)
     })
     $('#preserve').click(function () {
+      _this.param = {}
       let form = JSON.stringify(_this.getFrom())
       console.log(form)
       let action = '/form/save.do'
@@ -136,7 +141,7 @@ var design = {
         ifShow: ifField.ifShow,
         ifEditor: ifField.ifEditor
       }
-      let obj = _this.getElementData[$(el).attr('data-xhtml')].call(this, el)
+      let obj = _this.getElementData[$(el).attr('data-xhtml')].call(_this, el)
       if (obj.data) {
         obj.data = Object.assign(content[i].data, obj.data)
       }
@@ -150,44 +155,75 @@ var design = {
       let option = JSON.parse($(el).attr('data-option'))
       dataObj.placeholder = $(el).find('input').attr('placeholder')
       dataObj.data = {option: option}
+      if (!this.param.text) {
+        this.param.text = {}
+      }
+      this.param.text[$(el).find('input').attr('name')] = $(el).find('input').val()
       return dataObj
     },
     textarea (el) {
       let dataObj = {}
       dataObj.placeholder = $(el).find('textarea').attr('placeholder')
+      if (!this.param.textarea) {
+        this.param.textarea = {}
+      }
+      this.param.textarea[$(el).find('.nameValue').attr('name')] = $(el).find('textarea').val()
       return dataObj
     },
     radio (el) {
       let dataObj ={}
       dataObj.data = {value: []}
+      if (!this.param.radio) {
+        this.param.radio = {}
+      }
+      let _this = this
       $(el).find('input').each(function (i, val) {
         dataObj.data.value[i] = {}
         dataObj.data.value[i].value = $(this).val()
         dataObj.data.value[i].name = $(this).val()
         dataObj.data.value[i].checked = this.checked
+        if (this.checked) {
+          _this.param.radio[$(this).attr('name')] =  $(this).val()
+        }
       })
       return  dataObj
     },
     checkbox (el) {
       let dataObj = {}
       dataObj.data = {value: []}
+      if (!this.param.checkbox) {
+        this.param.checkbox = {}
+      }
+       let values= []
       $(el).find('input').each(function (i, val) {
         dataObj.data.value[i] = {}
         dataObj.data.value[i].value = $(this).val()
         dataObj.data.value[i].name = $(this).val()
         dataObj.data.value[i].checked = this.checked
+        if (this.checked) {
+          values.push($(this).val())
+        }
       })
+      this.param.checkbox[$(el).find('.nameValue').attr('name')] = values
       return  dataObj
     },
     select (el) {
       let dataObj = {}
+      let _this = this
       dataObj.data = {value: []}
+      if (!this.param.select) {
+        this.param.select = {}
+      }
       $(el).find('option').each(function (i, val) {
         dataObj.data.value[i] = {}
         dataObj.data.value[i].value = $(this).val()
         dataObj.data.value[i].name = $(this).val()
         dataObj.data.value[i].selected = this.selected
+        if (this.selected) {
+          _this.param.select[$(el).find('.nameValue').attr('name')] = $(this).val()
+        }
       })
+
       return  dataObj
     }
   },
@@ -280,11 +316,12 @@ var design = {
       })
       function radioData () {
         let label = ''
+        // console.log($('#'+id).find('.nameValue')[0])
         $('#selecd-ul li').each((i, elemt) => {
           // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
           label += `<label class="am-radio">
             <input type="radio" name="${$('#'+id).find('.nameValue').attr('name')}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
-            ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'checked': ''} >${$(elemt).find('input').val()}
+            ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'checked': ''} class ="nameValue">${$(elemt).find('input').val()}
           </label>`
         })
         $(`#${id} .label`).html(label)
@@ -403,7 +440,7 @@ var design = {
         $('#selecd-ul li').each((i, elemt) => {
           // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
           label += `<label class="am-checkbox">
-            <input type="checkbox" name="${id}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
+            <input type="checkbox" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
             ${$(elemt).find('.square').attr('class').indexOf('am-icon-check-square-o')>-1? 'checked': ''} >${$(elemt).find('input').val()}
           </label>`
         })
@@ -462,7 +499,7 @@ var design = {
         $('#selecd-ul li').each((i, elemt) => {
           //<option value="${element.value}" >${element.name}</option>
           label += `<option value="${$(elemt).find('input').val()}" disabled
-           ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'selected': ''} >${$(elemt).find('input').val()}
+           ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'selected': ''}>${$(elemt).find('input').val()}
            </option>`
         })
         $(`#${id} select`).html(label)
