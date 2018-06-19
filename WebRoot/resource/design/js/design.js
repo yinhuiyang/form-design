@@ -4,16 +4,18 @@ var design = {
   step:[],
   updata: {
   },
-  init () {
+  init (id) {
     let _this = this
     let action = '/form/get.do'
       // 保存请求
       let data = {
-        formId: '117285188051200'
+        formId: id
       }
-    api.baseURL = 'http://192.168.114.77:18013'
+   // api.baseURL = 'http://localhost:18013'
+    api.baseURL = basePath;
     api.POST(action, data, function (res) {
       _this.loadinit(JSON.parse(res.value.content))
+      $("#formTypeId").val(res.value.formTypeId)
     })
   },
   loadinit (from) {
@@ -86,11 +88,23 @@ var design = {
       design.init(from)
     })
     $('#preserve').click(function () {
-      let from = JSON.stringify(_this.getFrom())
-      console.log(from)
-      let action = ''
+      let form = JSON.stringify(_this.getFrom())
+      console.log(form)
+      let action = '/form/save.do'
       // 保存请求
-      api.POST(action, from, function (data) {})
+	  let data = {
+	    	formId: $("#formId").val(),
+	    	formTypeId:$("#formTypeId").val(),
+	    	content : form
+	  }
+      api.POST(action, data, function (res) {
+    	 if(res.errcode == 0){
+    		 
+    		 tool.alert( res.errmsg)
+    	 }else{
+    		 tool.alert(res.errmsg);
+    	 }
+      })
     })
   },
   getFrom () {
