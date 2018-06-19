@@ -354,6 +354,7 @@ var design = {
           let option = JSON.parse($(`#${id}`).attr('data-option'))
           option.reg = ''
           $(`#${id}`).attr('data-option', JSON.stringify(option))
+          $('#text').val(option.reg)
         } else {
           $('#textBox').hide()
           let option = JSON.parse($(`#${id}`).attr('data-option'))
