@@ -6,20 +6,29 @@ var design = {
   attribute: {}, //字段属性 
   updata: {
   },
-  init (id) {
+  formTypeId: '',
+  init () {
     let _this = this
     let action = '/form/get.do'
       // 保存请求
       let data = {
-        formId: id
+        formId: formId
       }
    // api.baseURL = 'http://localhost:18013'
+<<<<<<< HEAD
     // api.baseURL = basePath;
     // api.POST(action, data, function (res) {
     //   _this.loadinit(JSON.parse(res.value.content))
     //   $("#formTypeId").val(res.value.formTypeId)
     // })
     this.loadinit()
+=======
+    api.baseURL = basePath;
+    api.POST(action, data, function (res) {
+      _this.loadinit(JSON.parse(res.value.content))
+      _this.formTypeId = res.value.formTypeId
+    })
+>>>>>>> b4ee749d310a1d81c5bebb17ad2839606896fa80
   },
   loadinit (from) {
     this.$page = $('.design-view')
@@ -98,8 +107,8 @@ var design = {
       let action = '/form/save.do'
       // 保存请求
 	  let data = {
-	    	formId: $("#formId").val(),
-	    	formTypeId:$("#formTypeId").val(),
+	    	formId: formId,
+	    	formTypeId: _this.formTypeId,
 	    	content : form
 	  }
       api.POST(action, data, function (res) {

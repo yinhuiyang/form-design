@@ -12,6 +12,7 @@ Object.assign(design, {
     type: 'textarea',
     placeholder: '',
     name: '0textarea',
+    subhead: '',
     data: {
       ifWrite: false,
       ifShow: true,
@@ -26,6 +27,8 @@ Object.assign(design, {
     }
     let html = $(this.textareaHtml).attr({'id': page.id, 'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite,ifShow:page.data.ifShow,ifEditor:page.data.ifEditor})})
     html.find('.title span').html(page.title)
+    html.find('.subhead').html(page.subhead)
+    html.find('label span').html(page.title)
     html.find('.delete').hide()
     html.find('label').attr('for', page.id+1)
     html.find('textarea').attr({'placeholder': page.placeholder, 'id': page.id+1, name: page.name})
