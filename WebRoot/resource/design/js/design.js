@@ -8,27 +8,19 @@ var design = {
   },
   formTypeId: '',
   init () {
-    let _this = this
-    let action = '/form/get.do'
-      // 保存请求
-      let data = {
-        formId: formId
-      }
-   // api.baseURL = 'http://localhost:18013'
-<<<<<<< HEAD
-    // api.baseURL = basePath;
-    // api.POST(action, data, function (res) {
-    //   _this.loadinit(JSON.parse(res.value.content))
-    //   $("#formTypeId").val(res.value.formTypeId)
-    // })
-    this.loadinit()
-=======
-    api.baseURL = basePath;
-    api.POST(action, data, function (res) {
-      _this.loadinit(JSON.parse(res.value.content))
-      _this.formTypeId = res.value.formTypeId
-    })
->>>>>>> b4ee749d310a1d81c5bebb17ad2839606896fa80
+     let _this = this
+     let action = '/form/get.do'
+       // 保存请求
+       let data = {
+         formId: formId
+       }
+    // api.baseURL = 'http://localhost:18013'
+     api.baseURL = basePath;
+     api.POST(action, data, function (res) {
+       _this.loadinit(JSON.parse(res.value.content))
+       _this.formTypeId = res.value.formTypeId
+     })
+      //_this.loadinit(from);
   },
   loadinit (from) {
     this.$page = $('.design-view')
