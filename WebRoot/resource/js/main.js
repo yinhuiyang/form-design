@@ -23,7 +23,7 @@ app.appendJS('./resource/js/designtool.js')
 app.appendJS('./resource/js/service.js')
 app.appendJS('./resource/page/js/setData.js')
 app.appendJS('./resource/design/js/design.js')
-app.appendJS('./resource/page/js/component/panel.js')
+app.appendJS('./resource/page/js/component/form.js')
 app.appendJS('./resource/page/js/component/inputRadio.js')
 app.appendJS('./resource/page/js/component/text.js')
 app.appendJS('./resource/page/js/component/textarea.js')
@@ -38,7 +38,8 @@ var from = {
     {
       title: '费用申请',
       id: '1000',
-      type: 'panel',
+      type: 'form',
+      name:'formMoney',
       content: [
         {
           title: '费用用途',
@@ -58,7 +59,8 @@ var from = {
     {
       title: '请假申请',
       id: '1001',
-      type: 'panel',
+      type: 'form',
+      name:'formLeave',
       content: [
         {
           title: '请假事由',

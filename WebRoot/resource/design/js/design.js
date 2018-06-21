@@ -8,19 +8,19 @@ var design = {
   },
   formTypeId: '',
   init () {
-     let _this = this
-     let action = '/form/get.do'
-       // 保存请求
-       let data = {
-         formId: formId
-       }
-    // api.baseURL = 'http://localhost:18013'
-     api.baseURL = basePath;
-     api.POST(action, data, function (res) {
-       _this.loadinit(JSON.parse(res.value.content))
-       _this.formTypeId = res.value.formTypeId
-     })
-      //_this.loadinit(from);
+    let _this = this
+    // let action = '/form/get.do'
+    //   // 保存请求
+    //   let data = {
+    //     formId: formId
+    //   }
+   // api.baseURL = 'http://localhost:18013'
+    // api.baseURL = basePath;
+    // api.POST(action, data, function (res) {
+    //   _this.loadinit(JSON.parse(res.value.content))
+    //   $("#formTypeId").val(res.value.formTypeId)
+    // })
+    this.loadinit(from)
   },
   loadinit (from) {
     this.$page = $('.design-view')
@@ -28,7 +28,7 @@ var design = {
     this.toolbarFn()
     this.designSet()
     this.updatafn('radio', this.radioDataLoad)
-    this.updatafn('panel', this.panelLoad)
+    this.updatafn('form', this.panelLoad)
     this.updatafn('text', this.textLoad)
     this.updatafn('textarea', this.textareaLoad)
     this.updatafn('select', this.selectLoad)
@@ -120,8 +120,10 @@ var design = {
       from.panels[i] = {}
       from.panels[i].title = $(this).find('#title span').text()
       from.panels[i].id = this.id
-      from.panels[i].type = 'panel'
+      from.panels[i].type = 'form'
+      from.panels[i].name = $(elem).children('.nameValue').attr('name')
       from.panels[i].content = _this.getElement(elem)
+      
     })
     return from
   },
@@ -263,9 +265,11 @@ var design = {
     });
   },
   setdata: {
-    panel () {
+    form () {
       let id = $(this).attr('id')
-      let html = setData.title(id,'基础面板', $(`#${id}`).find('#title span').text())
+      let html = setData.title(id,'基础面板', $(`#${id}`).find('#title span').text())+
+                setData.underline()+
+                setData.setNmae(id, $(`#${id} > .nameValue`).attr('name'))
       $('.set-content').html(html)
     },
     radio: function () {
