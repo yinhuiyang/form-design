@@ -31,7 +31,7 @@ var setData = {
     let subhead = `<div class="setElementTitle">
         <span>描述信息</span>
       </div>
-      <textarea class="input_subhead" oninput="${fn};fn.call(this, '${id}')">${value}</textarea>`
+      <textarea  rows="2" oninput="${fn};fn.call(this, '${id}')">${value}</textarea>`
        function fn(id) {
         $(`#${id}`).find('.subhead').text($(this).val())
       }
@@ -42,10 +42,12 @@ var setData = {
         <span>默认值</span>
       </div>
       <div class="am-form-group">`
-      if ($(`#${id}`).attr('data-xhtml') == 'text') {
-        inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
+      if ($(`#${id}`).attr('data-xhtml') == 'textarea') {
+        inputHtml += `<textarea  id="default" rows="2" oninput="${iptvalue};iptvalue.call(this, '${id}')"  placeholder="" class="am-form-field">${$('#'+id).find('.input').val()}</textarea>`
+      }else if($(`#${id}`).attr('data-xhtml') == 'datetimepicker'){
+        inputHtml += `<input type="text" id="default" class="am-form-field custom datetimepicker" onchange="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
       } else {
-        inputHtml += `<textarea  id="default" rows="5" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}" placeholder="" class="am-form-field"/>`
+        inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
       }
     inputHtml += `</div>
       <div class="cfg_split"></div>
@@ -85,6 +87,62 @@ var setData = {
           <input type="text" id="error" class="am-form-field custom" value="${(JSON.parse($('#'+id).attr('data-option'))).err}" placeholder="验证错误提示"/>
         </div>`
     return textHtml
+  },
+  datatimeFormat (id) {
+    let textHtml = `<div class="setElementTitle">
+          <span>格式</span>
+        </div>
+        <div>
+          <div style="display: flex;">
+                <span style="width: 50;margin-left: 20;">语言</span>
+                <select id="lang" data-am-selected="{btnWidth: '100%' , btnSize: 'sm'}">
+                  <option value="ch">中文</option>
+                  <option value="en">英文</option>
+                </select>
+          </div>
+          <div style="display: flex;margin-top: 10px;">
+              <span style="width: 50;margin-left: 20;">类型</span>
+              <select id="pickerType" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+                  <option value="allpicker" >日期时间</option>
+                  <option value="datepicker">日期</option>
+                  <option value="timepicker">时间</option>
+              </select>
+          </div>
+          <div style="display: flex;margin-top: 10px;">
+            <span style="width: 50;margin-left: 20;">格式</span>
+            <select id="format" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+            </select>
+          </div>
+
+          <div class="am-form-group" id='textBox'  style="display: flex;">
+            <span style="width: 70;margin-left: 5px;margin-top: 14px;">自定义</span>
+            <input type="text" id="text" class="am-form-field custom" value="" placeholder="自定义"/>
+          </div>
+        </div>`
+    return textHtml
+  },
+  dateformatOption(type){
+      let optionHtml='<option value="text" >自定义</option>'
+      if(type === 'allpicker'){
+        optionHtml +=`
+        <option value="Y-m-d H:i" selected>Y-m-d H:i</option>
+        <option value="Y/m/d H:i" >Y/m/d H:i</option>
+        <option value="Y.m.d H:i" >Y.m.d H:i</option>
+        <option value="Y.m.d 9:00" >Y.m.d 9:00</option>
+        `
+      }else if(type === 'datepicker'){
+        optionHtml +=`
+        <option value="Y-m-d" selected >Y-m-d</option>
+        <option value="Y/m/d">Y/m/d</option>
+        `
+      }else if(type === 'timepicker'){
+        optionHtml +=`
+        <option value="H:i" selected>H:i</option>
+        <option value="H:i:s" >H:i:s</option>
+        `
+      }
+      
+      return optionHtml
   },
   radio (id) {
     let radioHtml =`<div class="setElementTitle">

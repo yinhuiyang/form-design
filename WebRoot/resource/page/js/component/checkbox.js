@@ -14,7 +14,7 @@ Object.assign(design,{
     subhead: '',
     data: {
       value: [{value:'多选项一', name: '多选项一'}, {value:'多选项二', name: '多选项二'},{value:'多选项三', name: '多选项三'}],
-      ifWrite: false,
+      ifWrite: true,
       ifShow: true,
       ifEditor: true
     }

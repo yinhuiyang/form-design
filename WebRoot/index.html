@@ -1,7 +1,6 @@
 <!-- <%@ page trimDirectiveWhitespaces="true"%><%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@ page import="java.util.*"%>
 <%@ include file="/WEB-INF/views/base/base.jsp"%>
 <%@ include file="/WEB-INF/views/base/csspath.jsp"%>
-<%@ include file="/WEB-INF/views/base/jspath.jsp"%>
 
 <!DOCTYPE html> -->
 <html>
@@ -12,26 +11,35 @@
     <meta name="content-type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css" href="./resource/plugins/jquery/ui/interactions/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="./resource/plugins/jquery/ui/widgets/jquery-ui.theme.min.css">
+    <link rel="stylesheet" type="text/css" href="./resource/plugins/datetimepicker/jquery.datetimepicker.min.css"/>
     <link rel="stylesheet" href="./resource/plugins/amazeui/css/amazeui.min.css">
     <script type="text/javascript" src="./resource/plugins/jquery/jquery.js"></script>
     <script type="text/javascript" src="./resource/plugins/jquery/ui/interactions/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="./resource/plugins/datetimepicker/jquery.datetimepicker.full.min.js"></script>
     <script src="./resource/plugins/amazeui/js/amazeui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="./resource/css/main.css">
     <script type="text/javascript" src="./resource/js/main.js"></script>
 
-    <!-- <link rel="stylesheet" type="text/css" href="${basePath}/resource/plugins/jquery/ui/interactions/jquery-ui.min.css">
+<!--
+      <script>
+      $.datetimepicker.setLocale('zh');
+    </script>
+<link rel="stylesheet" type="text/css" href="${basePath}/resource/plugins/jquery/ui/interactions/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="${basePath}/resource/plugins/jquery/ui/widgets/jquery-ui.theme.min.css">
     <link rel="stylesheet" href="${basePath}/resource/plugins/amazeui/css/amazeui.min.css">
     <script type="text/javascript" src="${basePath}/resource/plugins/jquery/jquery.js"></script>
+    <script type="text/javascript" src="${basePath}/resource/plugins/amazeui/js/amazeui.min.js"></script>
     <script type="text/javascript" src="${basePath}/resource/plugins/jquery/ui/interactions/jquery-ui.min.js"></script>
-    <script src="${basePath}/resource/plugins/amazeui/js/amazeui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="${basePath}/resource/css/main.css">
     <script type="text/javascript" src="${basePath}/resource/js/tool.js"></script>
     <script type="text/javascript" src="${basePath}/resource/js/main.js"></script>
+
     <script type="text/javascript">
       var formId = '${formId}';
-    	var basePath = '${basePath}';
-    </script> -->
+      var basePath = '${basePath}';
+    </script>
+
+-->
   </head>
   <body>
       
@@ -192,6 +200,7 @@
           </div>
         </div>
     </div>
+
     <script type="text/javascript">
       design.init()
     </script>

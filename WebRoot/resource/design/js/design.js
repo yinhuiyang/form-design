@@ -8,19 +8,19 @@ var design = {
   },
   formTypeId: '',
   init () {
-    let _this = this
-    // let action = '/form/get.do'
-    //   // 保存请求
-    //   let data = {
-    //     formId: formId
-    //   }
-   // api.baseURL = 'http://localhost:18013'
-    // api.baseURL = basePath;
-    // api.POST(action, data, function (res) {
-    //   _this.loadinit(JSON.parse(res.value.content))
-    //   $("#formTypeId").val(res.value.formTypeId)
-    // })
-    this.loadinit(from)
+     let _this = this
+    //  let action = '/form/get.do'
+    //    // 保存请求
+    //    let data = {
+    //      formId: formId
+    //    }
+    // // api.baseURL = 'http://localhost:18013'
+    //  api.baseURL = basePath;
+    //  api.POST(action, data, function (res) {
+    //    _this.loadinit(JSON.parse(res.value.content))
+    //    _this.formTypeId = res.value.formTypeId
+    //  })
+      _this.loadinit(from)
   },
   loadinit (from) {
     this.$page = $('.design-view')
@@ -81,7 +81,18 @@ var design = {
     this.step.push($(str).attr('id'))
     ui.item.replaceWith(str)
     $(`#${$(str).attr('id')}`).click()
+    
     this.initModel()
+  },
+  dateTimeJs (id,option) {
+    $.datetimepicker.setLocale(option.lang);
+    $(`#${id}`).datetimepicker(option)
+    /* {   
+      lang:'ch',
+      step:1,
+      timepicker: true,
+      datepicker:true,
+    }*/
   },
   toolbarFn () {
     var _this = this
@@ -98,19 +109,19 @@ var design = {
       console.log(form)
       let action = '/form/save.do'
       // 保存请求
-	  let data = {
-	    	formId: formId,
-	    	formTypeId: _this.formTypeId,
-	    	content : form
-	  }
-      api.POST(action, data, function (res) {
-    	 if(res.errcode == 0){
+	  // let data = {
+	  //   	formId: formId,
+	  //   	formTypeId: _this.formTypeId,
+	  //   	content : form
+	  // }
+    //   api.POST(action, data, function (res) {
+    // 	 if(res.errcode == 0){
     		 
-    		 tool.alert( res.errmsg)
-    	 }else{
-    		 tool.alert(res.errmsg);
-    	 }
-      })
+    // 		 tool.alert( res.errmsg)
+    // 	 }else{
+    // 		 tool.alert(res.errmsg);
+    // 	 }
+    //   })
     })
   },
   getFrom () {
@@ -123,7 +134,6 @@ var design = {
       from.panels[i].type = 'form'
       from.panels[i].name = $(elem).children('.nameValue').attr('name')
       from.panels[i].content = _this.getElement(elem)
-      
     })
     return from
   },
@@ -158,75 +168,94 @@ var design = {
       let option = JSON.parse($(el).attr('data-option'))
       dataObj.placeholder = $(el).find('input').attr('placeholder')
       dataObj.data = {option: option}
-      if (!this.param.text) {
-        this.param.text = {}
-      }
-      this.param.text[$(el).find('input').attr('name')] = $(el).find('input').val()
+      // if (!this.param.text) {
+      //   this.param.text = {}
+      // }
+      // this.param.text[$(el).find('input').attr('name')] = $(el).find('input').val()
+      let defValue=$(el).find('input').val()
+      dataObj.data.value=defValue
       return dataObj
     },
     textarea (el) {
       let dataObj = {}
+      dataObj.data = {}
       dataObj.placeholder = $(el).find('textarea').attr('placeholder')
-      if (!this.param.textarea) {
-        this.param.textarea = {}
-      }
-      this.param.textarea[$(el).find('.nameValue').attr('name')] = $(el).find('textarea').val()
+      // if (!this.param.textarea) {
+      //   this.param.textarea = {}
+      // }
+      // this.param.textarea[$(el).find('.nameValue').attr('name')] = $(el).find('textarea').val()
+      let defValue=$(el).find('textarea').val()
+      dataObj.data.value=defValue
       return dataObj
     },
     radio (el) {
       let dataObj ={}
       dataObj.data = {value: []}
-      if (!this.param.radio) {
-        this.param.radio = {}
-      }
+      // if (!this.param.radio) {
+      //   this.param.radio = {}
+      // }
       let _this = this
       $(el).find('input').each(function (i, val) {
         dataObj.data.value[i] = {}
         dataObj.data.value[i].value = $(this).val()
         dataObj.data.value[i].name = $(this).val()
         dataObj.data.value[i].checked = this.checked
-        if (this.checked) {
-          _this.param.radio[$(this).attr('name')] =  $(this).val()
-        }
+        // if (this.checked) {
+        //   _this.param.radio[$(this).attr('name')] =  $(this).val()
+        // }
       })
       return  dataObj
     },
     checkbox (el) {
       let dataObj = {}
       dataObj.data = {value: []}
-      if (!this.param.checkbox) {
-        this.param.checkbox = {}
-      }
-       let values= []
+      // if (!this.param.checkbox) {
+      //   this.param.checkbox = {}
+      // }
+      // let values= []
       $(el).find('input').each(function (i, val) {
         dataObj.data.value[i] = {}
         dataObj.data.value[i].value = $(this).val()
         dataObj.data.value[i].name = $(this).val()
         dataObj.data.value[i].checked = this.checked
-        if (this.checked) {
-          values.push($(this).val())
-        }
+        // if (this.checked) {
+        //   values.push($(this).val())
+        // }
       })
-      this.param.checkbox[$(el).find('.nameValue').attr('name')] = values
+     // this.param.checkbox[$(el).find('.nameValue').attr('name')] = values
       return  dataObj
     },
     select (el) {
       let dataObj = {}
       let _this = this
       dataObj.data = {value: []}
-      if (!this.param.select) {
-        this.param.select = {}
-      }
+      // if (!this.param.select) {
+      //   this.param.select = {}
+      // }
       $(el).find('option').each(function (i, val) {
         dataObj.data.value[i] = {}
         dataObj.data.value[i].value = $(this).val()
         dataObj.data.value[i].name = $(this).val()
         dataObj.data.value[i].selected = this.selected
-        if (this.selected) {
-          _this.param.select[$(el).find('.nameValue').attr('name')] = $(this).val()
-        }
+        // if (this.selected) {
+        //   _this.param.select[$(el).find('.nameValue').attr('name')] = $(this).val()
+        // }
       })
 
+      return  dataObj
+    }, 
+    datetimepicker (el) {
+      let dataObj = {}
+      let _this = this
+      dataObj.data = {value:''}
+      dataObj.placeholder = $(el).find('input').attr('placeholder')
+      let option = JSON.parse($(el).attr('data-option'))
+      let defValue=$(el).find('input').val()
+      let pickerType = $(el).attr("data-type")
+      
+      dataObj.data.pickerType = pickerType
+      dataObj.data.value=defValue
+      dataObj.data.option=option
       return  dataObj
     }
   },
@@ -349,8 +378,11 @@ var design = {
       $('.set-content').html(html)
       let reg = (JSON.parse($('#'+id).attr('data-option'))).reg
       $('#text-option').val(reg)
-      if (reg) {
+      let optiotype = $('#text-option').val()
+      if (reg && optiotype) {
         $('#textBox').hide()
+      } else {
+        $('#textBox').val(reg)
       }
       $('#text-option').change(function (){
         if($(this).val() === 'text') {
@@ -390,7 +422,115 @@ var design = {
       setData.underline()+
       setData.ifField(id, condition)
       $('.set-content').html(html)
+
+
+
     },
+    datetimepicker () {
+      $('#default').datetimepicker('destroy')
+      let id = $(this).attr('id')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'日期时间', $(`#${id}`).find('.title span').text()) +
+      setData.underline()+
+      setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
+      setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+      setData.underline()+
+      setData.datatimeFormat(id)+
+      setData.underline()+
+      setData.textInput(id)+
+      setData.underline()+
+      setData.ifField(id, condition)
+      
+      $('.set-content').html(html)
+
+      let lang = (JSON.parse($('#'+id).attr('data-option'))).lang
+      $('#lang').val(lang)
+
+      let format = (JSON.parse($('#'+id).attr('data-option'))).format
+      
+      let pickerType = ($('#'+id).attr('data-type'))
+      $('#pickerType').val(pickerType)
+
+      $('#format').html(setData.dateformatOption(pickerType));
+      $('#format').val(format)
+  
+      let optiontype = $('#format').val()
+      if (format && optiontype) {
+        $('#textBox').hide()
+        $('#text').val('')
+      } else {
+        $('#text').val(format)
+      }
+      
+      $('#lang').change(function (){
+        let option = JSON.parse($(`#${id}`).attr('data-option'))
+        option.lang = $(this).val()
+        $(`#${id}`).attr('data-option', JSON.stringify(option))
+        design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))))
+      })
+
+      $('#pickerType').change(function (){
+        let datepicker = false
+        let timepicker = false
+        let format=''
+        if($(this).val() === 'allpicker') {
+          format="Y-m-d H:i"
+          datepicker=true
+          timepicker=true
+        } else if($(this).val() === 'datepicker'){
+          format="Y-m-d"
+          datepicker=true
+          timepicker=false
+        }else if($(this).val() == 'timepicker') {
+          format="H:i"
+          datepicker=false
+          timepicker=true
+        }
+        $('#format').html(setData.dateformatOption($(this).val()));
+        $('#format').val(format)
+        let optiontype = $('#format').val()
+        if (format && optiontype) {
+          $('#textBox').hide()
+          $('#text').val('')
+        } else {
+          $('#textBox').show()
+          $('#text').val(format)
+        }
+
+        let option = JSON.parse($(`#${id}`).attr('data-option'))
+        option.datepicker=datepicker
+        option.timepicker=timepicker
+        option.format=format
+        $(`#${id}`).attr('data-option', JSON.stringify(option))
+        $('#'+id).attr('data-type',$(this).val())
+        design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
+      })
+
+      $('#format').change(function (){
+        let option = JSON.parse($(`#${id}`).attr('data-option'))
+        if($(this).val() === 'text') {
+          $('#textBox').show()
+          option.format = ''
+          $('#text').val(option.format)
+        } else{
+          $('#textBox').hide()
+          option.format=$(this).val()
+        }
+        $(`#${id}`).attr('data-option', JSON.stringify(option))
+        design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
+      })
+
+      $('#text').on('input', function () {
+        let option = JSON.parse($(`#${id}`).attr('data-option'))
+        option.format = $(this).val()
+        $(`#${id}`).attr('data-option', JSON.stringify(option))
+        design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
+      })
+
+      design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
+    },
+
     checkbox: function () {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))

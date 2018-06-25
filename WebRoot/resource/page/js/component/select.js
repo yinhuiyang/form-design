@@ -39,7 +39,7 @@ Object.assign(design, {
     page.data.value.forEach(element => {
       let label = `<option value="${element.value}" >${element.name}</option>`
       let $label = $(label)
-      $label.find('option').attr('selected', element.selected)
+      $label.attr('selected', element.selected)
       html.find('select').append($label[0])
     })
     return html[0].outerHTML
