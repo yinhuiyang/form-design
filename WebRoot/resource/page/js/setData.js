@@ -94,14 +94,14 @@ var setData = {
         </div>
         <div>
           <div style="display: flex;">
-                <span style="width: 50;margin-left: 20;">语言</span>
+                <span style="width: 50px;margin-left: 20px;">语言</span>
                 <select id="lang" data-am-selected="{btnWidth: '100%' , btnSize: 'sm'}">
                   <option value="ch">中文</option>
                   <option value="en">英文</option>
                 </select>
           </div>
           <div style="display: flex;margin-top: 10px;">
-              <span style="width: 50;margin-left: 20;">类型</span>
+              <span style="width: 50px;margin-left: 20px;">类型</span>
               <select id="pickerType" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
                   <option value="allpicker" >日期时间</option>
                   <option value="datepicker">日期</option>
@@ -109,13 +109,13 @@ var setData = {
               </select>
           </div>
           <div style="display: flex;margin-top: 10px;">
-            <span style="width: 50;margin-left: 20;">格式</span>
+            <span style="width: 50px;margin-left: 20px;">格式</span>
             <select id="format" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
             </select>
           </div>
 
           <div class="am-form-group" id='textBox'  style="display: flex;">
-            <span style="width: 70;margin-left: 5px;margin-top: 14px;">自定义</span>
+            <span style="width: 70px;margin-left: 5px;margin-top: 14px;">自定义</span>
             <input type="text" id="text" class="am-form-field custom" value="" placeholder="自定义"/>
           </div>
         </div>`
