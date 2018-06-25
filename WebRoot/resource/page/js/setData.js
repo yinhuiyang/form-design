@@ -73,11 +73,11 @@ var setData = {
         <div>
         <select id="text-option" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
             <option value="text" selected>自定义</option>
-            <option value="^((\(\d{2,3}\))|(\d{3}\-))?1\d{10}$" >手机号码</option>
-            <option value="^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$">电话号码</option>
-            <option value="^\d{6}$">邮政编码</option>
-            <option value="(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)" >身份号码</option>
-            <option value="^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$" >邮箱</option>
+            <option value="phone" >手机号码</option>
+            <option value="telephone">电话号码</option>
+            <option value="postalcode">邮政编码</option>
+            <option value="IDnumber" >身份号码</option>
+            <option value="email" >邮箱</option>
         </select>
         </div>
         <div class="am-form-group" id='textBox'>

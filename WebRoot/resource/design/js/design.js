@@ -6,6 +6,13 @@ var design = {
   attribute: {}, //字段属性 
   updata: {
   },
+  textFormat: {
+    phone: '^((\\(\\d{2,3}\\))|(\\d{3}\\-))?1\\d{10}$',
+    telephone: '^(0[0-9]{2,3}\\-)?([2-9][0-9]{6,7})+(\\-[0-9]{1,4})?$',
+    postalcode: '^\\d{6}$',
+    IDnumber: '(^\\d{15}$)|(^\\d{18}$)|(^\\d{17}(\\d|X|x)$)',
+    email: '^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$'
+  },
   formTypeId: '',
   init () {
      let _this = this
@@ -385,6 +392,7 @@ var design = {
         $('#textBox').val(reg)
       }
       $('#text-option').change(function (){
+        console.log($(this).val())
         if($(this).val() === 'text') {
           $('#textBox').show()
           let option = JSON.parse($(`#${id}`).attr('data-option'))
@@ -394,7 +402,7 @@ var design = {
         } else {
           $('#textBox').hide()
           let option = JSON.parse($(`#${id}`).attr('data-option'))
-          option.reg = $(this).val()
+          option.reg = design.textFormat[$(this).val()]
           $(`#${id}`).attr('data-option', JSON.stringify(option))
         }
       })
