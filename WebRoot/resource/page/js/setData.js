@@ -6,7 +6,7 @@ var setData = {
       </div>
       <input type="text" id="title" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${value}">`
       function fn (id) {
-        if($(`#${id}`).attr('data-xhtml') == 'panel') {
+        if($(`#${id}`).attr('data-xhtml') == 'form') {
           $(`#${id}`).find('#title span').text($(this).val())
         } else {
           $(`#${id}`).find('.title span').text($(this).val())
