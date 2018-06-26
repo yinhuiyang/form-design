@@ -24,6 +24,16 @@ var setData = {
     }
     return setNmaeHtml
   },
+  setFormNmae (id, value) {
+    let setNmaeHtml = `<div class="setElementTitle">
+        <span>字段名称</span>
+      </div>
+      <input type="text" id="name" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${value}">`
+    function fn (id) {
+      $(`#${id}`).children('.nameValue').attr('name', $(this).val())
+    }
+    return setNmaeHtml
+  },
   underline () {
     return `<div class="cfg_split"></div>`
   },

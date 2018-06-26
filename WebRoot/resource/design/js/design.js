@@ -305,7 +305,7 @@ var design = {
       let id = $(this).attr('id')
       let html = setData.title(id,'基础面板', $(`#${id}`).find('#title span').text())+
                 setData.underline()+
-                setData.setNmae(id, $(`#${id} .nameValue`).attr('name'))
+                setData.setFormNmae(id, $(`#${id} .nameValue`).attr('name'))
       $('.set-content').html(html)
     },
     radio: function () {
