@@ -41,6 +41,8 @@ var design = {
     this.updatafn('select', this.selectLoad)
     this.updatafn('checkbox', this.checkboxLoad)
     this.updatafn('datetimepicker', this.datetimepickerLoad)
+    this.updatafn('file', this.fileLoad)
+    this.updatafn('image', this.imageLoad)
     let html = this.updataload(from)
     if (html) {
       this.$page.find('.view-content').html(html)
@@ -170,6 +172,21 @@ var design = {
     return content
   },
   getElementData: {
+    file (el) {
+      let dataObj = {}
+      // if (!this.param.text) {
+      //   this.param.text = {}
+      // }
+      // this.param.text[$(el).find('input').attr('name')] = $(el).find('input').val()
+      return dataObj
+    },image (el) {
+      let dataObj = {}
+      // if (!this.param.text) {
+      //   this.param.text = {}
+      // }
+      // this.param.text[$(el).find('input').attr('name')] = $(el).find('input').val()
+      return dataObj
+    },
     text (el) {
       let dataObj = {}
       let option = JSON.parse($(el).attr('data-option'))
@@ -392,7 +409,6 @@ var design = {
         $('#textBox').val(reg)
       }
       $('#text-option').change(function (){
-        console.log($(this).val())
         if($(this).val() === 'text') {
           $('#textBox').show()
           let option = JSON.parse($(`#${id}`).attr('data-option'))
@@ -537,6 +553,30 @@ var design = {
       })
 
       design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
+    },file () {
+      let id = $(this).attr('id')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'附件', $(`#${id}`).find('.title span').text()) +
+      setData.underline()+
+      setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
+      setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+      setData.underline()+
+      setData.ifField(id, condition)
+      $('.set-content').html(html)
+
+    },image () {
+      let id = $(this).attr('id')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'图片', $(`#${id}`).find('.title span').text()) +
+      setData.underline()+
+      setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
+      setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+      setData.underline()+
+      setData.ifField(id, condition)
+      $('.set-content').html(html)
+
     },
 
     checkbox: function () {

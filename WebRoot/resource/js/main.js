@@ -19,6 +19,8 @@ app.appendJS('./resource/page/js/component/textarea.js')
 app.appendJS('./resource/page/js/component/select.js')
 app.appendJS('./resource/page/js/component/checkbox.js')
 app.appendJS('./resource/page/js/component/datetimepicker.js')
+app.appendJS('./resource/page/js/component/file.js')
+app.appendJS('./resource/page/js/component/image.js')
 
 // var from ={
 // 	"panels": [{
