@@ -114,7 +114,12 @@ var design = {
     })
     $('#preserve').click(function () {
       _this.param = {}
-      let form = JSON.stringify(_this.getFrom())
+
+      let formTmp = _this.getFrom()
+      if(!formTmp){
+          return false
+      }
+      let form = JSON.stringify(formTmp)
       console.log(form)
       let action = '/form/save.do'
       // 保存请求
@@ -136,19 +141,48 @@ var design = {
   getFrom () {
     let from ={panels:[]}
     let _this = this
+
+    var checkPanelName = {}
+
     $('.view-content').children('.group').each(function(i, elem) {
+
       from.panels[i] = {}
       from.panels[i].title = $(this).find('#title span').text()
       from.panels[i].id = this.id
       from.panels[i].type = 'form'
       from.panels[i].name = $(elem).children('.nameValue').attr('name')
-      from.panels[i].content = _this.getElement(elem)
+
+      if(app.isEmpty(from.panels[i].name) 
+        || app.isEmpty(from.panels[i].title)){
+        app.alert("布局组件存在标题或字段名称为空")
+        $(`#${from.panels[i].id}`).click()
+        from  = false
+        return false
+      }
+
+      if(app.isEmpty(checkPanelName[from.panels[i].name])){
+        checkPanelName[from.panels[i].name]=from.panels[i].title
+      }else{
+        app.alert(from.panels[i].title+"：其字段名称与其它布局组件字段重名")
+        $(`#${from.panels[i].id}`).click()
+        from  = false
+        return false
+      }
+
+      let content = _this.getElement(elem)
+      if(!content){
+        from  = false
+        return false
+      }
+      from.panels[i].content =content
     })
     return from
   },
   getElement (elem) {
     let content = []
     let _this = this
+    var checkElementName={}
+
     $(elem).find('.group').each(function (i,el) {
       // content.push(_this.getElementData[$(el).attr('data-xhtml')].call(this, el))
       content[i] = {}
@@ -157,6 +191,25 @@ var design = {
       content[i].title = $(el).find('.title span').text()
       content[i].type = $(el).attr('data-xhtml')
       content[i].name = $(el).find('.nameValue').attr('name')
+
+      if(app.isEmpty(content[i].name) 
+        || app.isEmpty(content[i].title)){
+        app.alert("基础组件存在标题或字段名称为空")
+        $(`#${content[i].id}`).click()
+        content  = false
+        return false
+      }
+
+
+      if(app.isEmpty(checkElementName[content[i].name])){
+        checkElementName[content[i].name]=content[i].title
+      }else{
+        app.alert(content[i].title+"：其字段名称与该布局组件中的其它基础组件字段重名")
+        $(`#${content[i].id}`).click()
+        content  = false
+        return false
+      }
+
       content[i].subhead = $(el).find('.subhead').text()
       content[i].data = {
         ifWrite: ifField.ifWrite,
@@ -169,6 +222,7 @@ var design = {
       }
       Object.assign(content[i], obj)
     })
+
     return content
   },
   getElementData: {
@@ -701,7 +755,8 @@ var design = {
     }
   },
   designSet () {
-    var _this = this
+    var _this = this  
+   
     $('.design-view').on('click','.group',function (e) {
       e.stopPropagation()
       _this.setdata[$(this).attr('data-xhtml')].call(this)
