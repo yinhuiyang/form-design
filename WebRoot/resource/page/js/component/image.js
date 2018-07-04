@@ -15,7 +15,7 @@ Object.assign(design, {
   imageData: {
     title: '图片',
     id: '100',
-    type: 'file',
+    type: 'image',
     placeholder: '',
     name: '0image',
     subhead: '',

@@ -6,6 +6,7 @@ var design = {
   attribute: {}, //字段属性 
   updata: {
   },
+  form:'',
   textFormat: {
     phone: '^((\\(\\d{2,3}\\))|(\\d{3}\\-))?1\\d{10}$',
     telephone: '^(0[0-9]{2,3}\\-)?([2-9][0-9]{6,7})+(\\-[0-9]{1,4})?$',
@@ -27,6 +28,7 @@ var design = {
     //    _this.loadinit(JSON.parse(res.value.content))
     //    _this.formTypeId = res.value.formTypeId
     //  })
+    this.form = from
       _this.loadinit(from)
   },
   loadinit (from) {
@@ -110,7 +112,7 @@ var design = {
       _this.step.pop()
     })
     $('#refresh').on('click', function () {
-      design.init(from)
+      _this.loadinit(_this.form)
     })
     $('#preserve').click(function () {
       _this.param = {}
@@ -136,6 +138,31 @@ var design = {
     // 		 tool.alert(res.errmsg);
     // 	 }
     //   })
+    })
+    $('#preview').click(function(){
+      let html = `<div class="preview-conent">
+        <div class="form-content">
+          <div class="img-icon">
+            <i class="am-icon-close back"></i>
+          </div>
+          <div id="formList"></div>
+        </div>
+      </div>`
+      let $html = $(html)
+      $html.find('i').click(function(){
+        $(this).parent().parent().parent().remove()
+      })
+      $('body').append($html)
+      let formTmp = _this.getFrom()
+      formTmp.title = ""
+      formTmp.id = 123156645
+      let formList = {
+        form: formTmp
+      }
+      var authorizeObj  = new authorizeApi(formList) // 绑定json
+      authorizeObj.loadbind('#formList')
+      console.log(formTmp)
+      
     })
   },
   getFrom () {
