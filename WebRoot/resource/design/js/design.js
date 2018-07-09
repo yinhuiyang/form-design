@@ -7,6 +7,7 @@ var design = {
   updata: {
   },
   form:'',
+  formTitle:'',
   textFormat: {
     phone: '^((\\(\\d{2,3}\\))|(\\d{3}\\-))?1\\d{10}$',
     telephone: '^(0[0-9]{2,3}\\-)?([2-9][0-9]{6,7})+(\\-[0-9]{1,4})?$',
@@ -25,7 +26,9 @@ var design = {
     // // api.baseURL = 'http://localhost:18013'
     //  api.baseURL = basePath;
     //  api.POST(action, data, function (res) {
-    //    _this.loadinit(JSON.parse(res.value.content))
+    //    _this.form=JSON.parse(res.value.content)
+    //    _this.formTitle=res.value.name
+    //    _this.loadinit(_this.form)
     //    _this.formTypeId = res.value.formTypeId
     //  })
     this.form = from
@@ -107,14 +110,14 @@ var design = {
   },
   toolbarFn () {
     var _this = this
-    $('#backBtn').on('click', function () {
+    $('#backBtn').off('click').on('click', function () {
       $(`#${_this.step[_this.step.length-1]}`).remove()
       _this.step.pop()
     })
-    $('#refresh').on('click', function () {
+    $('#refresh').off('click').on('click', function () {
       _this.loadinit(_this.form)
     })
-    $('#preserve').click(function () {
+    $('#preserve').off('click').on('click',function () {
       _this.param = {}
 
       let formTmp = _this.getFrom()
@@ -139,7 +142,7 @@ var design = {
     // 	 }
     //   })
     })
-    $('#preview').click(function(){
+    $('#preview').off('click').on('click',function(){
       let html = `<div class="preview-conent">
         <div class="form-content">
           <div class="img-icon">
@@ -154,8 +157,8 @@ var design = {
       })
       $('body').append($html)
       let formTmp = _this.getFrom()
-      formTmp.title = ""
-      formTmp.id = 123156645
+      formTmp.title = _this.formTitle
+      formTmp.id = _this.formId
       let formList = {
         form: formTmp
       }

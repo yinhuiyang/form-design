@@ -455,7 +455,7 @@ authorize.select = {
   <div class="am-form-group group" data-xhtml="select">
     <label for="" class="title"><span></span></label>
     <div class="subhead"></div>
-    <select data-am-selected>
+    <select data-am-selected="{btnWidth: '100%', maxHeight: 200,btnSize: 'sm',searchBox: 1}">
     </select>
     </div>`,
   loadSelect (page, eldata, elattribute) {
