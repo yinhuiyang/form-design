@@ -10,7 +10,7 @@ Object.assign(design, {
             <header class="am-panel-hd">
               <h3 class="am-panel-title " id="title"><span></span></h3>
             </header>
-            <div class="am-panel-bd input-content"  style="min-height: 100px;height: auto;">
+            <div class="am-panel-bd input-content am-g"  style="min-height: 100px;height: auto;">
             </div>
           </div>
           <div class="delete"><i class="am-icon-trash"></i></div>

@@ -12,9 +12,10 @@ Object.assign(design, {
       type: 'select',
       name: '0select',
       subhead: '',
+      grid: '12',
       data: {
         value: [{value:'单选一', name: '单选一', selected: true}, {value:'单选二', name: '单选二', selected: false},{value:'单选三', name: '单选三', selected: false}],
-        ifWrite: true,
+        ifWrite: false,
         ifShow: true,
         ifEditor: true
       }
@@ -25,6 +26,7 @@ Object.assign(design, {
       this.selectData.name = `${parseInt(this.selectData.name)+1}select`
       page = this.selectData 
     }
+    
     let html = $(this.selectHtml).attr('id', page.id)
     html.find('.subhead').html(page.subhead)
     html.find('.title span').text(page.title)
@@ -32,6 +34,7 @@ Object.assign(design, {
     if (page.data.ifWrite){
       html.find('label').append('<sup class="am-text-danger">*</sup>')
     }
+    html.addClass(`am-u-sm-${page.grid?page.grid: 12}`)
     html.find('.delete').hide()
     html.find('label').attr({'for': page.id+1})
     html.find('select').attr({'id': page.id+1})

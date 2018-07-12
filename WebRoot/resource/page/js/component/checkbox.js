@@ -12,9 +12,10 @@ Object.assign(design,{
     type: 'checkbox',
     name: '0checkbox',
     subhead: '',
+    grid: '12',
     data: {
       value: [{value:'多选项一', name: '多选项一'}, {value:'多选项二', name: '多选项二'},{value:'多选项三', name: '多选项三'}],
-      ifWrite: true,
+      ifWrite: false,
       ifShow: true,
       ifEditor: true
     }
@@ -30,6 +31,7 @@ Object.assign(design,{
     html.find('.title span').text(page.title)
     html.find('.nameValue').attr('name',page.name)
     html.find('.delete').hide()
+    html.addClass(`am-u-sm-${page.grid?page.grid: 12}`)
     if (page.data.ifWrite){
       html.find('.title').append('<sup class="am-text-danger">*</sup>')
     }

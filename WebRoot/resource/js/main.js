@@ -27,7 +27,9 @@ app.appendJS('./resource/page/js/component/image.js')
 // 		"title": "费用申请",
 // 		"id": "1000",
 // 		"type": "panel",
-// 		"content": []
+// 		"content": [
+      
+//     ]
 // 	}]}
 
 	var from ={"panels":[]}

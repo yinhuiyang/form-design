@@ -37,6 +37,36 @@ var setData = {
   underline () {
     return `<div class="cfg_split"></div>`
   },
+  grid (id) {
+    var numinpt = $(`#${id}`).attr('class').replace(/[^0-9]/ig,"")
+    if (!numinpt) {
+      numinpt = 12
+      let reg = /am-u-sm-\d*/ig
+      let className = reg.exec($(`#${id}`).attr('class'))[0]
+      $(`#${id}`).removeClass(className)
+      $(`#${id}`).addClass(`am-u-sm-${numinpt}`)
+    }
+    let gridHtml = `<div class="setElementTitle">
+      <span>网格队列</span>
+    </div>
+    <input type="number" id="grid-ipt" max="12" min="1" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${numinpt}">
+    <div class="am-alert am-alert-danger" style="display: none;">最大值为12，最小为1</div>`
+    
+    function fn(id) {
+      let num = parseInt($(this).val())
+      if(num > 12 || num < 1) {
+        $(this).val(12)
+        $('.am-alert').show()
+      } else {
+        $('.am-alert').hide()
+      }
+      let reg = /am-u-sm-\d+/ig
+      let className = reg.exec($(`#${id}`).attr('class'))[0]
+      $(`#${id}`).removeClass(className)
+      $(`#${id}`).addClass(`am-u-sm-${$(this).val()}`)
+    }
+    return gridHtml
+  },
   subhead (id, value) {
     let subhead = `<div class="setElementTitle">
         <span>描述信息</span>

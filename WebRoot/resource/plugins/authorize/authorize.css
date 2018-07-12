@@ -131,3 +131,31 @@
   width: 80%;
   height: 70%;
 }
+/* [class*=am-u-] {
+  padding: 0px
+} */
+fieldset {
+	clear: both;
+}
+fieldset:after{
+	content: "";
+	display: block;
+	clear: both;
+	
+}
+.group:before {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.group:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+fieldset [class*=am-u-]+[class*=am-u-]:last-child{
+	float: left;
+	
+}

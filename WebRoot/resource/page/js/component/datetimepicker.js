@@ -14,11 +14,12 @@ Object.assign(design, {
       placeholder: '日期选择',
       name: '0datetimepicker',
       subhead: '',
+      grid: '12',
       data:{
         value: '',
         pickerType:'allpicker',
         option: {lang: 'ch', step: 1,datepicker:true,timepicker:true,format:'Y-m-d H:i'},
-        ifWrite: true,
+        ifWrite: false,
         ifShow: true,
         ifEditor: true
       } 
@@ -38,6 +39,7 @@ Object.assign(design, {
     if (page.data.ifWrite){
       html.find('label').append('<sup class="am-text-danger">*</sup>')
     }
+    html.addClass(`am-u-sm-${page.grid?page.grid: 12}`)
     html.find('label span').html(page.title)
     html.find('.delete').hide()
     html.find('label').attr('for', page.id+1)

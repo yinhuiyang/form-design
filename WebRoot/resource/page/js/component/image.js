@@ -19,6 +19,7 @@ Object.assign(design, {
     placeholder: '',
     name: '0image',
     subhead: '',
+    grid: '12',
     data:{
       value: '',
       ifWrite: false,
@@ -39,6 +40,7 @@ Object.assign(design, {
     if (page.data.ifWrite){
       html.find('label').append('<sup class="am-text-danger">*</sup>')
     }
+    html.addClass(`am-u-sm-${page.grid?page.grid: 12}`)
     html.find('.delete').hide()
     html.find('label').attr('for', page.id+1)
     html.find('input').attr({'placeholder': page.placeholder, 'id': page.id+1, 'value': page.data.value, 'name': page.name})

@@ -399,3 +399,28 @@ h3{
 .form-content .section{
 	border-bottom: none
 }
+.input-content {
+	clear: both;
+}
+.input-content:after{
+	content: "";
+	display: block;
+	clear: both;
+	
+}
+.group:before {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.group:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.input-content [class*=am-u-]+[class*=am-u-]:last-child{
+	float: left;
+	
+}

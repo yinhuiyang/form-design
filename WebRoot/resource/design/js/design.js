@@ -221,7 +221,7 @@ var design = {
       content[i].title = $(el).find('.title span').text()
       content[i].type = $(el).attr('data-xhtml')
       content[i].name = $(el).find('.nameValue').attr('name')
-
+      content[i].grid = !$(el).attr('class').replace(/[^0-9]/ig,"") ? '12' : $(el).attr('class').replace(/[^0-9]/ig,"")
       if(app.isEmpty(content[i].name) 
         || app.isEmpty(content[i].title)){
         app.alert("基础组件存在标题或字段名称为空")
@@ -416,6 +416,8 @@ var design = {
                 setData.underline()+
                 setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
                 setData.underline()+
+                setData.grid(id)+
+                setData.underline()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
                 setData.radio(id)+
@@ -476,6 +478,8 @@ var design = {
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
       setData.underline()+
+      setData.grid(id)+
+      setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.text(id)+
@@ -524,6 +528,8 @@ var design = {
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
       setData.underline()+
+      setData.grid(id)+
+      setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.textInput(id)+
@@ -541,6 +547,8 @@ var design = {
       let html = setData.title(id,'日期时间', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
+      setData.grid(id)+
       setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
@@ -644,6 +652,8 @@ var design = {
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
       setData.underline()+
+      setData.grid(id)+
+      setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.ifField(id, condition)
@@ -655,6 +665,8 @@ var design = {
       let html = setData.title(id,'图片', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
+      setData.grid(id)+
       setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
@@ -669,6 +681,8 @@ var design = {
       let html = setData.title(id,'多选', $(`#${id}`).find('.title span').text()) +
                 setData.underline()+
                 setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+                setData.underline()+
+                setData.grid(id)+
                 setData.underline()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
@@ -731,6 +745,8 @@ var design = {
       let html = setData.title(id,'下拉', $(`#${id}`).find('.title span').text()) +
                 setData.underline()+
                 setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+                setData.underline()+
+                setData.grid(id)+
                 setData.underline()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+

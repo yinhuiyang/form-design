@@ -14,6 +14,29 @@
         </div>
       </div>
     </div>`,
+  suggestion: {
+      title: '',
+      id: '_suggestionPanel888lll',
+      type: 'form',
+      name:'_suggestionName',
+      content: [
+        {
+          title: '审核意见',
+          id: '_suggestionForm888lll',
+          type: 'textarea',
+          placeholder: '',
+          name: '_suggestion',
+          subhead: '',
+          grid: '12',
+          data: {
+            value: '',
+            ifWrite: false,
+            ifShow: true,
+            ifEditor: true
+          }
+        }
+      ]
+  },
   $formBoxHTml: {},
   init (form) {
     this.formData = form
@@ -26,6 +49,9 @@
     this.uphtmlFn('datetimepicker', this.datetimepicker.loadDatetimepicker)
     this.uphtmlFn('file', this.file.loadFile)
     this.uphtmlFn('image', this.image.loadImage)
+    if (this.formData.formSuggestion) {
+      this.formData.form.panels.push(this.suggestion)
+    }
   },
   loadbind (id) {
     let $html = $(this.formBoxHTml)
@@ -58,13 +84,13 @@
   },
   actionClick ($btn, action, idClass) {
     let _this = this
-    let err = false
     if (idClass) {
       var id = $(idClass).find('.form').attr('id')
     } else {
       var id = this.$formBoxHTml.find('.form').attr('id')
     }
     $btn.click(function () {
+      let err = false
       if (typeof action.validate === 'string') {
         action.validate = parseInt(action.validate)
       }
@@ -127,7 +153,6 @@
       eldata = {}
       elattribute = {}
     }
-    
     elem.content.forEach(value => {
       $formHtml.find('fieldset').append(this.uphtml[value.type](value, eldata, elattribute))
     })
@@ -245,7 +270,7 @@ authorize.form ={
   </header>
   <div class="am-panel-bd" style="min-height: 100px;height: auto;">
     <form action="" class="am-form" id="">
-      <fieldset>
+      <fieldset class="am-g">
       </fieldset>
     </form>
   </div>
@@ -260,7 +285,7 @@ authorize.form ={
 }
 
 authorize.text = {
-  textHtml: `<div class="am-form-group group" data-xhtml="text">
+  textHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="text">
       <label for="" class="title"><span></span>:</label>
       <div class="subhead"></div>
       <input type="text" id="" minlength="" placeholder="" value="" data-validation-message="" pattern=""/>
@@ -269,6 +294,7 @@ authorize.text = {
     let $html = $(this.text.textHtml)
     $html.find('.title span').text(page.title)
     // $html.attr('id', page.id)
+    $html.addClass(`am-u-md-${page.grid}`)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('input').attr('value',page.data.value)
     $html.find('input').attr({'placeholder': page.placeholder, 'id': page.id+1, 'data-validation-message': page.data.option.err, 'pattern': page.data.option.reg})
@@ -305,7 +331,7 @@ authorize.text = {
 }
 
 authorize.textarea = {
-  textareaHtml: `<div class="am-form-group group" data-xhtml="textarea">
+  textareaHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="textarea">
     <label for="" class="title"><span></span>:</label>
     <div class="subhead"></div>
     <textarea id=""></textarea>
@@ -314,6 +340,7 @@ authorize.textarea = {
     let $html = $(this.textarea.textareaHtml)
     $html.find('.title span').text(page.title)
     // $html.attr({'id': page.id})
+    $html.addClass(`am-u-md-${page.grid}`)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('textarea').html(page.data.value)
     $html.find('.subhead').text(page.subhead)
@@ -349,13 +376,14 @@ authorize.textarea = {
   }
 }
 authorize.radio={
-  radioHtml:`<div class="am-form-group group" data-xhtml="radio">
+  radioHtml:`<div class="am-form-group group am-u-sm-12" data-xhtml="radio">
   <h3 class="title"><span></span>:</h3>
   <div class="subhead"></div>
   <div class="label"></div>
   <div>`,
   loadRadio (page, eldata, elattribute) {
     let $html = $(this.radio.radioHtml)
+    $html.addClass(`am-u-md-${page.grid}`)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('.title span').html(page.title)
     $html.find('.subhead').text(page.subhead)
@@ -398,13 +426,14 @@ authorize.radio={
   }
 }
 authorize.checkbox ={
-  checkboxHtml: `<div class="am-form-group group" data-xhtml="checkbox">
+  checkboxHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="checkbox">
     <h3 class="title"><span></span></h3>
     <div class="subhead"></div>
     <div class="label"></div>
   </div>`,
   loadCheckbox(page, eldata, elattribute) {
     let $html = $(this.checkbox.checkboxHtml)
+    $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').html(page.title)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('.subhead').text(page.subhead)
@@ -452,14 +481,15 @@ authorize.checkbox ={
 }
 authorize.select = {
   selectHtml: `
-  <div class="am-form-group group" data-xhtml="select">
+  <div class="am-form-group group am-u-sm-12" style="height:84px" data-xhtml="select">
     <label for="" class="title"><span></span></label>
     <div class="subhead"></div>
-    <select data-am-selected="{btnWidth: '100%', maxHeight: 200,btnSize: 'sm',searchBox: 1}">
+    <select data-am-selected="{btnWidth: '100%'}">
     </select>
     </div>`,
   loadSelect (page, eldata, elattribute) {
     let $html = $(this.select.selectHtml)
+    $html.addClass(`am-u-md-${page.grid}`)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('.title span').html(page.title)
     $html.find('.subhead').text(page.subhead)
@@ -501,14 +531,14 @@ authorize.select = {
 }
 
 authorize.datetimepicker = {
-  datetimepickerHtml: `<div class="am-form-group group" data-xhtml="datetimepicker">
+  datetimepickerHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="datetimepicker">
     <label for="doc-vld-name" class="title"><span></span></label>
     <div class="subhead"></div>
         <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker readonly"/>
     </div>`,
   loadDatetimepicker (page, eldata, elattribute) {
-    console.log('123')
     let $html = $(this.datetimepicker.datetimepickerHtml)
+    $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').html(page.title)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('.subhead').text(page.subhead)
@@ -551,7 +581,7 @@ authorize.datetimepicker = {
   }
 }
 authorize.file = {
-  fileHtml: `<div class="am-form-group group" data-xhtml="file">
+  fileHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="file">
       <label for="" class="title"><span></span></label>
       <div class="subhead"></div>
       <div class="upload-btn">
@@ -564,6 +594,7 @@ authorize.file = {
     </div>`,
   loadFile (page, eldata, elattribute) {
     let $html = $(this.file.fileHtml) 
+    $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').text(page.title)
     $html.find('.subhead').text(page.subhead)
     $html.attr({'id': page.id, 'name': page.name})
@@ -634,14 +665,14 @@ authorize.file = {
               <i class="am-icon-trash "></i>
             </div>
           </div>`)
-        // if (!this.files.length) {
-        //  $(filethis).parent().parent().find('input').val('')
-        //   if (!page.data.ifWrite) {return}
-        //   $(filethis).parent().parent().find('.am-alert').remove()
-        //   $(filethis).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
-        //   $(filethis).parent().parent().addClass('am-form-error')
-        //   $(filethis).parent().parent().removeClass('am-form-success')
-        // }
+        if (!this.files.length) {
+          $(`#${$html.attr('id')}`).find('input').val('')
+          if (!page.data.ifWrite) {return}
+          $(`#${$html.attr('id')}`).find('.am-alert').remove()
+          $(`#${$html.attr('id')}`).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+          $(`#${$html.attr('id')}`).addClass('am-form-error')
+          $(`#${$html.attr('id')}`).removeClass('am-form-success')
+        }
         let file = this.files[i]
         let reader = new FileReader()
         reader.readAsDataURL(file)
@@ -671,8 +702,7 @@ authorize.file = {
           $(filethis).parent().parent().find('.am-alert').remove()
           $(filethis).parent().parent().addClass('am-form-success')
           $(filethis).parent().parent().removeClass('am-form-error')
-          // console.log($(filethis).parent().parent()[0])
-          $(filethis).parent().parent().find('.file-list').append($fileItem)
+          $(`#${$html.attr('id')}`).find('.file-list').append($fileItem)
         }
       }
     })
@@ -681,7 +711,7 @@ authorize.file = {
 }
 
 authorize.image = {
-  imageHtml: `<div class="am-form-group group" data-xhtml="image">
+  imageHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="image">
     <label for="" class="title"><span></span></label>
     <div class="subhead"></div>
     <div class="upload-btn">
@@ -694,6 +724,7 @@ authorize.image = {
   </div>`,
   loadImage (page, eldata, elattribute) {
     let $html = $(this.image.imageHtml)
+    $html.addClass(`am-u-md-${page.grid}`)
     if (elattribute[page.name]) {
       page.data.ifWrite = elattribute[page.name].ifWrite
       page.data.ifShow = elattribute[page.name].ifShow
@@ -746,13 +777,13 @@ authorize.image = {
         this.image.btnImg($imgItem, v.dataUrl)
         $imgItem.find('i').click(function () {
           $(this).parent().parent().remove()
-          if (!$(` #${page.id}`).find('.file-item').length){
-            $(` #${page.id}`).find('input').val('')
+          if (!$(`#${page.id}`).find('.file-item').length){
+            $(`#${page.id}`).find('input').val('')
             if (!page.data.ifWrite) {return}
-              $(` #${page.id}`).find('.am-alert').remove()
-              $(` #${page.id}`).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
-              $(` #${page.id}`).addClass('am-form-error')
-              $(` #${page.id}`).removeClass('am-form-success')
+              $(`#${page.id}`).find('.am-alert').remove()
+              $(`#${page.id}`).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+              $(`#${page.id}`).addClass('am-form-error')
+              $(`#${page.id}`).removeClass('am-form-success')
           }
         })
         let data = {
@@ -813,10 +844,10 @@ authorize.image = {
           if (!$(thisImage).parent().parent().find('.file-item').length){
             $(thisImage).parent().parent().find('input').val('')
             if (!page.data.ifWrite) {return}
-            $(thisImage).parent().parent().find('.am-alert').remove()
-            $(thisImage).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
-            $(thisImage).parent().parent().addClass('am-form-error')
-            $(thisImage).parent().parent().removeClass('am-form-success')
+              $(thisImage).parent().parent().find('.am-alert').remove()
+              $(thisImage).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+              $(thisImage).parent().parent().addClass('am-form-error')
+              $(thisImage).parent().parent().removeClass('am-form-success')
           }
         })
         $(thisImage).parent().parent().find('.file-list').append($fileItem)
