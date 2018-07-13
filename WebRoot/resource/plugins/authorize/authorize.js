@@ -37,6 +37,7 @@
         }
       ]
   },
+  preview_flag:true,
   $formBoxHTml: {},
   init (form) {
     this.formData = form
@@ -78,6 +79,9 @@
     actions.forEach(v => {
       let $btn = $(btn)
       $btn.html(v.text)
+      if (v.color) {
+        $btn.css({'background': v.color, 'color': '#fff'})
+      }
       this.actionClick($btn, v, idClass)
       $(`#${id}`).append($btn)
     })
@@ -140,6 +144,7 @@
     var attribute = this.formData.attribute
     let eldata =  ''
     let elattribute = ''
+    let grid = 0
     try {
       eldata =  data[elem.name]
       elattribute =  attribute[elem.name]
@@ -153,8 +158,29 @@
       eldata = {}
       elattribute = {}
     }
-    elem.content.forEach(value => {
-      $formHtml.find('fieldset').append(this.uphtml[value.type](value, eldata, elattribute))
+    let gridHtml = `<div class="am-g"></div>`
+    let $gridHtml = $(gridHtml)
+    elem.content.forEach((value, i) => {
+      if (!value.grid ) {
+        value.grid = 12
+      }
+      if (grid < 12 && grid > 0 && value.grid == 12) {
+        $formHtml.find('fieldset').append($gridHtml)
+        $gridHtml = $(gridHtml)
+        grid = 0
+      }
+      grid += parseInt(value.grid)
+      let $child = this.uphtml[value.type](value, eldata, elattribute)
+      $gridHtml.append($child)
+      if (grid == 12) {
+        $formHtml.find('fieldset').append($gridHtml)
+        $gridHtml = $(gridHtml)
+        grid = 0
+      } else if(i === elem.content.length-1) {
+        $formHtml.find('fieldset').append($gridHtml)
+        $gridHtml = $(gridHtml)
+        grid = 0
+      }
     })
     return $formHtml
   },
@@ -481,7 +507,7 @@ authorize.checkbox ={
 }
 authorize.select = {
   selectHtml: `
-  <div class="am-form-group group am-u-sm-12" style="height:84px" data-xhtml="select">
+  <div class="am-form-group group am-u-sm-12" data-xhtml="select">
     <label for="" class="title"><span></span></label>
     <div class="subhead"></div>
     <select data-am-selected="{btnWidth: '100%'}">
@@ -594,6 +620,7 @@ authorize.file = {
     </div>`,
   loadFile (page, eldata, elattribute) {
     let $html = $(this.file.fileHtml) 
+    let _this = this
     $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').text(page.title)
     $html.find('.subhead').text(page.subhead)
@@ -654,7 +681,67 @@ authorize.file = {
       })
     }
     $html.find('input').change(function () {
-      let filethis = this
+      if (_this.preview_flag){
+    		_this.file.preview.call(this, page, _this)
+    	}else{
+    		_this.file.getFile.call(this, page, _this)
+    	}
+    })
+    return $html
+  },
+  getFile (page, _this) {
+    let filethis = this
+    let data = new FormData()
+    let url=coos.getRootPath()+'fileUpload/upload.do'
+    if (!this.files.length) {return}
+    for (var i = 0; i < this.files.length; i++) {
+      data.append(i, this.files[i])
+    }
+    $.ajax({
+      url: url,
+      data: data,
+      type : 'post',
+      processData : false,
+      contentType: false,
+      success: function (res){
+        $(filethis).parent().parent().find('input').val('')
+        for (var j = 0; j < res.result.length; j++) {
+          let $fileItem = $(`<div class="file-item" data-dataurl="">
+            <div class="file-left">
+              <div class="file-title"><a download="" target="_blank" href=""></a></div>
+              <div class="file-size"></div>
+            </div>
+            <div class="file-right">
+              <i class="am-icon-trash "></i>
+            </div>
+          </div>`)
+          let file = res.result[j]
+          let size = file.size/1024 > 1024? (file.size/1024/1024).toFixed(2) + 'M': (file.size/1024).toFixed(2) + 'KB'
+          $fileItem.find('.file-title a').text(file.name)
+          $fileItem.find('.file-title a').attr({'href': file.dataUrl, 'download': file.name})
+          $fileItem.find('.file-size').text(size)
+          $fileItem.attr('data-dataurl', JSON.stringify(file))
+          $fileItem.find('i').click(function () {
+            $(this).parent().parent().remove()
+            if ($(filethis).parent().parent().find('.file-item').length === 0) {
+              $(filethis).parent().parent().find('input').val('')
+              if (!page.data.ifWrite) {return}
+              $(filethis).parent().parent().find('.am-alert').remove()
+              $(filethis).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+              $(filethis).parent().parent().addClass('am-form-error')
+              $(filethis).parent().parent().removeClass('am-form-success')
+            }
+          })
+          $(filethis).parent().parent().find('.am-alert').remove()
+          $(filethis).parent().parent().addClass('am-form-success')
+          $(filethis).parent().parent().removeClass('am-form-error')
+          $(filethis).parent().parent().find('.file-list').append($fileItem)
+        }
+      }
+    })
+  },
+  preview (page, _this) {
+    let filethis = this
       for (var i = 0; i < this.files.length; i++) {
         let $fileItem = $(`<div class="file-item" data-dataurl="">
             <div class="file-left">
@@ -702,11 +789,9 @@ authorize.file = {
           $(filethis).parent().parent().find('.am-alert').remove()
           $(filethis).parent().parent().addClass('am-form-success')
           $(filethis).parent().parent().removeClass('am-form-error')
-          $(`#${$html.attr('id')}`).find('.file-list').append($fileItem)
+          $(filethis).parent().parent().find('.file-list').append($fileItem)
         }
       }
-    })
-    return $html
   }
 }
 
@@ -737,7 +822,11 @@ authorize.image = {
     $html.find('label').attr('for', page.id+1)
     $html.find('input').attr({'id': page.id+1, name: page.name})
     $html.find('input').change(function () {
-      _this.image.getImage.call(this, page, _this)
+      if (_this.preview_flag){
+    		_this.image.preview.call(this, page, _this)
+    	}else{
+    		_this.image.getImage.call(this, page, _this)
+    	}
     })
     if (elattribute[page.name]) {
       page.data.ifWrite = elattribute[page.name].ifWrite
@@ -810,7 +899,8 @@ authorize.image = {
       $("body").append($html)
     })
   },
-  getImage (page, _this) {
+  preview (page, _this) {
+    let thisImage = this
     for (var i = 0; i < this.files.length; i++) {
       let $fileItem = $(`<div class="file-item" data-dataurl="">
           <img src='' class="img-left"/>
@@ -824,7 +914,6 @@ authorize.image = {
       </div>`)
       let file = this.files[i]
       let reader = new FileReader()
-      let thisImage = this
       reader.readAsDataURL(file)
       reader.onloadend = function () {
         let size = file.size/1024 > 1024? (file.size/1024/1024).toFixed(2) + 'M': (file.size/1024).toFixed(2) + 'KB'
@@ -853,6 +942,56 @@ authorize.image = {
         $(thisImage).parent().parent().find('.file-list').append($fileItem)
       }
     } 
+  },
+  getImage (page, _this) {
+    let thisImage = this
+    let data = new FormData()
+    let url=coos.getRootPath()+'fileUpload/upload.do'
+    if (!this.files.length) {return}
+    for (var i = 0; i < this.files.length; i++) {
+      data.append(i, this.files[i])
+    }
+    $.ajax({
+      url: url,
+      data : data,
+      type : 'post',
+      processData : false,
+      contentType: false,
+      success: function (res){
+        $(thisImage).parent().parent().find('input').val('')
+        for (var j = 0; j < res.result.length; j++) {
+          let $fileItem = $(`<div class="file-item" data-dataurl="">
+            <img src='' class="img-left"/>
+            <div class="file-content">
+              <div class="file-title">ttkkk.png</div>
+              <div class="file-size">785KB</div>
+            </div>
+            <div class="file-right">
+              <i class="am-icon-trash "></i>
+            </div>
+          </div>`)
+          let file = res.result[j]
+          let size = file.size/1024 > 1024? (file.size/1024/1024).toFixed(2) + 'M': (file.size/1024).toFixed(2) + 'KB'
+          $fileItem.find('.img-left').attr('src', file.dataUrl)
+          $fileItem.find('.file-title').text(file.name)
+          $fileItem.find('.file-size').text(size)
+          $fileItem.attr('data-dataurl', JSON.stringify(file))
+          _this.image.btnImg($fileItem, reader.result)
+          $fileItem.find('i').click(function () {
+            $(this).parent().parent().remove()
+            if (!$(thisImage).parent().parent().find('.file-item').length){
+              $(thisImage).parent().parent().find('input').val('')
+              if (!page.data.ifWrite) {return}
+                $(thisImage).parent().parent().find('.am-alert').remove()
+                $(thisImage).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+                $(thisImage).parent().parent().addClass('am-form-error')
+                $(thisImage).parent().parent().removeClass('am-form-success')
+            }
+          })
+          $(thisImage).parent().parent().find('.file-list').append($fileItem)
+        }
+      }
+    })
   }
 }
 
