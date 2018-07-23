@@ -48,6 +48,7 @@ var design = {
     this.updatafn('datetimepicker', this.datetimepickerLoad)
     this.updatafn('file', this.fileLoad)
     this.updatafn('image', this.imageLoad)
+    this.updatafn('table', this.tableLaod)
     let html = this.updataload(from)
     if (html) {
       this.$page.find('.view-content').html(html)
@@ -71,7 +72,9 @@ var design = {
       let html = _this.updata[value.type](value)
       // console.log(html)
       data =  $(html)
-      data.find('.input-content').append(this.updataInput(value))
+      if (value.type !== 'table') {
+        data.find('.input-content').append(this.updataInput(value))
+      }
       fromHtml += data[0].outerHTML
     })
     // console.log(fromHtml)
@@ -179,7 +182,7 @@ var design = {
       from.panels[i] = {}
       from.panels[i].title = $(this).find('#title span').text()
       from.panels[i].id = this.id
-      from.panels[i].type = 'form'
+      from.panels[i].type = $(this).attr('data-xhtml')
       from.panels[i].name = $(elem).children('.nameValue').attr('name')
 
       if(app.isEmpty(from.panels[i].name) 
@@ -198,8 +201,12 @@ var design = {
         from  = false
         return false
       }
-
-      let content = _this.getElement(elem)
+      let content = ''
+      if ($(this).attr('data-xhtml') == 'table') {
+        content = _this.getElementTable(elem)
+      } else {
+        content = _this.getElement(elem)
+      }
       if(!content){
         from  = false
         return false
@@ -207,6 +214,62 @@ var design = {
       from.panels[i].content =content
     })
     return from
+  },
+  getElementTable (elem){
+    let content = []
+    let _this = this
+    var checkElementName={}
+    $(elem).find('th').each(function (i,el) {
+      let data = {}
+      content[i] = {}
+      content[i].id = ''
+      content[i].title = ''
+      content[i].name = $(el).attr('name')
+      content[i].titleTh = $(el).text()
+      content[i].type = $(el).attr('data-type')
+      content[i].data = {}
+      if(app.isEmpty(content[i].type)){
+        app.alert(content[i].titleTh+"：未选择字段类型")
+        $(this).click()
+        content  = false
+        return false
+      }
+      if(app.isEmpty(content[i].name) 
+        || app.isEmpty(content[i].titleTh)){
+        app.alert("基础组件存在标题或字段名称为空")
+        $(this).click()
+        content  = false
+        return false
+      }
+      if(app.isEmpty(checkElementName[content[i].name])){
+        checkElementName[content[i].name]=content[i].titleTh
+      }else{
+        app.alert(content[i].titleTh+"：其字段名称与该布局组件中的其它基础组件字段重名")
+        $(this).click()
+        content  = false
+        return false
+      }
+      if ($(el).attr('data-type') == 'text') {
+        data = JSON.parse($(el).attr('data-text'))
+        content[i].placeholder = data.placeholder
+        content[i].data.value = data.value
+        content[i].data.option = data.option
+      } else if ($(el).attr('data-type') == 'select') {
+        data = JSON.parse($(el).attr('data-select'))
+        content[i].data.value = data.value
+      } else if ($(el).attr('data-type') == 'datetimepicker') {
+        data = JSON.parse($(el).attr('data-datetimepicker'))
+        content[i].data.value = data.value
+        content[i].placeholder = data.placeholder
+        content[i].data.option = data.option
+        content[i].data.pickerType = data.pickerType
+      }
+      content[i].data.ifWrite = data.ifWrite
+      content[i].data.ifShow = data.ifShow
+      content[i].data.ifEditor = data.ifEditor
+      content[i].data.ifCollect = data.ifCollect
+    })
+    return content
   },
   getElement (elem) {
     let content = []
@@ -489,18 +552,24 @@ var design = {
       setData.ifField(id, condition)
       $('.set-content').html(html)
       let reg = (JSON.parse($('#'+id).attr('data-option'))).reg
-      $('#text-option').val(reg)
+      for (let k in design.textFormat) {
+        if (design.textFormat[k] == reg) {
+          $('#text-option').val(k)
+          $('#text').val('')
+          break;
+        } else {
+          $('#text-option').val(reg)
+        }
+      }
       let optiotype = $('#text-option').val()
       if (reg && optiotype) {
         $('#textBox').hide()
-      } else {
-        $('#textBox').val(reg)
       }
       $('#text-option').change(function (){
         if($(this).val() === 'text') {
           $('#textBox').show()
           let option = JSON.parse($(`#${id}`).attr('data-option'))
-          option.reg = ''
+          option.reg = $('#text').val()
           $(`#${id}`).attr('data-option', JSON.stringify(option))
           $('#text').val(option.reg)
         } else {
@@ -798,6 +867,207 @@ var design = {
         })
         $(`#${id} select`).html(label)
       }
+    },
+    table () {
+      let id = $(this).attr('id')
+      let html = setData.title(id,'表格', $(`#${id}`).find('#title span').text()) +
+        setData.underline()+
+        setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+        setData.underline()+
+        setData.tableAddTh(id)
+      $('.set-content').html(html)
+    }
+  },
+  setTableData: {
+    text (id) {
+      let thThis = this
+      let textData = JSON.parse($(this).attr('data-text'))
+      let html = setData.underline()+
+      setData.textTh(textData.option.reg, textData.option.err)+
+      setData.underline()+
+      setData.textInput(id, 'data-text')+
+      setData.underline()+
+      setData.ifFieldTh(id, 'data-text', textData)
+      $('.set-content .type-content').html(html)
+      let reg = textData.option.reg
+      for (let k in design.textFormat) {
+        if (design.textFormat[k] == reg) {
+          $('#text-option').val(k)
+          $('#text').val('')
+          break;
+        } else {
+          $('#text-option').val(reg)
+        }
+      }
+      let optiotype = $('#text-option').val()
+      if (reg && optiotype) {
+        $('#textBox').hide()
+      }
+      $('#text-option').change(function (){
+        if($(this).val() === 'text') {
+          $('#textBox').show()
+          // let option = JSON.parse($(`#${id}`).attr('data-option'))
+          textData.option.reg = $('#text').val()
+          $(thThis).attr('data-text', JSON.stringify(textData))
+          // $('#text').val(textData.option.reg)
+        } else {
+          $('#textBox').hide()
+          // let option = JSON.parse($(`#${id}`).attr('data-option'))
+          textData.option.reg = design.textFormat[$(this).val()]
+          $(thThis).attr('data-text', JSON.stringify(textData))
+        }
+      })
+      $('#text').on('input', function () {
+        textData.option.reg = $(this).val()
+        $(thThis).attr('data-text', JSON.stringify(textData))
+      })
+      $('#error').on('input', function () {
+        textData.option.err = $(this).val()
+        $(thThis).attr('data-text', JSON.stringify(textData))
+      })
+    },
+    select (id) {
+      let thThis = this
+      let textData = JSON.parse($(this).attr('data-select'))
+      let html = setData.underline()+
+        setData.selectTh(id)+
+        setData.underline()+
+        setData.ifFieldTh(id, 'data-select', textData)
+      $('.set-content .type-content').html(html)
+      $('#selecd-ul').on('click', '.minus',function () {
+        $(this).parent().remove()
+        selectData()
+      })
+      $('#selecd-ul').on('input', 'input', function () {
+        selectData()
+      })
+      $('#selecd-ul').on('click', '.circle', function () {
+        $('#selecd-ul .circle').addClass('am-icon-circle-o')
+        $('#selecd-ul .circle').removeClass('am-icon-dot-circle-o')
+        $(this).removeClass('am-icon-circle-o')
+        $(this).addClass('am-icon-dot-circle-o')
+        selectData()
+      })
+      $('.add_btn_group ').on('click','.add_item',function () {
+        let ul =`<li>
+          <i class="am-icon-circle-o circle"></i>
+          <a>
+            <input type="text" value="">
+          </a>
+          <i class="am-icon-arrows arrows"></i>
+          <i class="am-icon-minus-circle minus"></i>
+        </li>`
+        $('#selecd-ul').append(ul)
+        selectData()
+      })
+      $('#selecd-ul').sortable({ 
+        placeholder: "li",
+		    handle: '.arrows',
+		    cursor: 'move',
+        update (event, ui) {
+          selectData(ui)
+        }
+      })
+      function selectData() {
+        textData.value = []
+        $('#selecd-ul li').each((i, elemt) => {
+          //<option value="${element.value}" >${element.name}</option>
+          // label += `<option value="${$(elemt).find('input').val()}" disabled
+          //  ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'selected': ''}>${$(elemt).find('input').val()}
+          //  </option>`
+          textData.value[i] = {}
+          textData.value[i].value = $(elemt).find('input').val()
+          textData.value[i].name = $(elemt).find('input').val()
+          textData.value[i].selected = ($(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1)
+        })
+        $(thThis).attr('data-select', JSON.stringify(textData))
+      }
+    },
+    datetimepicker (id) {
+      let thThis = this
+      let textData = JSON.parse($(this).attr('data-datetimepicker'))
+      let html = setData.underline()+
+      setData.datatimeFormat(id)+
+      setData.underline()+
+      setData.textInput(id, 'data-datetimepicker')+
+      setData.underline()+
+      setData.ifFieldTh(id, 'data-datetimepicker', textData)
+      $('.set-content .type-content').html(html)
+      let lang = textData.option.lang
+      $('#lang').val(lang)
+      let format = textData.option.format
+      
+      let pickerType = textData.pickerType
+      $('#pickerType').val(pickerType)
+      $('#format').html(setData.dateformatOption(pickerType));
+      $('#format').val(format)
+  
+      let optiontype = $('#format').val()
+      if (format && optiontype) {
+        $('#textBox').hide()
+        $('#text').val('')
+      } else {
+        $('#text').val(format)
+      }
+      design.dateTimeJs("default",textData.option)
+      $('#lang').change(function (){
+        textData.option.lang = $(this).val()
+        $(thThis).attr('data-datetimepicker', JSON.stringify(textData))
+        design.dateTimeJs("default",textData.option)
+      })
+      $('#pickerType').change(function (){
+        let datepicker = false
+        let timepicker = false
+        let format=''
+        if($(this).val() === 'allpicker') {
+          format="Y-m-d H:i"
+          datepicker=true
+          timepicker=true
+        } else if($(this).val() === 'datepicker'){
+          format="Y-m-d"
+          datepicker=true
+          timepicker=false
+        }else if($(this).val() == 'timepicker') {
+          format="H:i"
+          datepicker=false
+          timepicker=true
+        }
+        $('#format').html(setData.dateformatOption($(this).val()));
+        $('#format').val(format)
+        let optiontype = $('#format').val()
+        if (format && optiontype) {
+          $('#textBox').hide()
+          $('#text').val('')
+        } else {
+          $('#textBox').show()
+          $('#text').val(format)
+        }
+
+        
+        textData.option.datepicker=datepicker
+        textData.option.timepicker=timepicker
+        textData.option.format=format
+        textData.pickerType = $(this).val()
+        $(thThis).attr('data-datetimepicker', JSON.stringify(textData))
+        design.dateTimeJs("default",textData.option);
+      })
+      $('#format').change(function (){
+        if($(this).val() === 'text') {
+          $('#textBox').show()
+          textData.option.format = ''
+          $('#text').val(textData.option.format)
+        } else{
+          $('#textBox').hide()
+          textData.option.format = $(this).val()
+        }
+        $(thThis).attr('data-datetimepicker', JSON.stringify(textData))
+        design.dateTimeJs("default",textData.option);
+      })
+      $('#text').on('input', function () {
+        textData.option.format = $(this).val()
+        $(thThis).attr('data-datetimepicker', JSON.stringify(textData))
+        design.dateTimeJs("default",textData.option);
+      })
     }
   },
   designSet () {
@@ -807,6 +1077,7 @@ var design = {
       e.stopPropagation()
       _this.setdata[$(this).attr('data-xhtml')].call(this)
       $('.group').removeClass('active')
+      $('.th-item').removeClass('active')
       $(this).addClass('active')
       $('.delete').hide()
       $(this).children('.delete').show()
@@ -841,6 +1112,44 @@ var design = {
         }
       });
       // $(this).parent().remove()
+    })
+    $('.design-view').off('click', '.th-item').on('click', '.th-item', function (e) {
+      e.stopPropagation()
+      $(this).parent().parent().parent().parent().parent().parent().removeClass('active')
+      $('.delete').hide()
+      $('.th-item').removeClass('active')
+      $(this).addClass('active')
+      let id = $(this).parent().parent().parent().parent().parent().parent().attr('id')
+      let html = setData.titleTh(id, $(`#${id}`).find('th.active').text())+
+        setData.underline()+
+        setData.setNameTh (id,$(`#${id}`).find('th.active').attr('name')|| '')+
+        setData.underline()+
+        setData.typeTh()
+      $('.set-content').html(html)
+      let type = $(this).attr('data-type')
+      if (!type) {
+        type = $('#typeTh-option').val()
+      } else {
+        $('#typeTh-option').val(type)
+      }
+      _this.setTableData[type].call(this, id)
+      $(this).attr({'data-type': type})
+      let thThis = this
+      $('#typeTh-option').off('change').on('change', function (e) {
+        $(`#${id}`).find('th.active').attr('data-type', $(this).val())
+        _this.setTableData[$('#typeTh-option').val()].call(thThis, id)
+      })
+    })
+    
+    $('.set-content').off('click', '.deleteTh').on('click', '.deleteTh', function (e) {
+      e.stopPropagation()
+      let id = $('th.active').parent().parent().parent().parent().parent().parent().attr('id')
+      if ($(`#${id}`).find('th').length === 1) {
+        app.alert("已经是最后一个标题了，无法删除")
+        return
+      }
+      $('th.active').remove()
+      $(`#${id}`).find('th').eq(0).click()
     })
   }
 }

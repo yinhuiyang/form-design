@@ -159,18 +159,3 @@ fieldset [class*=am-u-]+[class*=am-u-]:last-child{
 	float: left;
 	
 }
-.table_panel {
-  margin-top: 5px;
-}
- td .am-form-group{
-   margin: 0;
- }
- thead tr{
-   background: #f6f9fe;
- }
- tbody tr {
-   background: #fff;
- }
- tr.active {
-   background: #E4EFC9;
- }

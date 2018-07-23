@@ -37,7 +37,7 @@
         }
       ]
   },
-  preview_flag:false, // true预览 ，false为真实提交
+  preview_flag:true,
   $formBoxHTml: {},
   init (form) {
     this.formData = form
@@ -50,7 +50,6 @@
     this.uphtmlFn('datetimepicker', this.datetimepicker.loadDatetimepicker)
     this.uphtmlFn('file', this.file.loadFile)
     this.uphtmlFn('image', this.image.loadImage)
-    this.uphtmlFn('table', this.table.loadTable)
     if (this.formData.formSuggestion) {
       this.formData.form.panels.push(this.suggestion)
     }
@@ -65,17 +64,9 @@
     var form = this.formData.form
     $(`#${$html.find('.form').attr('id')}`).parent().find('.formTitle').html(form.title)
     // $('.formTitle')
-    let eldata =  ''
-    let elattribute = ''
-    var data = this.formData.data || {}
-    var attribute = this.formData.attribute || {}
-    form.panels.forEach(element => { 
-      eldata =  data[element.name] || {}
-      elattribute =  attribute[element.name] || {}
-      let $formHtml = this.uphtml[element.type](element, eldata, elattribute)
-      if (element.type !== 'table') {
-        $formHtml = this.addChild($formHtml,element)
-      }
+    form.panels.forEach(element => {  
+      let $formHtml = this.uphtml[element.type](element)
+      $formHtml = this.addChild($formHtml,element)
       // $formHtml.find('fieldset').html(childHtml)
       this.addHTml($html.find('.form').attr('id'), $formHtml)
       this.regFn(`#${$formHtml.find('form').attr('id')}`)
@@ -149,13 +140,24 @@
   },
   addChild ($formHtml,elem) {
     let ChildHtml = ''
-    var data = this.formData.data || {}
-    var attribute = this.formData.attribute || {}
+    var data = this.formData.data
+    var attribute = this.formData.attribute
     let eldata =  ''
     let elattribute = ''
     let grid = 0
-    elattribute =  attribute[elem.name] || {}
-    eldata =  data[elem.name] || {}
+    try {
+      eldata =  data[elem.name]
+      elattribute =  attribute[elem.name]
+      if (!eldata)  {
+        eldata = {}
+      }
+      if (!elattribute){
+        elattribute = {}
+      }
+    } catch (error) {
+      eldata = {}
+      elattribute = {}
+    }
     let gridHtml = `<div class="am-g"></div>`
     let $gridHtml = $(gridHtml)
     elem.content.forEach((value, i) => {
@@ -191,30 +193,9 @@
     let data ={}
     // let id = this.$formBoxHTml.find('.form').attr('id')
     $(`#${id}`).children('.group').each(function(i, elem) {
-      if ($(elem).attr('data-xhtml') == 'table') {
-        data[$(elem).attr('name')] =_this.getdataTable(elem)
-      }else {
-        data[$(elem).attr('name')] = _this.getdatachild(elem)
-      }
+      data[$(elem).attr('name')] = _this.getdatachild(elem)
     })
     // console.log(data)
-    return data
-  },
-  getdataTable (elem){
-    let _this = this
-    let data ={}
-    $(elem).find('th').each(function(i, el) {
-      if (data[$(el).attr('name')]) {
-        $(elem).find( `tbody td [name=${$(el).attr('name')}]`).each(function (i, child) {
-          data[$(el).attr('name')].push($(this).val())
-        })
-      } else {
-        data[$(el).attr('name')] = []
-        $(elem).find( `td [name=${$(el).attr('name')}]`).each(function (i, child) {
-          data[$(el).attr('name')].push($(this).val())
-        })
-      }
-    })
     return data
   },
   getdatachild(elem){
@@ -328,189 +309,7 @@ authorize.form ={
     return $html
   }
 }
-authorize.table = {
-  tableHtml: `<div class="am-panel am-panel-default group" data-xhtml="table">
-  <header class="am-panel-hd">
-    <h3 class="am-panel-title"></h3>
-  </header>
-  <div class="am-panel-bd" style="min-height: 100px;height: auto;">
-    <form action="" class="am-form" >
-      <fieldset>
-        <button  type="button" class="am-btn addTh am-btn-secondary am-radius">
-          添加
-          <i class="am-icon-plus"></i>
-        </button>
-        <button type="button" class="am-btn formDeleteTh am-btn-danger am-radius">
-          删除
-          <i class="am-icon-trash"></i>
-        </button>
-        <table class="table_panel am-table am-table-bordered am-table-centered ">
-          <thead>
-            <tr>
-            </tr>
-          </thead>
-          <tfoot>
-          <tr></tr>
-          </tfoot>
-          <tbody>
-          </tbody>
-        </table>
-      </fieldset>
-    </form>
-  </div>
-  </div>`,
-  loadTable (page, eldata, elattribute) {
-    let $html = $(this.table.tableHtml)
-    let _this=this
-    $html.find('h3').text(page.title)
-    $html.attr({'id': page.id, 'name': page.name})
-    $html.find('form').attr('id', page.id+123456)
-    let Collect = 0
-    page.content.forEach((el)=>{
-      if (!elattribute[el.name]) {
-        elattribute[el.name] = {}
-        elattribute[el.name].ifWrite = el.data.ifWrite
-        elattribute[el.name].ifShow = el.data.ifShow
-        elattribute[el.name].ifEditor = el.data.ifEditor
-        elattribute[el.name].ifCollect = el.data.ifCollect
-      }
-      if (elattribute[el.name].ifCollect) {
-        Collect++
-        $html.find('tfoot tr').append(`<td><div class="am-form-group">
-          <input type="text" />
-        </div></td>`)
-      } else {
-        $html.find('tfoot tr').append(`<td>-</td>`)
-      }
-      let $thHTml= $(`<th></th>`)
-      $thHTml.attr('name', el.name)
-      $thHTml.text(el.titleTh)
-      if (elattribute[el.name].ifWrite) {
-        $thHTml.append('<sup class="am-text-danger">*</sup>')
-      }
-      $html.find('thead tr').append($thHTml)
-      if (eldata[el.name]) {
-        eldata[el.name].forEach((v, i) => {
-          tdData = v
-          let $tD = _this.table.ChildHtml(el.type, el, tdData, elattribute[el.name])
-          let $tDHtml=$(`<td></td>`)
-          $tDHtml.append($tD)
-          if ($html.find('tbody tr')[i]) {
-            $html.find('tbody tr').eq(i).append($tDHtml)
-          } else {
-            $html.find('tbody').append('<tr></tr>')
-            $html.find('tbody tr').eq(i).append($tDHtml)
-          }
-        })
-      } 
-    })
-    if (!Collect) {
-      $html.find('tfoot tr').html('')
-    }
-    $html.find('.addTh').click(function () {
-      _this.table.addTH.call(this, _this, page, eldata, elattribute)
-    })
-    $html.find('.formDeleteTh').click(function () {
-      $('tbody tr.active').remove()
-    })
-    $html.on('click', 'tbody tr', function () {
-      $('tbody tr').removeClass('active')
-      $(this).addClass('active')
-    })
-    return $html
-  },
-  addTH (_this, page, eldata, elattribute){
-    $('tbody tr').removeClass('active')
-    let $tr = $(`<tr class="active"></tr>`)
-    
-    page.content.forEach(el =>{
-      let $tDHtml=$(`<td></td>`)
-      $tDHtml.append(_this.table.ChildHtml(el.type, el, '', elattribute[el.name]))
-      $tr.append($tDHtml)
-    })
-    $(this).parent().find('tbody').append($tr)
-  },
-  ChildHtml (type, el, tDdata, tDattribute) {
-    if (type == 'text') {
-      let $text =$(`<input type="text" id="" minlength="" placeholder="" value="" data-validation-message="" pattern=""/>`)
-      
-      $text.attr({
-        'name': el.name,
-        'value': el.data.value,
-        'placeholder': el.placeholder,
-        'data-validation-message': el.data.option.err,
-        'pattern': el.data.option.reg
-      })
-      if (tDdata) {
-        $text.attr({'value': tDdata})
-      }
-      if (tDattribute.ifWrite) {
-        $text.attr('required', true)
-      }
-      if (!tDattribute.ifShow) {
-        $text = $('<div>-</div>')
-      }
-      if (!tDattribute.ifEditor) {
-        $text.attr('disabled', true)
-      }
-       let $form = $(`<div class="am-form-group">
-                </div>`)
-      $form.append($text)
-      return $form
-    } else if (type == 'select') {
-      let $select = $(`<div class="am-form-group" style="background:#fff"><select data-am-selected="{btnWidth: '100%'}">
-      </select>
-      </div`)
-      $select.find('select').attr('name', el.name)
-      el.data.value.forEach(v => {
-        let option = `<option value="${v.value}">${v.value}</option>`
-        let $option = $(option)
-        if (tDdata) {
-          if (v.value == tDdata) {
-            $option.attr('selected', true)
-          } else {
-            $option.attr('selected', false)
-          }
-        } else {
-          $option.attr('selected', v.selected)
-        }
-        $select.find('select').append($option)
-      })
-      if (tDattribute.ifWrite) {
-        $select.find('select').attr('required', true)
-      }
-      if (!tDattribute.ifShow) {
-        $select.html('-')
-      }
-      if (!tDattribute.ifEditor) {
-        $select.find('select').attr('disabled', true)
-      }
-      return $select
-    } else {
-      let $datetimepicker = $(`<div class="am-form-group"><input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker readonly"/></div>`)
-      $datetimepicker.find('input').attr('name', el.name)
-      if (tDdata) {
-        $datetimepicker.find('input').attr({'value': tDdata})
-      } else {
-        $datetimepicker.find('input').attr({'value': el.data.value})
-      }
-      if (tDattribute.ifWrite) {
-        $datetimepicker.find('input').attr('required', true)
-      }
-      if (!tDattribute.ifShow) {
-        $datetimepicker.html('-')
-      }
-      $datetimepicker.find('input').attr({'placeholder': el.placeholder})
-      if (!tDattribute.ifEditor) {
-        $datetimepicker.find('input').attr('disabled', true)
-      } else {
-        $.datetimepicker.setLocale(el.data.option.lang);
-        $datetimepicker.find('input').datetimepicker(el.data.option)
-      }
-      return $datetimepicker
-    }
-  }
-}
+
 authorize.text = {
   textHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="text">
       <label for="" class="title"><span></span>:</label>

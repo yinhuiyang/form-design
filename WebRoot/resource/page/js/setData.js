@@ -6,13 +6,49 @@ var setData = {
       </div>
       <input type="text" id="title" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${value}">`
       function fn (id) {
-        if($(`#${id}`).attr('data-xhtml') == 'form') {
+        if($(`#${id}`).attr('data-xhtml') == 'form' || $(`#${id}`).attr('data-xhtml') == 'table') {
           $(`#${id}`).find('#title span').text($(this).val())
         } else {
           $(`#${id}`).find('.title span').text($(this).val())
         }
       }
     return titleHtml
+  },
+  titleTh (id,value) {
+    let titleHtml = `<div class="setElementTitle">
+        <span>标题</span>
+        <button type="button" class="am-btn am-btn-danger deleteTh am-radius">删除</button>
+      </div>
+      <input type="text" id="title" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${value}">`
+      function fn (id) {
+        $(`#${id}`).find('th.active').text($(this).val())
+      }
+    return titleHtml
+  },
+  setNameTh (id, value) {
+    let setNmaeHtml = `<div class="setElementTitle">
+        <span>字段名称</span>
+      </div>
+      <input type="text" id="name" class="input_title" oninput="${fn};fn.call(this, '${id}')" value="${value}">`
+    function fn (id) {
+      $(`#${id}`).find('th.active').attr('name', $(this).val())
+    }
+    return setNmaeHtml
+  },
+  typeTh () {
+    let typeThHtml = `<div class="setElementTitle">
+          <span>组件类型</span>
+        </div>
+        <div>
+        <select id="typeTh-option" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+            <option value="text" selected>输入框</option>
+            <option value="select">下拉框</option>
+            <option value="datetimepicker">日期</option>
+        </select>
+        </div>
+        <div class="type-content"></div>
+        `
+    return typeThHtml
   },
   setNmae (id, value) {
     let setNmaeHtml = `<div class="setElementTitle">
@@ -23,6 +59,25 @@ var setData = {
       $(`#${id}`).find('.nameValue').attr('name', $(this).val())
     }
     return setNmaeHtml
+  },
+  tableAddTh (id) {
+    let html =`<div class="setElementTitle">
+    <span>添加列</span>
+  </div>
+  <button type="button" class="am-btn am-btn-secondary am-radius" style="width:100%;" onclick="${fn};fn.call(this, '${id}')">添加</button>`
+  function fn(id) {
+    let thHtml = `<th class='th-item'>请输入标题</th>`
+    let $thHtml = $(thHtml)
+    $thHtml.attr({
+      'data-text': JSON.stringify(design.tableType.text), 
+      'data-select': JSON.stringify(design.tableType.select), 
+      'data-datetimepicker': JSON.stringify(design.tableType.datetimepicker), 
+      'name': 'th',
+      'data-type': ''
+    })
+    $(`#${id}`).find('table tr').append($thHtml)
+  }
+  return html
   },
   setFormNmae (id, value) {
     let setNmaeHtml = `<div class="setElementTitle">
@@ -77,7 +132,7 @@ var setData = {
       }
     return subhead
   },
-  textInput (id) {
+  textInput (id, type) {
     let inputHtml = `<div class="setElementTitle">
         <span>默认值</span>
       </div>
@@ -86,7 +141,9 @@ var setData = {
         inputHtml += `<textarea  id="default" rows="2" oninput="${iptvalue};iptvalue.call(this, '${id}')"  placeholder="" class="am-form-field">${$('#'+id).find('.input').val()}</textarea>`
       }else if($(`#${id}`).attr('data-xhtml') == 'datetimepicker'){
         inputHtml += `<input type="text" id="default" class="am-form-field custom datetimepicker" onchange="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
-      } else {
+      } else if ($(`#${id}`).attr('data-xhtml') == 'table') {
+        inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${(JSON.parse($('#'+id).find('th.active').attr(type))).value}"/>`
+      }else{
         inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
       }
     inputHtml += `</div>
@@ -94,15 +151,44 @@ var setData = {
       <div class="setElementTitle">
         <span>输入提示</span>
       </div>
-      <div class="am-form-group">
-        <input type="text" id="prompt" oninput="${iptPlaceholder};iptPlaceholder.call(this, '${id}')" value="${$('#'+id).find('.input').attr('placeholder')}" class="am-form-field custom"/>
+      <div class="am-form-group">`
+      if($(`#${id}`).attr('data-xhtml') == 'table') {
+        inputHtml += `<input type="text" id="prompt" oninput="${iptPlaceholder};iptPlaceholder.call(this, '${id}')" value="${(JSON.parse($('#'+id).find('th.active').attr(type))).placeholder}" class="am-form-field custom"/>
       </div>`
+      } else {
+        inputHtml += `<input type="text" id="prompt" oninput="${iptPlaceholder};iptPlaceholder.call(this, '${id}')" value="${$('#'+id).find('.input').attr('placeholder')}" class="am-form-field custom"/>
+      </div>`
+      }
     
     function iptvalue (id) {
-      $(`#${id}`).find('.input').val($(this).val())
+      if($(`#${id}`).attr('data-xhtml') == 'table') {
+        if ($('#'+id).find('th.active').attr('data-type') == 'text') {
+          let data = JSON.parse($('#'+id).find('th.active').attr('data-text'))
+          data.value = $(this).val()
+          $('#'+id).find('th.active').attr('data-text', JSON.stringify(data))
+        } else {
+          let data = JSON.parse($('#'+id).find('th.active').attr('data-datetimepicker'))
+          data.value = $(this).val()
+          $('#'+id).find('th.active').attr('data-datetimepicker', JSON.stringify(data))
+        }
+      } else {
+        $(`#${id}`).find('.input').val($(this).val())
+      }
     }
     function iptPlaceholder (id) {
-      $('#'+id).find('.input').attr('placeholder', $(this).val())
+      if($(`#${id}`).attr('data-xhtml') == 'table') {
+        if ($('#'+id).find('th.active').attr('data-type') == 'text') {
+          let data = JSON.parse($('#'+id).find('th.active').attr('data-text'))
+          data.placeholder = $(this).val()
+          $('#'+id).find('th.active').attr('data-text', JSON.stringify(data))
+        } else {
+          let data = JSON.parse($('#'+id).find('th.active').attr('data-datetimepicker'))
+          data.placeholder = $(this).val()
+          $('#'+id).find('th.active').attr('data-datetimepicker', JSON.stringify(data))
+        }
+      } else {
+        $('#'+id).find('.input').attr('placeholder', $(this).val())
+      }
     }
     return inputHtml
   },
@@ -125,6 +211,28 @@ var setData = {
         </div>
         <div class="am-form-group" id='errorBox'>
           <input type="text" id="error" class="am-form-field custom" value="${(JSON.parse($('#'+id).attr('data-option'))).err}" placeholder="验证错误提示"/>
+        </div>`
+    return textHtml
+  },
+  textTh (reg, err) {
+    let textHtml = `<div class="setElementTitle">
+          <span>格式</span>
+        </div>
+        <div>
+        <select id="text-option" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+            <option value="text" selected>自定义</option>
+            <option value="phone" >手机号码</option>
+            <option value="telephone">电话号码</option>
+            <option value="postalcode">邮政编码</option>
+            <option value="IDnumber" >身份号码</option>
+            <option value="email" >邮箱</option>
+        </select>
+        </div>
+        <div class="am-form-group" id='textBox'>
+          <input type="text" id="text" class="am-form-field custom" value="${reg}" placeholder="正则验证"/>
+        </div>
+        <div class="am-form-group" id='errorBox'>
+          <input type="text" id="error" class="am-form-field custom" value="${err}" placeholder="验证错误提示"/>
         </div>`
     return textHtml
   },
@@ -271,13 +379,43 @@ var setData = {
       </div>`
       return selectHtml
   },
+  selectTh (id) {
+    let data = JSON.parse($('#'+id).find('th.active').attr('data-select'))
+    let selectHtml =`<div class="setElementTitle">
+          <span>选项</span>
+        </div>
+        <div class="selecd-box">
+        <ul id="selecd-ul">`
+        for(let i = 0; i< data.value.length; i++) {
+          let li= `<li>
+            <i class="am-icon-circle-o circle"></i>
+            <a>
+              <input type="text" value="${data.value[i].value}">
+            </a>
+            <i class="am-icon-arrows arrows"></i>
+            <i class="am-icon-minus-circle minus"></i>
+          </li>`
+          let $li = $(li)
+          if (data.value[i].selected) {
+            $li.find('.circle').removeClass('am-icon-circle-o')
+            $li.find('.circle').addClass('am-icon-dot-circle-o')
+          }
+          selectHtml += $li[0].outerHTML
+      }   
+      selectHtml +=`</ul>
+        <div class="add_btn_group">
+          <div class="add_item">添加选项</div>
+        </div>
+      </div>`
+      return selectHtml
+  },
   ifField (id, condition) {
     let ifField = `<div class="setElementTitle">
           <span>校验</span>
         </div>
       <div>
         <label class="am-checkbox am-secondary am-success">
-          <input type="checkbox" data-am-ucheck id='ifWrite' onchange='${ifWrite}; ifWrite.call(this, "${id}", ${JSON.stringify(condition)})' class="am-ucheck-checkbox" ${condition.ifWrite? 'checked' : ''}> 
+          <input type="checkbox" data-am-ucheck id='ifWrite' onchange='${ifWrite}; ifWrite.call(this, "${id}")' class="am-ucheck-checkbox" ${condition.ifWrite? 'checked' : ''}> 
           <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
           必填 
         </label>
@@ -288,33 +426,93 @@ var setData = {
       </div>
       <div>
         <label class="am-checkbox am-secondary am-success">
-          <input type="checkbox" data-am-ucheck checked id='ifShow' onchange='${ifShow};ifShow.call(this, "${id}", ${JSON.stringify(condition)})' class="am-ucheck-checkbox" ${condition.ifShow? 'checked' : ''}>
+          <input type="checkbox" data-am-ucheck id='ifShow' onchange='${ifShow}; ifShow.call(this, "${id}")' class="am-ucheck-checkbox" ${condition.ifShow? 'checked' : ''}> 
           <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
-           可见
+          可见 
         </label>
         <label class="am-checkbox am-secondary am-success">
-          <input type="checkbox" data-am-ucheck checked id="ifEditor" onchange='${ifEditor};ifEditor.call(this, "${id}", ${JSON.stringify(condition)})' class="am-ucheck-checkbox" ${condition.ifEditor? 'checked' : ''}>
+          <input type="checkbox" data-am-ucheck id='ifEditor' onchange='${ifEditor}; ifEditor.call(this, "${id}")' class="am-ucheck-checkbox" ${condition.ifEditor? 'checked' : ''}> 
           <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
           可编辑 
         </label>
       </div>`
-    function ifWrite(id, condition) {
+    function ifWrite(id) {
       // condition = JSON.parse(condition)
       if (this.checked && !$(`#${id} h3 sup`)[0]) {
         $(`#${id} .title`).append(`<sup class="am-text-danger">*</sup>`)
       } else {
         $(`#${id} .title sup`).remove()
       }
+      let condition = JSON.parse($(`#${id}`).attr("data-xdata"))
       condition.ifWrite = this.checked
       $(`#${id}`).attr("data-xdata", JSON.stringify(condition))
     }
-    function ifShow(id, condition) {
+    function ifShow(id) {
+      let condition = JSON.parse($(`#${id}`).attr("data-xdata"))
       condition.ifShow = this.checked
       $(`#${id}`).attr("data-xdata", JSON.stringify(condition))
     }
-    function ifEditor(id, condition) {
+    function ifEditor(id) {
+      let condition = JSON.parse($(`#${id}`).attr("data-xdata"))
       condition.ifEditor = this.checked
       $(`#${id}`).attr("data-xdata", JSON.stringify(condition))
+    }
+    return ifField
+  },
+  ifFieldTh (id, type, condition) {
+    
+    let ifField = `<div class="setElementTitle">
+          <span>校验</span>
+        </div>
+      <div>
+        <label class="am-checkbox am-secondary am-success">
+          <input type="checkbox" data-am-ucheck id='ifWrite' onchange='${ifWrite}; ifWrite.call(this, "${id}", "${type}", ${JSON.stringify(condition)})' class="am-ucheck-checkbox" ${condition.ifWrite? 'checked' : ''}> 
+          <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
+          必填 
+        </label>
+        
+      </div>
+      <div class="cfg_split"></div>
+      <div class="setElementTitle">
+        <span>字段权限</span>
+      </div>
+      <div>
+        <label class="am-checkbox am-secondary am-success">
+          <input type="checkbox" data-am-ucheck id='ifShow' onchange='${ifShow}; ifShow.call(this, "${id}", "${type}")' class="am-ucheck-checkbox" ${condition.ifShow? 'checked' : ''}> 
+          <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
+          可见 
+        </label>
+        <label class="am-checkbox am-secondary am-success">
+          <input type="checkbox" data-am-ucheck id='ifEditor' onchange='${ifEditor}; ifEditor.call(this, "${id}", "${type}")' class="am-ucheck-checkbox" ${condition.ifEditor? 'checked' : ''}> 
+          <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
+          可编辑 
+        </label>
+        <label class="am-checkbox am-secondary am-success">
+          <input type="checkbox" data-am-ucheck id='ifCollect' onchange='${ifCollect}; ifCollect.call(this, "${id}", "${type}")' class="am-ucheck-checkbox" ${condition.ifCollect? 'checked' : ''}> 
+          <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span>
+          汇总 
+        </label>
+      </div>`
+    function ifWrite(id, type) {
+      // condition = JSON.parse(condition)
+      let condition = JSON.parse($(`#${id}`).find("th.active").attr(type))
+      condition.ifWrite = this.checked
+      $(`#${id}`).find("th.active").attr(type, JSON.stringify(thcondition))
+    }
+    function ifShow(id, type) {
+      let condition = JSON.parse($(`#${id}`).find("th.active").attr(type))
+      condition.ifShow = this.checked
+      $(`#${id}`).find("th.active").attr(type, JSON.stringify(condition))
+    }
+    function ifEditor(id, type) {
+      let condition = JSON.parse($(`#${id}`).find("th.active").attr(type))
+      condition.ifEditor = this.checked
+      $(`#${id}`).find("th.active").attr(type, JSON.stringify(condition))
+    }
+    function ifCollect(id, type) {
+      let condition = JSON.parse($(`#${id}`).find("th.active").attr(type))
+      condition.ifCollect = this.checked
+      $(`#${id}`).find("th.active").attr(type, JSON.stringify(condition))
     }
     return ifField
   }

@@ -21,6 +21,7 @@ app.appendJS('./resource/page/js/component/checkbox.js')
 app.appendJS('./resource/page/js/component/datetimepicker.js')
 app.appendJS('./resource/page/js/component/file.js')
 app.appendJS('./resource/page/js/component/image.js')
+app.appendJS('./resource/page/js/component/table.js')
 
 // var from ={
 // 	"panels": [{
@@ -31,7 +32,84 @@ app.appendJS('./resource/page/js/component/image.js')
       
 //     ]
 // 	}]}
-
-	var from ={"panels":[]}
-
+var from ={"panels": []}
+	// var from ={"panels":[
+  //   {
+  //     title: '新表格面板',
+  //     id: '110000',
+  //     name: '0table',
+  //     type: 'table',
+  //     content: [
+  //       {
+  //         titleTh: '出发时间',
+  //         title:'',
+  //         id: '100',
+  //         type: 'datetimepicker',
+  //         placeholder: '日期选择',
+  //         name: '0datetimepicker',
+  //         subhead: '',
+  //         grid: '12',
+  //         data:{
+  //           value: '',
+  //           pickerType:'allpicker',
+  //           option: {lang: 'ch', step: 1,datepicker:true,timepicker:true,format:'Y-m-d H:i'},
+  //           ifWrite: false,
+  //           ifShow: true,
+  //           ifEditor: true,
+  //           ifCollect: false
+  //         }
+  //       },
+  //       {
+  //         titleTh: '出发地点',
+  //         id: '100',
+  //         type: 'text',
+  //         placeholder: '',
+  //         name: '0text',
+  //         subhead: '',
+  //         grid: '12',
+  //         data:{
+  //           option: {reg: '', err: ''},
+  //           value: '',
+  //           ifWrite: false,
+  //           ifShow: true,
+  //           ifEditor: true,
+  //           ifCollect: false
+  //         }
+  //       },
+  //       {
+  //         titleTh: '到达地点',
+  //         id: '100',
+  //         type: 'text',
+  //         placeholder: '',
+  //         name: '0text',
+  //         subhead: '',
+  //         grid: '12',
+  //         data:{
+  //           option: {reg: '', err: ''},
+  //           value: '',
+  //           ifWrite: false,
+  //           ifShow: true,
+  //           ifEditor: true,
+  //           ifCollect: false
+  //         }
+  //       },
+  //       {
+  //         titleTh: '交通工具',
+  //         id: '100013',
+  //         type: 'select',
+  //         name: '0select',
+  //         subhead: '',
+  //         grid: '12',
+  //         data: {
+  //           value: [{value:'单选一', name: '单选一', selected: true}, {value:'单选二', name: '单选二', selected: false},{value:'单选三', name: '单选三', selected: false}],
+  //           ifWrite: true,
+  //           ifShow: false,
+  //           ifEditor: false,
+  //           ifCollect: false
+  //         }
+  //       },
+  //     ],
+  //   }
+  // ]}
+// var from = {"panels":[{"title":"新表格面板","id":"110000","type":"table","name":"0table","content":[{"id":"","title":"","name":"0datetimepicker","titleTh":"出发时间","type":"datetimepicker","data":{"value":"","option":{"lang":"ch","step":1,"datepicker":true,"timepicker":true,"format":"Y-m-d H:i"},"pickerType":"allpicker","ifWrite":false,"ifShow":true,"ifEditor":true,"ifCollect":false},"placeholder":"日期选择"},{"id":"","title":"","name":"0text","titleTh":"出发地点","type":"text","data":{"value":"","option":{"reg":"","err":""},"ifWrite":false,"ifShow":true,"ifEditor":true,"ifCollect":false},"placeholder":""},{"id":"","title":"","name":"0text","titleTh":"到达地点","type":"text","data":{"value":"","option":{"reg":"","err":""},"ifWrite":false,"ifShow":true,"ifEditor":true,"ifCollect":false},"placeholder":""},{"id":"","title":"","name":"0select","titleTh":"交通工具","type":"select","data":{"value":[{"value":"单选一","name":"单选一","selected":true},{"value":"单选二","name":"单选二","selected":false},{"value":"单选三","name":"单选三","selected":false}],"ifWrite":true,"ifShow":false,"ifEditor":false,"ifCollect":false}}]}]}
 // console.log('main')

@@ -320,7 +320,12 @@ h3{
 	justify-content: center;
 	color: red;
 }
-
+.deleteTh {
+	width: 78px;
+	height: 22px;
+	font-size: 12px;
+	padding: 0;
+}
 
 .upload-btn {
 	position: relative;
@@ -423,4 +428,11 @@ h3{
 .input-content [class*=am-u-]+[class*=am-u-]:last-child{
 	float: left;
 	
+}
+.table_panel{
+	margin-top: 5px;
+}
+.th-item.active{
+	background: #0DB3A6;
+	color: #fff;
 }
