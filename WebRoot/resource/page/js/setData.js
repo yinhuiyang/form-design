@@ -109,13 +109,14 @@ var setData = {
     
     function fn(id) {
       let num = parseInt($(this).val())
+      console.log(num)
       if(num > 12 || num < 1) {
         $(this).val(12)
         $('.am-alert').show()
       } else {
         $('.am-alert').hide()
       }
-      let reg = /am-u-sm-\d+/ig
+      let reg = /am-u-sm-\d*/ig
       let className = reg.exec($(`#${id}`).attr('class'))[0]
       $(`#${id}`).removeClass(className)
       $(`#${id}`).addClass(`am-u-sm-${$(this).val()}`)
@@ -493,11 +494,21 @@ var setData = {
           汇总 
         </label>
       </div>`
+    if (condition.ifWrite && !$(`#${id}`).find("th.active sup")[0]) {
+      $(`#${id}`).find("th.active").append(`<sup class="am-text-danger">*</sup>`)
+    } else {
+      $(`#${id}`).find("th.active sup").remove()
+    }
     function ifWrite(id, type) {
       // condition = JSON.parse(condition)
       let condition = JSON.parse($(`#${id}`).find("th.active").attr(type))
       condition.ifWrite = this.checked
-      $(`#${id}`).find("th.active").attr(type, JSON.stringify(thcondition))
+      if (this.checked && !$(`#${id}`).find("th.active sup")[0]) {
+        $(`#${id}`).find("th.active").append(`<sup class="am-text-danger">*</sup>`)
+      } else {
+        $(`#${id}`).find("th.active sup").remove()
+      }
+      $(`#${id}`).find("th.active").attr(type, JSON.stringify(condition))
     }
     function ifShow(id, type) {
       let condition = JSON.parse($(`#${id}`).find("th.active").attr(type))

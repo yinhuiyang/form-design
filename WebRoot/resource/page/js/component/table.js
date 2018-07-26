@@ -125,6 +125,9 @@ Object.assign(design, {
           'name': page.content[i].name,
           'data-type': page.content[i].type
         })
+        if (page.content[i].data.ifWrite) {
+          $thHtml.append('<sup class="am-text-danger">*</sup>')  
+        }
         $html.find('tr').append($thHtml)
       }
     }
