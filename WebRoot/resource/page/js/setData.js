@@ -277,7 +277,6 @@ var setData = {
         <option value="Y-m-d H:i" selected>Y-m-d H:i</option>
         <option value="Y/m/d H:i" >Y/m/d H:i</option>
         <option value="Y.m.d H:i" >Y.m.d H:i</option>
-        <option value="Y.m.d 9:00" >Y.m.d 9:00</option>
         `
       }else if(type === 'datepicker'){
         optionHtml +=`

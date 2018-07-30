@@ -39,6 +39,7 @@
   },
   preview_flag:false, // true预览 ，false为真实提交
   $formBoxHTml: {},
+  Mobile: false,
   init (form) {
     this.formData = form
     this.uphtmlFn('form', this.form.loadForm)
@@ -50,7 +51,18 @@
     this.uphtmlFn('datetimepicker', this.datetimepicker.loadDatetimepicker)
     this.uphtmlFn('file', this.file.loadFile)
     this.uphtmlFn('image', this.image.loadImage)
-    this.uphtmlFn('table', this.table.loadTable)
+    var ua = navigator.userAgent
+    var isWindowsPhone = /(?:Windows Phone)/.test(ua)
+    var isAndroid = /(?:Android)/.test(ua)
+    var isFireFox = /(?:Firefox)/.test(ua)
+    var isTablet = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua))
+    var isPhone = /(?:iPhone)/.test(ua) && !isTablet
+    this.Mobile = (isWindowsPhone || isAndroid ||isPhone) && !this.preview_flag
+    if (this.Mobile) { //移动端
+      this.uphtmlFn('table', this.phoneTable.loadTable)
+    } else {
+      this.uphtmlFn('table', this.table.loadTable)
+    }
     if (this.formData.formSuggestion) {
       this.formData.form.panels.push(this.suggestion)
     }
@@ -203,18 +215,23 @@
   getdataTable (elem){
     let _this = this
     let data ={}
-    $(elem).find('th').each(function(i, el) {
-      if (data[$(el).attr('name')]) {
-        $(elem).find( `tbody td [name=${$(el).attr('name')}]`).each(function (i, child) {
-          data[$(el).attr('name')].push($(this).val())
+    data[$(elem).attr('name')] = []
+    if (_this.Mobile) {
+      $(elem).find('.tbody .tr').each(function(i, el) {
+        data[$(elem).attr('name')][i] = {}
+        $(el).find(`.phone-form-group`).each(function (j, child) {
+          let typeHtml = $(child).attr('data-xhtml') == 'text'? 'input':$(child).attr('data-xhtml') == 'datetimepicker'? 'input':'select'
+          data[$(elem).attr('name')][i][$(child).find(typeHtml).attr('name')] = $(child).find(typeHtml).val()
         })
-      } else {
-        data[$(el).attr('name')] = []
-        $(elem).find( `td [name=${$(el).attr('name')}]`).each(function (i, child) {
-          data[$(el).attr('name')].push($(this).val())
+      })
+    }else{
+      $(elem).find('tbody tr').each(function(i, el) {
+        data[$(elem).attr('name')][i] = {}
+        $(elem).find(`th`).each(function (j, child) {
+          data[$(elem).attr('name')][i][$(child).attr('name')] = $(el).find(`td [name=${$(child).attr('name')}]`).val()
         })
-      }
-    })
+      })
+    }
     return data
   },
   getdatachild(elem){
@@ -225,6 +242,63 @@
       Object.assign(data, obj)
     })
     return data
+  },
+  getTime ($tdHtml,option) {
+        if (option.lang = 'ch') {
+          option.lang = 'zh'
+        }
+        option.format = option.format.replace(/Y/, 'yy')
+        option.format = option.format.replace(/([^m])m[^m]/, '$1mm$1')
+        option.format = option.format.replace(/([^d])(d$)/, '$1dd')
+        option.format = option.format.replace(/([^d])d(\s)/, '$1dd$2')
+        option.format = option.format.replace(/ H:/, ' HH:')
+        option.format = option.format.replace(/^H:/, 'HH:')
+        if (option.format.indexOf('s')>-1) {
+          option.format = option.format.replace(/:i:/, ':ii:')
+          option.format = option.format.replace(/:s$/, ':ss')
+        } else {
+          option.format = option.format.replace(/:i$/, ':ii')
+        }
+        console.log(option.format)
+        let arr = option.format.split(' ')
+        if (arr[0].indexOf('yy')> -1) {
+          var dateFormat = arr[0]
+        } else {
+          var timeFormat = arr[0]
+          var timeWheels = arr[0].replace(/:/g, '')
+        }
+        if (arr[1]) {
+          var timeFormat = arr[1]
+          var timeWheels = arr[1].replace(/:/g, '')
+        }
+        var currYear = (new Date()).getFullYear();
+        var opt={};
+        opt.date = {preset : 'date'};
+        opt.datetime = {preset : 'datetime'};
+        opt.time = {preset : 'time'};
+        opt.my_default = {
+          theme: 'android-ics light', //皮肤样式
+          display: 'bottom', //显示方式
+          mode: 'scroller', //日期选择模式
+          lang: option.lang,
+          dateFormat: dateFormat,
+          startYear:currYear-4, //开始年份
+          endYear:currYear+4, //结束年份
+          // minDate: new Date()
+          timeFormat: timeFormat,
+          timeWheels: timeWheels,
+          width: 70,
+        };
+        var preset=''
+        if (option.datepicker&&!option.timepicker) {
+          preset = 'date'
+        } else if (!option.datepicker&&option.timepicker) {
+          preset ='time'
+        } else {
+          preset = 'datetime'
+          opt.my_default.width = $('body').outerWidth()/5 - 30
+        }
+    $tdHtml.find('input').scroller('destroy').scroller($.extend(opt[preset], opt['my_default']));
   },
   getdata: {
     text (el) {
@@ -328,6 +402,225 @@ authorize.form ={
     return $html
   }
 }
+authorize.phoneTable={
+  tableHtml:`<div class="am-panel am-panel-default group" data-xhtml="table">
+  <header class="am-panel-hd">
+    <h3 class="am-panel-title"></h3>
+  </header>
+  <div class="am-panel-bd" style="min-height: 100px;height: auto;">
+    <form action="" class="am-form" >
+      <fieldset>
+        <div class="tbody">
+        </div>
+        <div class="tfoot">
+        </div>
+        <button  type="button" class="am-btn addTh am-btn-secondary am-radius">
+          添加
+          <i class="am-icon-plus"></i>
+        </button>
+      </fieldset>
+    </form>
+  </div>
+  </div>`,
+  loadTable (page, eldata, elattribute) {
+    let $html = $(this.phoneTable.tableHtml)
+    let _this=this
+    $html.find('h3').text(page.title)
+    $html.attr({'id': page.id, 'name': page.name})
+    $html.find('form').attr('id', page.id+123456)
+    let collect = []
+    page.content.forEach((el)=>{
+      let tdData = ''
+      if (!elattribute[el.name]) {
+        elattribute[el.name] = {}
+        elattribute[el.name].ifWrite = el.data.ifWrite
+        elattribute[el.name].ifShow = el.data.ifShow
+        elattribute[el.name].ifEditor = el.data.ifEditor
+        elattribute[el.name].ifCollect = el.data.ifCollect
+      }
+      if(elattribute[el.name].ifCollect) {
+        collect.push(el.name)
+        let $divTd = this.phoneTable.addChild(_this, el, '', elattribute[el.name])
+        $divTd.find('input').attr({'name': `_sum_${el.name}`, 'disabled': true})
+        if ($html.find('.tfoot .tr')[0]) {
+          $html.find('.tfoot .tr').eq(0).append($divTd)
+        } else {
+          $html.find('.tfoot').append('<div class="tr content am-g"><div class="th">总结</div></div>')
+          $html.find('.tfoot .tr').eq(0).append($divTd)
+        }
+      }
+      if (eldata[page.name]&&eldata[page.name].length){
+        eldata[page.name].forEach((v, i) => {
+          tdData = v[el.name]
+          let $divTd = this.phoneTable.addChild(_this,el, tdData, elattribute[el.name])
+          if ($html.find('.tbody .tr')[i]) {
+            $html.find('.tbody .tr').eq(i).append($divTd)
+          } else {
+            $html.find('.tbody').append('<div class="tr content am-g"></div>')
+            $html.find('.tbody .tr').eq(i).append($divTd)
+          }
+        })
+      } else {
+        let $divTd = this.phoneTable.addChild(_this, el, '', elattribute[el.name])
+        if ($html.find('.tbody .tr')[0]) {
+          $html.find('.tbody .tr').eq(0).append($divTd)
+        } else {
+          $html.find('.tbody').append('<div class="tr content am-g"></div>')
+          $html.find('.tbody .tr').eq(0).append($divTd)
+        }
+      }
+    })
+    collect.forEach(v => {
+      let sum = 0
+      $html.find(`.tbody .tr [name = ${v}]`).each((i, e) => {
+        sum += parseFloat($(e).val() || 0)
+      })
+      $html.find(`.tfoot [name = _sum_${v}]`).val(sum.toFixed(2))
+    })
+    $html.find('.tbody .tr').append('<div class="iconDelete" style="display:none"><i class="am-icon-close"></i></div>')
+    $html.on('click', '.tbody .tr', function () {
+      $('.tbody .tr').removeClass('active')
+      $('.iconDelete').hide()
+      $(this).addClass('active')
+      $(this).find('.iconDelete').show()
+    })
+    $html.find('.addTh').click(function(){
+      _this.phoneTable.addtr.call(this, _this,  page, elattribute)
+    })
+    $html.find('.iconDelete').click(function () {
+      if ($('.tbody .tr').length > 1) {
+        $('.tbody .tr.active').remove()
+      } else {
+        alert('已经是最后一个了')
+      }
+    })
+    return $html
+  },
+  addtr(_this, page, elattribute){
+    $('.tbody .tr').removeClass('active')
+    $('.iconDelete').hide()
+    let $divTr = $('<div class="tr content am-g active"><div class="iconDelete"><i class="am-icon-close"></i></div></div>')
+    page.content.forEach((el)=>{
+      $divTr.append(_this.phoneTable.addChild(_this, el, '', elattribute[el.name]))
+    })
+    $(this).parent().find('.tbody').append($divTr)
+  },
+  addChild (_this, el, tDdata, tDattribute) {
+    if (el.type == 'text') {
+      let $tdHtml =$(`<div class="am-form-group  phone-form-group am-u-sm-12 " data-xhtml="text">
+        <div class="phone-group">
+          <div class ="phone-label">
+            <label for="" class="title "><span></span>:</label>
+          </div>
+          <input type="text" id="" class="phone-item" minlength="" placeholder="" value="" data-validation-message="" pattern=""/>
+        </div>
+      </div>`)
+      $tdHtml.find('.title span').text(el.titleTh)
+      $tdHtml.find('input').attr({
+        'name': el.name,
+        'value': el.data.value,
+        'placeholder': el.placeholder,
+        'data-validation-message': el.data.option.err,
+        'pattern': el.data.option.reg
+      })
+      if (tDdata) {
+        $tdHtml.find('input').attr({'value': tDdata})
+      }
+      if (tDattribute.ifWrite) {
+        $tdHtml.find('.title').append('<sup class="am-text-danger">*</sup>')
+        $tdHtml.find('input').attr('required', true)
+      }
+      if (!tDattribute.ifShow) {
+        $tdHtml.find('input').replaceWith('<div class="phone-item" style="text-align: center;"> —— </div>')
+      }
+      if (!tDattribute.ifEditor) {
+        $tdHtml.find('input').attr('disabled', true)
+      }
+      if (tDattribute.ifCollect) {
+        $tdHtml.find('input').on('input',function () {
+          let sum = 0
+          $(this).parent().parent().parent().parent().find(`[name = ${el.name}]`).each(function () {
+            sum += parseFloat($(this).val() || 0)
+          })
+          $(this).parent().parent().parent().parent().parent().find(`.tfoot [name = _sum_${el.name}]`).val(sum.toFixed(2))
+        })
+      }
+      return $tdHtml
+    } else if (el.type == 'select') {
+      let $tdHtml = $(`<div class="am-form-group phone-form-group am-u-sm-12" data-xhtml="select">
+        <div class="phone-group">
+          <div class="phone-label">
+              <label for="" class="title"><span>交通工具</span>:</label>
+            </div>
+            <div style="background:#fff;width:70%">
+              <select data-am-selected="{btnWidth: '100%'}">
+              </select>
+            </div>
+        </div>
+      </div>`)
+      $tdHtml.find('.title span').text(el.titleTh)
+      $tdHtml.find('select').attr({'name': el.name})
+      el.data.value.forEach(v => {
+        let option = `<option value="${v.value}">${v.value}</option>`
+        let $option = $(option)
+        if (tDdata) {
+          if (v.value == tDdata) {
+            $option.attr('selected', true)
+          } else {
+            $option.attr('selected', false)
+          }
+        } else {
+          $option.attr('selected', v.selected)
+        }
+        $tdHtml.find('select').append($option)
+      })
+      if (tDattribute.ifWrite) {
+        $tdHtml.find('.title').append('<sup class="am-text-danger">*</sup>')
+        $tdHtml.find('select').attr('required', true)
+      }
+      if (!tDattribute.ifShow) {
+        $tdHtml.find('select').replaceWith('<div class="phone-item" style="text-align: center;width:100%"> —— </div>')
+      }
+      if (!tDattribute.ifEditor) {
+        $tdHtml.find('select').attr('disabled', true)
+      }
+      return $tdHtml
+    } else {
+      let $tdHtml = $(`<div class="am-form-group phone-form-group am-u-sm-12 " data-xhtml="datetimepicker">
+        <div class="phone-group">
+          <div class ="phone-label">
+            <label for="" class="title "><span></span>:</label>
+          </div>
+          <input type="text"class="phone-item" />
+        </div>
+        
+      </div>`)
+      $tdHtml.find('.title span').text(el.titleTh)
+      $tdHtml.find('input').attr('name', el.name)
+      if (tDdata) {
+        $tdHtml.find('input').attr({'value': tDdata})
+      } else {
+        $tdHtml.find('input').attr({'value': el.data.value})
+      }
+      if (tDattribute.ifWrite) {
+        $tdHtml.find('.title').append('<sup class="am-text-danger">*</sup>')
+        $tdHtml.find('input').attr('required', true)
+      }
+      
+      if (!tDattribute.ifShow) {
+        $tdHtml.find('input').replaceWith('<div class="phone-item" style="text-align: center;"> —— </div>')
+      }
+      if (!tDattribute.ifEditor) {
+        $tdHtml.find('input').attr('disabled', true)
+      } else {
+        // $.datetimepicker.setLocale(el.data.option.lang);
+        // $tdHtml.find('input').datetimepicker(el.data.option)
+        _this.getTime($tdHtml, el.data.option)
+      }
+      return $tdHtml
+    }
+  }
+}
 authorize.table = {
   tableHtml: `<div class="am-panel am-panel-default group" data-xhtml="table">
   <header class="am-panel-hd">
@@ -365,7 +658,7 @@ authorize.table = {
     $html.find('h3').text(page.title)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('form').attr('id', page.id+123456)
-    let Collect = 0
+    let Collect = []
     page.content.forEach((el)=>{
       if (!elattribute[el.name]) {
         elattribute[el.name] = {}
@@ -375,9 +668,9 @@ authorize.table = {
         elattribute[el.name].ifCollect = el.data.ifCollect
       }
       if (elattribute[el.name].ifCollect) {
-        Collect++
+        Collect.push(el.name)
         $html.find('tfoot tr').append(`<td><div class="am-form-group">
-          <input type="text" />
+          <input type="text" name="_sum_${el.name}" disabled/>
         </div></td>`)
       } else {
         $html.find('tfoot tr').append(`<td>-</td>`)
@@ -389,10 +682,10 @@ authorize.table = {
         $thHTml.append('<sup class="am-text-danger">*</sup>')
       }
       $html.find('thead tr').append($thHTml)
-      if (eldata[el.name]) {
-        eldata[el.name].forEach((v, i) => {
-          tdData = v
-          let $tD = _this.table.ChildHtml(el.type, el, tdData, elattribute[el.name])
+      if (eldata[page.name]&&eldata[page.name].length) {
+        eldata[page.name].forEach((v, i) => {
+          tdData = v[el.name]
+          let $tD = _this.table.ChildHtml(el, tdData, elattribute[el.name])
           let $tDHtml=$(`<td></td>`)
           $tDHtml.append($tD)
           if ($html.find('tbody tr')[i]) {
@@ -404,11 +697,18 @@ authorize.table = {
         })
       } 
     })
-    if (!Collect) {
+    if (!Collect.length) {
       $html.find('tfoot tr').html('')
     }
+    Collect.forEach(v => {
+      let sum = 0
+      $html.find(`td [name = ${v}]`).each(function(){
+        sum += parseFloat($(this).val() || 0)
+      })
+      $html.find(`td [name = _sum_${v}]`).val(sum.toFixed(2))
+    })
     $html.find('.addTh').click(function () {
-      _this.table.addTH.call(this, _this, page, eldata, elattribute)
+      _this.table.addTH.call(this, _this, page,elattribute)
     })
     $html.find('.formDeleteTh').click(function () {
       $('tbody tr.active').remove()
@@ -419,21 +719,20 @@ authorize.table = {
     })
     return $html
   },
-  addTH (_this, page, eldata, elattribute){
+  addTH (_this,page, elattribute){
     $('tbody tr').removeClass('active')
     let $tr = $(`<tr class="active"></tr>`)
     
     page.content.forEach(el =>{
       let $tDHtml=$(`<td></td>`)
-      $tDHtml.append(_this.table.ChildHtml(el.type, el, '', elattribute[el.name]))
+      $tDHtml.append(_this.table.ChildHtml(el, '', elattribute[el.name]))
       $tr.append($tDHtml)
     })
     $(this).parent().find('tbody').append($tr)
   },
-  ChildHtml (type, el, tDdata, tDattribute) {
-    if (type == 'text') {
+  ChildHtml (el, tDdata, tDattribute) {
+    if (el.type == 'text') {
       let $text =$(`<input type="text" id="" minlength="" placeholder="" value="" data-validation-message="" pattern=""/>`)
-      
       $text.attr({
         'name': el.name,
         'value': el.data.value,
@@ -453,11 +752,20 @@ authorize.table = {
       if (!tDattribute.ifEditor) {
         $text.attr('disabled', true)
       }
+      if (tDattribute.ifCollect) {
+        $text.on('input', function() {
+          let sum = 0
+          $(this).parent().parent().parent().parent().parent().find(`td [name = ${el.name}]`).each(function (i, child) {
+            sum += parseFloat($(this).val()||0)
+          })
+          $(this).parent().parent().parent().parent().parent().find(`td [name = _sum_${el.name}]`).val(sum.toFixed(2))
+        })
+      }
        let $form = $(`<div class="am-form-group">
                 </div>`)
       $form.append($text)
       return $form
-    } else if (type == 'select') {
+    } else if (el.type == 'select') {
       let $select = $(`<div class="am-form-group" style="background:#fff"><select data-am-selected="{btnWidth: '100%'}">
       </select>
       </div`)
@@ -799,8 +1107,12 @@ authorize.datetimepicker = {
       if (!page.data.ifEditor) {
         $html.find('input').attr('disabled', true)
       } else {
-        $.datetimepicker.setLocale(page.data.option.lang);
-        $html.find('input').datetimepicker(page.data.option)
+        if (!this.Mobile) {
+          $.datetimepicker.setLocale(page.data.option.lang);
+          $html.find('input').datetimepicker(page.data.option)
+        } else {
+          this.getTime($html, page.data.option)
+        }
       }
     }
     $html.find('input').attr({'placeholder': page.placeholder, 'id': page.id+1, 'name': page.name})
