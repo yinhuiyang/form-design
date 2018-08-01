@@ -436,3 +436,33 @@ h3{
 	background: #0DB3A6;
 	color: #fff;
 }
+.custom-group{
+	display: flex;
+	align-items: center;
+}
+.icon-bz{
+	font-size: 20px;
+	margin-top: 15px;
+	width: 20px;
+	text-align: center;
+	margin-left: 3px;
+	background-color: #DEF1FF;
+	border-radius: 2px;
+}
+.default-box{
+	position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,.3);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.default-content{
+	width: 40%;
+	min-height: 200px;
+	background: #fff;
+}

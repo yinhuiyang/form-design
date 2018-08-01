@@ -137,15 +137,18 @@ var setData = {
     let inputHtml = `<div class="setElementTitle">
         <span>默认值</span>
       </div>
-      <div class="am-form-group">`
+      <div class="am-form-group custom-group">`
       if ($(`#${id}`).attr('data-xhtml') == 'textarea') {
         inputHtml += `<textarea  id="default" rows="2" oninput="${iptvalue};iptvalue.call(this, '${id}')"  placeholder="" class="am-form-field">${$('#'+id).find('.input').val()}</textarea>`
       }else if($(`#${id}`).attr('data-xhtml') == 'datetimepicker'){
         inputHtml += `<input type="text" id="default" class="am-form-field custom datetimepicker" onchange="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
+        +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
       } else if ($(`#${id}`).attr('data-xhtml') == 'table') {
         inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${(JSON.parse($('#'+id).find('th.active').attr(type))).value}"/>`
+        +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
       }else{
-        inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
+        inputHtml += `<input type="text" id="default" class="am-form-field custom" onchange="${iptvalue};iptvalue.call(this, '${id}')"  oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
+        +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
       }
     inputHtml += `</div>
       <div class="cfg_split"></div>
@@ -190,6 +193,47 @@ var setData = {
       } else {
         $('#'+id).find('.input').attr('placeholder', $(this).val())
       }
+    }
+    function defaultFn(id) {
+      let html = `<div class="am-modal am-modal-no-btn" tabindex="-1" id="">
+        <div class="am-modal-dialog">
+          <div class="am-modal-hd">默认函数
+            <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+          </div>
+          <div class="am-modal-bd">
+          <ul class="am-list am-list-static">`
+      if ($(`#${id}`).attr("data-xhtml") === "text" || $("#"+id).find("th.active").attr("data-type") == "text"){
+        html += `<li><span class="default-value">`+"${user.name}"+`</span><span class="am-badge am-badge-success">输入</span></li></li>
+          <li><span class="default-value">`+"${org.orgName}"+`</span><span class="am-badge am-badge-success">输入</span></li></li>`
+      }
+      if ($(`#${id}`).attr("data-xhtml") === "datetimepicker" || $("#"+id).find("th.active").attr("data-type") == "datetimepicker") {
+        html += `<li><span class="default-value">`+"${getToday()} </span><input type="+"text"+" class="+"datetimepicker-time"+" "+"/>"
+        +`<span class="am-badge am-badge-success">输入</span></li>`
+      }
+      html += `</ul> 
+          </div>
+        </div>
+      </div>`
+      let $html = $(html)
+      if ($(`#${id}`).attr("data-xhtml") === "datetimepicker" || $("#"+id).find("th.active").attr("data-type") == "datetimepicker") {
+        $.datetimepicker.setLocale("ch");
+        $html.find(".datetimepicker-time").datetimepicker({lang: "ch", step: 1, datepicker:false,timepicker:true, format:"H:i"})
+      }
+      $html.modal()
+      $html.attr("id", "your-defaultFn_" + app.getNumber())
+      $html.find(".am-badge-success").click(function() {
+        let val = ""
+        if ($(this).parent().find("input")[0]) {
+          val = "${getToday()}" + " "+$(this).parent().find("input").eq(0).val()
+        } else {
+          val = $(this).parent().find(".default-value").text()
+        }
+        $("#default").val(val)
+        $(`#${id}`).find("input").val(val)
+        $(this).parent().parent().parent().parent().parent().modal("close")
+      })
+      $("body").append($html)
+      // $("#your-defaultFn").modal()
     }
     return inputHtml
   },
