@@ -203,11 +203,11 @@ var setData = {
           <div class="am-modal-bd">
           <ul class="am-list am-list-static">`
       if ($(`#${id}`).attr("data-xhtml") === "text" || $("#"+id).find("th.active").attr("data-type") == "text"){
-        html += `<li><span class="default-value">`+"${user.name}"+`</span><span class="am-badge am-badge-success">输入</span></li></li>
-          <li><span class="default-value">`+"${org.orgName}"+`</span><span class="am-badge am-badge-success">输入</span></li></li>`
+        html += `<li><span class="default-value">`+"#{user.name}"+`</span><span class="am-badge am-badge-success">输入</span></li></li>
+          <li><span class="default-value">`+"#{org.orgName}"+`</span><span class="am-badge am-badge-success">输入</span></li></li>`
       }
       if ($(`#${id}`).attr("data-xhtml") === "datetimepicker" || $("#"+id).find("th.active").attr("data-type") == "datetimepicker") {
-        html += `<li><span class="default-value">`+"${getToday()} </span><input type="+"text"+" class="+"datetimepicker-time"+" "+"/>"
+        html += `<li><span class="default-value">`+"#{getToday()} </span><input type="+"text"+" class="+"datetimepicker-time"+" "+"/>"
         +`<span class="am-badge am-badge-success">输入</span></li>`
       }
       html += `</ul> 
@@ -224,7 +224,7 @@ var setData = {
       $html.find(".am-badge-success").click(function() {
         let val = ""
         if ($(this).parent().find("input")[0]) {
-          val = "${getToday()}" + " "+$(this).parent().find("input").eq(0).val()
+          val = "#{getToday()}" + " "+$(this).parent().find("input").eq(0).val()
         } else {
           val = $(this).parent().find(".default-value").text()
         }
