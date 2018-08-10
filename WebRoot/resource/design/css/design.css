@@ -5,6 +5,13 @@
 body {
 	position: unset;
 }
+ul{
+	padding: 0;
+	margin: 0;
+}
+li{
+	list-style-type: none;
+}
 .am-ucheck-icons{
 	top: 3px
 }
@@ -465,4 +472,251 @@ h3{
 	width: 40%;
 	min-height: 200px;
 	background: #fff;
+}
+.user-content{
+	border: 1px dashed #e0e0e0;
+	margin: 0;
+	padding: 0;
+	background: #fff;
+}
+.user-radio{
+	width: 330px;
+	height: 40px;
+	max-width: 100%;
+}
+.user-btn{
+	cursor: pointer;
+	line-height: 38px;
+	text-align: center;
+	color: #989898;
+}
+.user-checkbox {
+	width: 720px;
+	height: 80px;
+	max-width: 100%;
+}
+.user-checkbox .user-btn{
+	line-height: 72px
+}
+.set-userOrg{
+	width: 100%;
+	height: 30px;
+	line-height: 28px;
+	margin: 5px 0;
+	text-align: center;
+	border: 1px solid transparent;
+	border-color: #ccc;
+}
+.set-userOrg:hover{
+	background-color: #ebebeb;
+}
+.choice{
+	display: flex;
+  color: #333;
+}
+.choice-btn {
+	width: 54px;
+	height: 35;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #e0e0e0;
+	cursor: pointer;
+	background-color: #f4f4f4;
+}
+.choice-left{
+	border-radius: 2px 0 0 2px;
+}
+.choice-right{
+	border-radius: 0 2px 2px 0;
+}
+.choice-selected{
+	border-color: #0DB3A6;
+	background-color: #0DB3A6;
+	color: #fff;
+}
+#user-box, #organize-box{
+	position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,.3);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-content{
+	background-color: #fff;
+	width: 610px;
+}
+.user-title{
+	height: 55px;
+	line-height: 55px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 0 20px;
+	border-bottom: 1px solid #e9e9e9;
+	font-size: 16px;
+	color: #1f2d3d;
+	display: flex;
+	justify-content: space-between;
+}
+.user-title .back{
+	font-size: 20px;
+  display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+.list-selecred{
+	height: 80px;
+	border: 1px solid #e0e0e0;
+	margin-bottom: 10px;
+	overflow: auto;
+	list-style-type: disc;
+	padding: 0;
+	margin: 0;
+}
+.ul-box{
+	margin: 20px;
+  margin-bottom: 10px;
+}
+.list-selecred li {
+	display: inline-block;
+	line-height: 30px;
+	margin: 5px 0 0 5px;
+	padding: 0 10px;
+	border-radius: 1px;
+	background: #F3F6FC;
+}
+.list-selecred li .del-user{
+	cursor: pointer;
+	margin-left: 10px;
+	padding: 3px;
+	color: #999;
+	font-size: 20px;
+}
+.user-list{
+	margin: 0 20px 0 20px;
+}
+.list-search{
+	position: relative;
+}
+.input-search{
+	width: 100%;
+	height: 38px;
+	padding: 0 30px 0 10px;
+	border-radius: 0;
+	border: 1px solid #e0e0e0;;
+}
+.list-search .search {
+	line-height: 38px;
+	color: #989898;
+	cursor: pointer;
+	font-size: 16px;
+	position: absolute;
+	top: 11px;
+	right: 10px;
+}
+.list-name{
+	border: 1px solid #e0e0e0;
+}
+.list-ul{
+	height: 309px;
+	padding: 0;
+	margin: 0;
+}
+.list-ul li {
+	cursor: pointer;
+	padding: 0 30px 0 10px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	position: relative;
+	line-height: 30px;
+	list-style-type: none;
+}
+.list-ul li label{
+	margin-top: 5px;
+  margin-bottom: 5px;
+}
+.list-item.actve{
+	background: #eee;
+}
+.btn-box{
+	height: 60px;
+	padding: 14px 20px;
+	display: flex;
+	justify-content: space-between;
+}
+.btn-box button{
+	padding: 0;
+	height: 32px;
+  width: 70px;
+}
+.user-item, .organize-item{
+	list-style-type: none;
+	line-height: 30px;
+	display: inline-block;
+	margin: 4px 0 0 4px;
+	padding: 0 10px;
+	border-radius: 1px;
+	background: #F3F6FC;
+}
+.searchListBox{
+	position: absolute;
+	background: #fff;
+	z-index: 1;
+	top: 38px;
+	width: 100%;
+	border: 1px solid #e0e0e0;
+	height: 311px;
+	padding: 10px;
+}
+.searchListUl{
+	padding: 0;
+  margin: 0;
+}
+.searchItem{
+	list-style-type: none;
+	cursor: pointer;
+	padding: 0 5px;
+	line-height: 30px;
+	font-size: 14px;
+	color: #333;
+	border-bottom: solid 1px #e0e0e0;
+}
+.searchItem:hover{
+	background: #eee;
+}
+.searchItem:last-child{
+	border-bottom: none
+}
+.org-back{
+	color: #0DB3A6;
+  font-size: 14px;
+  cursor: pointer;
+}
+.org-item{
+	display: flex;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	align-items: center;
+}
+.org-item div{
+	margin-left: 10px;
+}
+.user-list .am-tabs-bd-ofv{
+	overflow: auto;
+}
+.goOrg{
+	cursor: pointer;
+}
+.org-item span{
+	cursor: pointer;
+}
+.org-item:hover,#tab2 li:hover{
+	background: #eee;
 }

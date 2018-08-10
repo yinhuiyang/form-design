@@ -453,6 +453,33 @@ var setData = {
       </div>`
       return selectHtml
   },
+  userOrg (id) {
+    let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+    let html = `<div class="setElementTitle">
+      <span>默认值</span>
+    </div>
+    <div class="set-userOrg" id='userOrg'>设置</div>
+    <div class="setElementTitle">
+      <span>选择</span>
+    </div>
+    <div class="choice">
+    <div class="choice-btn choice-left ${condition.ifChoice == 'radio'? 'choice-selected': ''}" onclick="${choiceFn};choiceFn.call(this, '${id}', 'radio')">单选</div>
+    <div class="choice-btn choice-right ${condition.ifChoice == 'checkbox'? 'choice-selected': ''}" onclick="${choiceFn};choiceFn.call(this,'${id}', 'checkbox')">多选</div>
+    </div>`
+    function choiceFn(id, type) {
+      $(this).addClass('choice-selected')
+      $(this).siblings().removeClass('choice-selected')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      condition.ifChoice = type
+      $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+      if(type == 'checkbox') {
+        $(`#${id}`).find('.user-content').addClass('user-checkbox')
+      } else {
+        $(`#${id}`).find('.user-content').removeClass('user-checkbox')
+      }
+    }
+    return html
+  },
   ifField (id, condition) {
     let ifField = `<div class="setElementTitle">
           <span>校验</span>

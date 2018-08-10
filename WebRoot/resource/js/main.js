@@ -22,6 +22,8 @@ app.appendJS('./resource/page/js/component/datetimepicker.js')
 app.appendJS('./resource/page/js/component/file.js')
 app.appendJS('./resource/page/js/component/image.js')
 app.appendJS('./resource/page/js/component/table.js')
+app.appendJS('./resource/page/js/component/user.js')
+app.appendJS('./resource/page/js/component/organize.js')
 
 // var from ={
 // 	"panels": [{

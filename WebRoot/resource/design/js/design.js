@@ -49,6 +49,8 @@ var design = {
     this.updatafn('file', this.fileLoad)
     this.updatafn('image', this.imageLoad)
     this.updatafn('table', this.tableLaod)
+    this.updatafn('user', this.userLoad)
+    this.updatafn('organize', this.organizeLoad)
     let html = this.updataload(from)
     if (html) {
       this.$page.find('.view-content').html(html)
@@ -279,7 +281,7 @@ var design = {
     $(elem).find('.group').each(function (i,el) {
       // content.push(_this.getElementData[$(el).attr('data-xhtml')].call(this, el))
       content[i] = {}
-      let ifField =JSON.parse($(el).attr('data-xdata'))
+      let ifField = JSON.parse($(el).attr('data-xdata'))
       content[i].id = el.id
       content[i].title = $(el).find('.title span').text()
       content[i].type = $(el).attr('data-xhtml')
@@ -428,6 +430,24 @@ var design = {
       dataObj.data.value=defValue
       dataObj.data.option=option
       return  dataObj
+    },
+    user (el) {
+      let dataObj = {}
+      dataObj.data = {value:[]}
+      $(el).find('.user-item').each((i,v) => {
+        dataObj.data.value.push(JSON.parse($(v).find('span').attr('data-value')))
+      })
+      dataObj.data.ifChoice = JSON.parse($(el).attr('data-xdata')).ifChoice
+      return dataObj
+    },
+    organize (el) {
+      let dataObj = {}
+      dataObj.data = {value:[]}
+      $(el).find('.organize-item').each((i,v) => {
+        dataObj.data.value.push(JSON.parse($(v).find('span').attr('data-value')))
+      })
+      dataObj.data.ifChoice = JSON.parse($(el).attr('data-xdata')).ifChoice
+      return dataObj
     }
   },
   initModel () {
@@ -876,6 +896,402 @@ var design = {
         setData.underline()+
         setData.tableAddTh(id)
       $('.set-content').html(html)
+    },
+    user () {
+      let id = $(this).attr('id')
+      let name = $(this).find('.nameValue').attr('name')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'用户选择', $(`#${id}`).find('.title span').text()) +
+      setData.underline()+
+      setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
+      setData.grid(id)+
+      setData.underline()+
+      setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+      setData.underline()+
+      setData.userOrg(id)+
+      setData.underline()+
+      setData.ifField(id, condition)
+      $('.set-content').html(html)
+      $('#userOrg').click(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        let defaultHtml = `<div id="user-box">
+          <div class="user-content">
+            <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
+            <div class="ul-box">
+              <ul class="list-selecred">
+              </ul>
+            </div>
+            <div class="user-list">
+              <div class="list-search">
+                <input class="input-search">
+                <i class="am-icon-search search"></i>
+                <div class="searchListBox" style="display: none">
+                  <ul class="searchListUl">
+                    <li class="searchItem">linlinlin</li>
+                    <li class="searchItem">linlinlin</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="list-name">
+                <ul class="list-ul">
+                </ul>
+              </div>
+            </div>
+            <div class="btn-box">
+              <div>
+                <button type="button" class="am-btn am-btn-default am-radius previous">上一页</button>
+                <button type="button" class="am-btn am-btn-default am-radius next">下一页</button>
+              </div>
+              <div>
+                <button type="button" class="am-btn am-btn-default am-radius back" >取消</button>
+                <button type="button" class="am-btn am-btn-success am-radius sure">确定</button>
+              </div>
+            </div>
+          </div>
+        </div>`
+        let $defaultHtml = $(defaultHtml)
+        let resData = [
+          {name:"loo1", userID:"21256832676"},
+          {name:"loo2", userID:"21256832675"},
+          {name:"loo4", userID:"21256832677"},
+          {name:"loo3", userID:"21256832673"},
+          {name:"loo5", userID:"21256832674"}
+        ]
+        function getuser (data) {
+          // $.ajax({
+        //   url: url,
+        //   type: 'POST',
+        //   data: '',
+        //   async: false,
+        //   success: function (res) {
+            // resData = res.value
+            let liItem = `<li class="list-item">
+            <label class="am-${condition.ifChoice}">
+            当前用户 <input type="${condition.ifChoice}" name="${name}" data-value=${JSON.stringify({name: '当前用户', userID: '#{user.name}'})} class ="nameValue" value="当前用户" data-am-ucheck>
+            </label>
+          </li>`
+            if(resData.length == 0) {
+              return ''
+            }
+            resData.forEach(data => {
+              liItem += `<li class="list-item">
+                <label class="am-${condition.ifChoice}">
+                ${data.name} <input type="${condition.ifChoice}" name="${name}" data-value=${JSON.stringify(data)} class ="nameValue" value="${data.name}" data-am-ucheck>
+                </label>
+              </li>`
+            })
+            return liItem
+        //   }
+        // })
+        }
+        function getSearch() {
+          // $.aiax({
+          //   url:url,
+          //   type: 'POST',
+          //   data: '',
+          //   async: false,
+          //   success: function (res) {
+          //     resData = res.value
+                let liItem = ''
+                if(resData.length == 0) {
+                  return ''
+                }
+                resData.forEach(data => {
+                  liItem +=  `<li class="searchItem">
+                  <span data-value=${JSON.stringify(data)}>${data.name}</span>
+                  </label>
+                </li>`
+                })
+                return liItem
+          //   }
+          // })
+        }
+        $defaultHtml.find('.list-ul').append(getuser())
+        $(`#${id}`).find('.user-item').each((i, v) => {
+          let val = JSON.parse($(v).find('span').attr('data-value'))
+          let li = `<li><span class="userName" data-value=${$(v).find('span').attr('data-value')} value="${val.name}">${val.name}</span> <span class="del-user">x</span></li>`
+          $defaultHtml.find(`input[value = ${val.name}]`)[0].checked = true
+          $defaultHtml.find('.list-selecred').append(li)
+        })
+        $defaultHtml.find('label input').change(function(){
+          if (this.checked) {
+            $(this).parent().parent().parent().find('li').removeClass('actve')
+            $(this).parent().parent().addClass('actve')
+            if ($(this).attr('type') == 'radio'){
+              radioListFn.call(this)
+            } else {
+              checkboxListFn.call(this)
+            }
+          } else {
+            $(this).parent().parent().removeClass('actve')
+            if ($(this).attr('type') == 'checkbox'){
+              $(`span[value=${$(this).val()}]`).parent().remove()
+            }
+          }
+        })
+        function radioListFn () {
+          let value = $(this).attr('data-value')
+          let li=`<li><span class="userName" data-value= ${value}>${$(this).val()}</span> <span class="del-user">x</span></li>`
+          $('.ul-box .list-selecred').html(li)
+        }
+        function checkboxListFn () {
+          let value = $(this).attr('data-value')
+          let li = `<li><span class="userName" data-value=${value} value="${$(this).val()}">${$(this).val()}</span> <span class="del-user">x</span></li>`
+          $('.ul-box .list-selecred').append(li)
+        }
+        $defaultHtml.find('.ul-box .list-selecred').on('click', '.del-user', function (e) {
+          e.stopPropagation()
+          $(this).parent().remove()
+          let val = $(this).parent().find('.userName').text()
+          $(`input[value = ${val}]`)[0].checked = false
+        })
+        function getSearchList () {
+          $('.searchListBox .searchListUl').html(getSearch())
+          $('.searchListBox').show()
+        }
+        // $defaultHtml.find('.list-search i').click(function () {
+        //   getSearchList()
+        // })
+        $defaultHtml.find('.input-search').keydown(function (event) {
+          if(event.keyCode==13){
+            getSearchList()                           
+          }
+        })
+        $defaultHtml.find('.input-search').on('input',function () {
+          getSearchList()
+        })
+        $defaultHtml.find('.input-search').blur(function () {
+          setTimeout(function(){  
+            // input框失去焦点，隐藏下拉框  
+            $('.searchListBox').hide() 
+          }, 300);
+        })
+        $defaultHtml.find('.searchListUl').on('click', '.searchItem', function () {
+          let li = `<li><span class="userName" data-value=${$(this).attr('data-value')} value="${$(this).text()}">${$(this).text()}</span> <span class="del-user">x</span></li>`
+          if (condition.ifChoice == 'checkbox') {
+            $('.ul-box .list-selecred').append(li)
+          } else {
+            $('.ul-box .list-selecred').html(li)
+          }
+          $(`input[value = ${$(this).text()}]`)[0].checked = true
+        })
+        $defaultHtml.find('.back').click(function (){
+          $('#user-box').remove()
+        })
+        $defaultHtml.find('.sure').click(function (){
+          let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+          let ulLi = ''
+          $('.userName').each((i, v) => {
+            ulLi += `<li class="user-item"><span data-value=${$(v).attr('data-value')}>${$(v).text()}</span></li>`
+          })
+          $(`#${id}`).find('.user-content').html(ulLi)
+          $('#user-box').remove()
+        })
+        let page = 0
+        $defaultHtml.find('.previous').click(function () {
+          page--
+          if(page<1) {
+            app.alert('已经是第一页了')
+          }
+          $('#user-box .list-ul').html(getuser())
+        })
+        $defaultHtml.find('.next').click(function () {
+          page++
+          // if(page > 5) {
+          // }
+          let li = getuser()
+          if (li) {
+            $('#user-box .list-ul').html(li)
+          } else {
+            app.alert('已经是最后一页了')
+            page --
+          }
+        })
+        $('body').append($defaultHtml)
+      })
+    },
+    organize(){
+      let id = $(this).attr('id')
+      let name = $(this).find('.nameValue').attr('name')
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let html = setData.title(id,'组织选择', $(`#${id}`).find('.title span').text()) +
+      setData.underline()+
+      setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      setData.underline()+
+      setData.grid(id)+
+      setData.underline()+
+      setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+      setData.underline()+
+      setData.userOrg(id)+
+      setData.underline()+
+      setData.ifField(id, condition)
+      $('.set-content').html(html)
+      $('#userOrg').click(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        let defaultHtml = `<div id="organize-box">
+          <div class="user-content">
+            <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
+            <div class="ul-box">
+              <ul class="list-selecred">
+                <li><span class="userName">林泽成</span> <span class="del-user">x</span></li>
+              </ul>
+            </div>
+            <div class="user-list">
+              <div class="am-tabs" data-am-tabs>
+                <ul class="am-tabs-nav am-nav am-nav-tabs">
+                  <li class="am-active"><a href="#tab1">部门</a></li>
+                  <li><a href="#tab2">动态产数</a></li>
+                </ul>
+            
+                <div class="am-tabs-bd am-tabs-bd-ofv" style="height:309px">
+                  <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+                    <div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
+                    <ul>
+                      <li class="org-item">
+                        <i class="am-icon-plus goOrg"></i>
+                        <div><span>大数据</span></div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="am-tab-panel am-fade" id="tab2">
+                    <ul>
+                      <li data-value=${JSON.stringify({"orgID":"#{org.orgName}","enterpriseID":"1267","orgCode":"1001","orgName":"当前部门"})}>当前部门</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-box">
+              <div>
+                
+              </div>
+              <div>
+                <button type="button" class="am-btn am-btn-default am-radius back" >取消</button>
+                <button type="button" class="am-btn am-btn-success am-radius sure">确定</button>
+              </div>
+            </div>
+          </div>
+        </div>`
+        let $defaultHtml = $(defaultHtml)
+        let datali = ''
+        $(`#${id}`).find('.organize-item').each((i,v) => {
+          datali +=`<li><span class="userName" data-value=${$(v).find('span').attr('data-value')} value="${$(v).text()}">${$(v).text()}</span> <span class="del-user">x</span></li>`
+        })
+        $defaultHtml.find('.list-selecred').html(datali)
+        let resData = [
+          {"orgID":"1","enterpriseID":"1267","orgCode":"1001","orgName":"mtest"},
+          {"orgID":"2","enterpriseID":"1267","orgCode":"10011002","orgName":"12345"},
+          {"orgID":"3301969324687217","enterpriseID":"1267","orgCode":"10011001","orgName":"001"},
+          {"orgID":"10","enterpriseID":"1267","orgCode":"10011003","orgName":"g01"},
+          {"orgID":"11","enterpriseID":"1267","orgCode":"10011004","orgName":"g02"},
+          {"orgID":"17","enterpriseID":"1267","orgCode":"10011005","orgName":"t001"},
+          {"orgID":"18","enterpriseID":"1267","orgCode":"10011006","orgName":"t002"},
+          {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
+          {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
+          {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"}
+        ]
+        let resDataChild= [
+          {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
+          {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
+          {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"},
+          {"orgID":"15","enterpriseID":"1267","orgCode":"100110031002","orgName":"g012"},
+          {"orgID":"16","enterpriseID":"1267","orgCode":"100110031003","orgName":"g013"},
+          {"orgID":"14","enterpriseID":"1267","orgCode":"1001100310011001","orgName":"g0111"}
+        ]
+        function getorg() {
+          // $.ajax({
+          //   url:url,
+          //   type: 'POST',
+          //   data: '',
+          //   success: function (res) {
+          //     resData = res.value
+                 let orgul = `<ul>`
+                 resData.forEach(v => {
+                  orgul += `<li class="org-item">
+                    <i class="am-icon-plus goOrg"></i>
+                    <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
+                  </li>`
+                 })
+                 orgul += `</ul>`
+                $('#tab1').html(orgul)
+          //   }
+          // })
+        }
+        function getorgChild(orghtmlarr, i) {
+          // $.ajax({
+          //   url:url,
+          //   type: 'POST',
+          //   data: '',
+          //   success: function (res) {
+          //     resDataChild = res.value
+                let Ul =`<div class="org-back" data-backHtml ='${JSON.stringify(orghtmlarr)}'><i class="am-icon-reply"></i> <span>上一级</span></div>
+                  <ul>`
+                resDataChild.forEach((v) => {
+                  Ul += `<li class="org-item">
+                    <i class="am-icon-plus goOrg"></i>
+                    <div data-value=${JSON.stringify(v)}><span>${v.orgName+ i}</span></div>
+                  </li>`
+                })
+                Ul += '</ul>'
+                $('#tab1').html(Ul)
+          //   }
+          // })
+        }
+        
+        $defaultHtml.on('click', '#tab1 .org-item div, #tab2 li', function () {
+          let val = $(this).text()
+          let valData =$(this).attr('data-value')
+          let li =`<li><span class="userName" data-value=${valData}  value="${val}">${val}</span> <span class="del-user">x</span></li>`
+          if (condition.ifChoice == 'radio') {
+            $('.list-selecred').html(li)
+          } else {
+            if (!$(`span[value=${val}]`)[0]) {
+              $('.list-selecred').append(li)
+            }
+          }
+        })
+        $defaultHtml.find('.list-selecred').on('click', '.del-user', function () {
+          $(this).parent().remove()
+        })
+        // $defaultHtml.find('#tab2 li').click(function () {
+
+        // })
+        let i= 0
+        $defaultHtml.find('#tab1').on('click', '.goOrg', function () {
+          i++
+          let orghtmlarr = JSON.parse($('#tab1').find('.org-back').attr('data-backHtml')|| "[]") 
+          $('#tab1').find('.org-back').attr('data-backHtml', '')
+          let orghtml = $('#tab1').html()
+          if (orghtmlarr&&  orghtmlarr.length) {
+            orghtmlarr.push(orghtml)
+          } else {
+            orghtmlarr = []
+            orghtmlarr.push(orghtml)
+          }
+          getorgChild.call(this, orghtmlarr,i)
+        })
+        $defaultHtml.find('#tab1').on('click', '.org-back', function () {
+          let orghtmlarr = JSON.parse($(this).attr('data-backHtml'))
+          let orghtml = orghtmlarr[orghtmlarr.length-1]
+          orghtmlarr.pop()
+          $('#tab1').html(orghtml)
+          $('#tab1').find('.org-back').attr('data-backHtml', JSON.stringify(orghtmlarr))
+        })
+        $defaultHtml.find('.back').click(function (){
+          $('#organize-box').remove()
+        })
+        $defaultHtml.find('.sure').click(function (){
+          let ulLi = ''
+          $('.userName').each((i, v) => {
+            ulLi += `<li class="organize-item"><span data-value=${$(v).attr('data-value')}>${$(v).text()}</span></li>`
+          })
+          $(`#${id}`).find('.user-content').html(ulLi)
+          $('#organize-box').remove()
+        })
+        $('body').append($defaultHtml)
+        getorg()
+      })
     }
   },
   setTableData: {
