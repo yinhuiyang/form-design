@@ -1179,26 +1179,17 @@ var design = {
           datali +=`<li><span class="userName" data-value=${$(v).find('span').attr('data-value')} value="${$(v).text()}">${$(v).text()}</span> <span class="del-user">x</span></li>`
         })
         $defaultHtml.find('.list-selecred').html(datali)
-        let resData = [
-          {"orgID":"1","enterpriseID":"1267","orgCode":"1001","orgName":"mtest"},
-          {"orgID":"2","enterpriseID":"1267","orgCode":"10011002","orgName":"12345"},
-          {"orgID":"3301969324687217","enterpriseID":"1267","orgCode":"10011001","orgName":"001"},
-          {"orgID":"10","enterpriseID":"1267","orgCode":"10011003","orgName":"g01"},
-          {"orgID":"11","enterpriseID":"1267","orgCode":"10011004","orgName":"g02"},
-          {"orgID":"17","enterpriseID":"1267","orgCode":"10011005","orgName":"t001"},
-          {"orgID":"18","enterpriseID":"1267","orgCode":"10011006","orgName":"t002"},
-          {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
-          {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
-          {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"}
-        ]
-        let resDataChild= [
-          {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
-          {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
-          {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"},
-          {"orgID":"15","enterpriseID":"1267","orgCode":"100110031002","orgName":"g012"},
-          {"orgID":"16","enterpriseID":"1267","orgCode":"100110031003","orgName":"g013"},
-          {"orgID":"14","enterpriseID":"1267","orgCode":"1001100310011001","orgName":"g0111"}
-        ]
+        let resData = {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"}
+        
+        let resDataChild= ''
+        // [
+        //   {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
+        //   {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
+        //   {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"},
+        //   {"orgID":"15","enterpriseID":"1267","orgCode":"100110031002","orgName":"g012"},
+        //   {"orgID":"16","enterpriseID":"1267","orgCode":"100110031003","orgName":"g013"},
+        //   {"orgID":"14","enterpriseID":"1267","orgCode":"1001100310011001","orgName":"g0111"}
+        // ]
         function getorg() {
           // $.ajax({
           //   url:url,
@@ -1207,25 +1198,29 @@ var design = {
           //   success: function (res) {
           //     resData = res.value
                  let orgul = `<ul>`
-                 resData.forEach(v => {
                   orgul += `<li class="org-item">
                     <i class="am-icon-plus goOrg"></i>
-                    <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
+                    <div data-value=${JSON.stringify(resData)}><span>${resData.orgName}</span></div>
                   </li>`
-                 })
                  orgul += `</ul>`
+                 sessionStorage.setItem('orgPageArr',JSON.stringify([resData]))
                 $('#tab1').html(orgul)
           //   }
           // })
         }
-        function getorgChild(orghtmlarr, i) {
+        function getorgChild( i) {
+          let _this = this
           // $.ajax({
           //   url:url,
           //   type: 'POST',
           //   data: '',
           //   success: function (res) {
           //     resDataChild = res.value
-                let Ul =`<div class="org-back" data-backHtml ='${JSON.stringify(orghtmlarr)}'><i class="am-icon-reply"></i> <span>上一级</span></div>
+                if (!resDataChild) {
+                  $(_this).attr({'class': 'am-icon-minus'})
+                  return
+                }
+                let Ul =`<div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
                   <ul>`
                 resDataChild.forEach((v) => {
                   Ul += `<li class="org-item">
@@ -1234,6 +1229,9 @@ var design = {
                   </li>`
                 })
                 Ul += '</ul>'
+                let orgPageArr = JSON.parse(sessionStorage.orgPageArr)
+                orgPageArr.push(resDataChild)
+                sessionStorage.orgPageArr = JSON.stringify(orgPageArr)
                 $('#tab1').html(Ul)
           //   }
           // })
@@ -1260,23 +1258,42 @@ var design = {
         let i= 0
         $defaultHtml.find('#tab1').on('click', '.goOrg', function () {
           i++
-          let orghtmlarr = JSON.parse($('#tab1').find('.org-back').attr('data-backHtml')|| "[]") 
-          $('#tab1').find('.org-back').attr('data-backHtml', '')
-          let orghtml = $('#tab1').html()
-          if (orghtmlarr&&  orghtmlarr.length) {
-            orghtmlarr.push(orghtml)
-          } else {
-            orghtmlarr = []
-            orghtmlarr.push(orghtml)
-          }
-          getorgChild.call(this, orghtmlarr,i)
+          // let orghtmlarr = JSON.parse($('#tab1').find('.org-back').attr('data-backHtml')|| "[]") 
+          // $('#tab1').find('.org-back').attr('data-backHtml', '')
+          // let orghtml = $('#tab1').html()
+          // if (orghtmlarr&&  orghtmlarr.length) {
+          //   orghtmlarr.push(orghtml)
+          // } else {
+          //   orghtmlarr = []
+          //   orghtmlarr.push(orghtml)
+          // }
+          getorgChild.call(this, i)
         })
         $defaultHtml.find('#tab1').on('click', '.org-back', function () {
-          let orghtmlarr = JSON.parse($(this).attr('data-backHtml'))
-          let orghtml = orghtmlarr[orghtmlarr.length-1]
+          let orghtmlarr = JSON.parse(sessionStorage.orgPageArr)
+          let orgarr = orghtmlarr[orghtmlarr.length-2]
           orghtmlarr.pop()
+          sessionStorage.orgPageArr = JSON.stringify(orghtmlarr)
+          let orghtml = ''
+          if (!orgarr.length) {
+            orghtml= `<ul>
+              <li class="org-item">
+                <i class="am-icon-plus goOrg"></i>
+                <div data-value=${JSON.stringify(orgarr)}><span>${orgarr.orgName}</span></div>
+              </li>
+            </ul>`
+          } else {
+            orghtml =`<div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
+                  <ul>`
+            orgarr.forEach((v) => {
+              orghtml += `<li class="org-item">
+                <i class="am-icon-plus goOrg"></i>
+                <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
+              </li>`
+            })
+            orghtml += '</ul>'
+          }
           $('#tab1').html(orghtml)
-          $('#tab1').find('.org-back').attr('data-backHtml', JSON.stringify(orghtmlarr))
         })
         $defaultHtml.find('.back').click(function (){
           $('#organize-box').remove()
