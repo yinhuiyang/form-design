@@ -174,3 +174,49 @@ fieldset [class*=am-u-]+[class*=am-u-]:last-child{
  tr.active {
    background: #E4EFC9;
  }
+ .am-form-group.am-u-sm-12 .phone-item{
+   display:inline-block;
+   width: 70%;
+ }
+ .am-form-group.am-u-sm-12 .phone-label{
+   width: 28%;
+ }
+ .phone-group{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+ }
+ .phone-form-group{
+  margin-bottom: 5px;
+ }
+ .tbody, tfoot{
+  margin-top: 5px;
+ }
+ .tfoot .th {
+  color: #9e9e9e8a;
+  background: #eee;
+  line-height: 29px;
+  margin-bottom: 5px;
+  padding-left: 9px;
+ }
+ .tbody .tr.content{
+  padding: 5px 0;
+  border-top: 3px solid #eee;
+  position: relative;
+ }
+ .tbody .tr.active{
+  background: #E4EFC9;
+ }
+ .tbody .tr.content:last-child {
+  border-bottom: 3px solid #eee;
+ }
+ .iconDelete i{
+  color: red;
+  font-size: 20px
+}
+ .iconDelete{
+  position: absolute;
+  top: -12px;
+  right: -6px;
+ }
+

@@ -26,12 +26,15 @@ Object.assign(design, {
     id: '110000',
     name: '0table',
     type: 'table',
+    background: '#f5f5f5',
     content: [],
   },
   tableType : {
     text: {
         option: {reg: '', err: ''},
         placeholder: '',
+        maxLangth: '',
+        minLangth:'',
         value: '',
         ifWrite: false,
         ifShow: true,
@@ -46,7 +49,7 @@ Object.assign(design, {
         ifCollect: false
     },
     datetimepicker: {
-        value: '2018-12-01',
+        value: '',
         placeholder: '',
         pickerType:'allpicker',
         option: {lang: 'ch', step: 1,datepicker:true,timepicker:true,format:'Y-m-d H:i'},
@@ -64,7 +67,12 @@ Object.assign(design, {
     }
     let $html = $(this.tableHtml)
     $html.attr('id', page.id)
+    $html.attr('data-titleBackground', page.background)
     $html.find('.nameValue').attr({'name': page.name})
+    $html.find('.am-panel-hd').css({"background": page.background, 'color': '#fff'})
+    if (page.background == '#f5f5f5') {
+      $html.find('.am-panel-hd').css({'color': '#444'})
+    }
     if (!page.content.length) {
       for (let i = 0; i< 4; i++) {
         let thHtml = `<th class="th-item">请输入标题</th>`
@@ -96,6 +104,8 @@ Object.assign(design, {
           text.ifShow = page.content[i].data.ifShow
           text.ifEditor = page.content[i].data.ifEditor
           text.ifCollect = page.content[i].data.ifCollect
+          text.maxLangth = page.content[i].maxLangth
+          text.minLangth = page.content[i].minLangth
         } else if (page.content[i].type == 'select') {
           $.extend(true, text, this.tableType.text)
           $.extend(true, select, this.tableType.select)

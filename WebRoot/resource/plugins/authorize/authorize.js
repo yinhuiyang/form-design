@@ -37,7 +37,7 @@
         }
       ]
   },
-  preview_flag:false, // true预览 ，false为真实提交
+  preview_flag: false, // true预览 ，false为真实提交
   $formBoxHTml: {},
   Mobile: false,
   init (form) {
@@ -51,6 +51,8 @@
     this.uphtmlFn('datetimepicker', this.datetimepicker.loadDatetimepicker)
     this.uphtmlFn('file', this.file.loadFile)
     this.uphtmlFn('image', this.image.loadImage)
+    this.uphtmlFn('user', this.user.userLoad)
+    this.uphtmlFn('organize', this.organize.organizeLoad)
     var ua = navigator.userAgent
     var isWindowsPhone = /(?:Windows Phone)/.test(ua)
     var isAndroid = /(?:Android)/.test(ua)
@@ -65,6 +67,15 @@
     }
     if (this.formData.formSuggestion) {
       this.formData.form.panels.push(this.suggestion)
+    }
+    if (!this.formData.cache) {
+      this.formData.cache = {}
+    }
+    if (!this.formData.cache.user) {
+      this.formData.cache.user = {}
+    }
+    if (!this.formData.cache.org){
+      this.formData.cache.org = {}
     }
   },
   loadbind (id) {
@@ -130,6 +141,9 @@
         if (_this.ifFile()) {
           err = true
         }
+        if (_this.ifUser()) {
+          err = true
+        }
         if (err) {
           return
         }
@@ -137,6 +151,30 @@
       let data = _this.getdataFn(id)
         _this.formData.onAction(action, data)
     })
+  },
+  ifUser(){
+    let err = false
+    $('[data-xhtml=user]').each(function () {
+      if ($(this).find("sup")[0]&& !$(this).find('.user-item').length) {
+          if(!$(this).find('.am-alert')[0]) {
+            $(this).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择用户</div>`)
+          }
+          err = true
+      } else {
+        $(this).find('.am-alert').remove()
+      }
+    })
+    $('[data-xhtml=organize]').each(function () {
+      if ($(this).find("sup")[0] && !$(this).find('.organize-item').length) {
+        if(!$(this).find('.am-alert')[0]) {
+          $(this).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择组织</div>`)
+        }
+        err = true
+      } else {
+        $(this).find('.am-alert').remove()
+      }
+    })
+    return err
   },
   ifFile () {
     let errHtml = `<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`
@@ -279,7 +317,7 @@
         opt.my_default = {
           theme: 'android-ics light', //皮肤样式
           display: 'bottom', //显示方式
-          mode: 'scroller', //日期选择模式
+          mode: '0', //日期选择模式
           lang: option.lang,
           dateFormat: dateFormat,
           startYear:currYear-4, //开始年份
@@ -357,6 +395,22 @@
       })
       data[$(el).attr('name')] = nameData
       return data
+    },
+    user (el) {
+      let data = {}
+      data[$(el).attr('name')] = []
+      $(el).find('.user-item').each((i,v) =>{
+        data[$(el).attr('name')].push(JSON.parse($(v).find('span').attr('data-value')))
+      })
+      return data
+    },
+    organize (el) {
+      let data = {}
+      data[$(el).attr('name')] = []
+      $(el).find('.organize-item').each((i,v) =>{
+        data[$(el).attr('name')].push(JSON.parse($(v).find('span').attr('data-value')))
+      })
+      return data
     }
   },
   regFn (id) {
@@ -389,7 +443,7 @@ authorize.form ={
   </header>
   <div class="am-panel-bd" style="min-height: 100px;height: auto;">
     <form action="" class="am-form" id="">
-      <fieldset class="am-g">
+      <fieldset>
       </fieldset>
     </form>
   </div>
@@ -399,6 +453,10 @@ authorize.form ={
     $html.find('h3').text(page.title)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('form').attr('id', page.id+1)
+    $html.find('.am-panel-hd').css({"background": page.background, 'color': '#fff'})
+    if (page.background == '#f5f5f5') {
+      $html.find('.am-panel-hd').css({'color': '#444'})
+    }
     return $html
   }
 }
@@ -428,6 +486,10 @@ authorize.phoneTable={
     $html.find('h3').text(page.title)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('form').attr('id', page.id+123456)
+    $html.find('.am-panel-hd').css({"background": page.background, 'color': '#fff'})
+    if (page.background == '#f5f5f5') {
+      $html.find('.am-panel-hd').css({'color': '#444'})
+    }
     let collect = []
     page.content.forEach((el)=>{
       let tdData = ''
@@ -477,12 +539,12 @@ authorize.phoneTable={
       })
       $html.find(`.tfoot [name = _sum_${v}]`).val(sum.toFixed(2))
     })
-    $html.find('.tbody .tr').append('<div class="iconDelete" style="display:none"><i class="am-icon-close"></i></div>')
+    $html.find('.tbody .tr').append('<div class="iconDelete"><i class="am-icon-close"></i></div>')
     $html.on('click', '.tbody .tr', function () {
       $('.tbody .tr').removeClass('active')
-      $('.iconDelete').hide()
+      // $('.iconDelete').hide()
       $(this).addClass('active')
-      $(this).find('.iconDelete').show()
+      // $(this).find('.iconDelete').show()
     })
     $html.find('.addTh').click(function(){
       _this.phoneTable.addtr.call(this, _this,  page, elattribute)
@@ -498,7 +560,7 @@ authorize.phoneTable={
   },
   addtr(_this, page, elattribute){
     $('.tbody .tr').removeClass('active')
-    $('.iconDelete').hide()
+    // $('.iconDelete').hide()
     let $divTr = $('<div class="tr content am-g active"><div class="iconDelete"><i class="am-icon-close"></i></div></div>')
     page.content.forEach((el)=>{
       $divTr.append(_this.phoneTable.addChild(_this, el, '', elattribute[el.name]))
@@ -516,12 +578,16 @@ authorize.phoneTable={
         </div>
       </div>`)
       $tdHtml.find('.title span').text(el.titleTh)
+      el.data.value = el.data.value.replace(/^\#{user.name}$/g, _this.formData.cache.user.name|| el.data.value)
+      el.data.value = el.data.value.replace(/^\#{org.orgName}$/g, _this.formData.cache.org.orgName|| el.data.value)
       $tdHtml.find('input').attr({
         'name': el.name,
         'value': el.data.value,
         'placeholder': el.placeholder,
         'data-validation-message': el.data.option.err,
-        'pattern': el.data.option.reg
+        'pattern': el.data.option.reg,
+        'minlength': el.minLangth,
+        'maxlength': el.maxLangth
       })
       if (tDdata) {
         $tdHtml.find('input').attr({'value': tDdata})
@@ -597,6 +663,7 @@ authorize.phoneTable={
       </div>`)
       $tdHtml.find('.title span').text(el.titleTh)
       $tdHtml.find('input').attr('name', el.name)
+      el.data.value = el.data.value.replace(/\#\{getToday\(\)\}/g, new Date().Format(/^Y+.m+.d+/i.exec(el.data.option.format)[0]))
       if (tDdata) {
         $tdHtml.find('input').attr({'value': tDdata})
       } else {
@@ -658,6 +725,10 @@ authorize.table = {
     $html.find('h3').text(page.title)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('form').attr('id', page.id+123456)
+    $html.find('.am-panel-hd').css({"background": page.background, 'color': '#fff'})
+    if (page.background == '#f5f5f5') {
+      $html.find('.am-panel-hd').css({'color': '#444'})
+    }
     let Collect = []
     page.content.forEach((el)=>{
       if (!elattribute[el.name]) {
@@ -685,7 +756,7 @@ authorize.table = {
       if (eldata[page.name]&&eldata[page.name].length) {
         eldata[page.name].forEach((v, i) => {
           tdData = v[el.name]
-          let $tD = _this.table.ChildHtml(el, tdData, elattribute[el.name])
+          let $tD = _this.table.ChildHtml(_this, el, tdData, elattribute[el.name])
           let $tDHtml=$(`<td></td>`)
           $tDHtml.append($tD)
           if ($html.find('tbody tr')[i]) {
@@ -725,20 +796,24 @@ authorize.table = {
     
     page.content.forEach(el =>{
       let $tDHtml=$(`<td></td>`)
-      $tDHtml.append(_this.table.ChildHtml(el, '', elattribute[el.name]))
+      $tDHtml.append(_this.table.ChildHtml(_this, el, '', elattribute[el.name]))
       $tr.append($tDHtml)
     })
     $(this).parent().find('tbody').append($tr)
   },
-  ChildHtml (el, tDdata, tDattribute) {
+  ChildHtml (_this, el, tDdata, tDattribute) {
     if (el.type == 'text') {
-      let $text =$(`<input type="text" id="" minlength="" placeholder="" value="" data-validation-message="" pattern=""/>`)
+      let $text =$(`<input type="text" id="" placeholder="" value="" data-validation-message="" pattern=""/>`)
+      el.data.value = el.data.value.replace(/^\#{user.name}$/g, _this.formData.cache.user.name|| el.data.value)
+      el.data.value = el.data.value.replace(/^\#{org.orgName}$/g, _this.formData.cache.org.orgName|| el.data.value)
       $text.attr({
         'name': el.name,
         'value': el.data.value,
         'placeholder': el.placeholder,
         'data-validation-message': el.data.option.err,
-        'pattern': el.data.option.reg
+        'pattern': el.data.option.reg,
+        'minlength': el.minLangth,
+        'maxlength': el.maxLangth
       })
       if (tDdata) {
         $text.attr({'value': tDdata})
@@ -797,6 +872,8 @@ authorize.table = {
     } else {
       let $datetimepicker = $(`<div class="am-form-group"><input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker readonly"/></div>`)
       $datetimepicker.find('input').attr('name', el.name)
+      // $datetimepicker.find('input').attr({'value': el.data.})
+      el.data.value = el.data.value.replace(/\#\{getToday\(\)\}/g, new Date().Format(/^Y.m.d/i.exec(el.data.option.format)[0]))
       if (tDdata) {
         $datetimepicker.find('input').attr({'value': tDdata})
       } else {
@@ -823,16 +900,18 @@ authorize.text = {
   textHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="text">
       <label for="" class="title"><span></span>:</label>
       <div class="subhead"></div>
-      <input type="text" id="" minlength="" placeholder="" value="" data-validation-message="" pattern=""/>
+      <input type="text" id="" ="" placeholder="" value="" data-validation-message="" pattern=""/>
       </div>`,
   loadText (page, eldata, elattribute) {
     let $html = $(this.text.textHtml)
+    page.data.value = page.data.value.replace(/^\#{user.name}$/g, this.formData.cache.user.name|| page.data.value)
+    page.data.value = page.data.value.replace(/^\#{org.orgName}$/g, this.formData.cache.org.orgName|| page.data.value)
     $html.find('.title span').text(page.title)
     // $html.attr('id', page.id)
     $html.addClass(`am-u-md-${page.grid}`)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('input').attr('value',page.data.value)
-    $html.find('input').attr({'placeholder': page.placeholder, 'id': page.id+1, 'data-validation-message': page.data.option.err, 'pattern': page.data.option.reg})
+    $html.find('input').attr({'placeholder': page.placeholder, 'id': page.id+1, 'data-validation-message': page.data.option.err, 'pattern': page.data.option.reg, 'maxlength': page.maxLangth, "minlength": page.minLangth})
     $html.find('label').attr('for', page.id+1)
     $html.find('.subhead').text(page.subhead)
     if (typeof eldata  === 'object' && eldata[page.name]) {
@@ -882,7 +961,7 @@ authorize.textarea = {
     if (typeof eldata  === 'object' && eldata[page.name]) {
       $html.find('textarea').html(eldata[page.name])
     }
-    $html.find('textarea').attr({'id': page.id+1, 'placeholder': page.placeholder, 'name': page.name})
+    $html.find('textarea').attr({'id': page.id+1, 'placeholder': page.placeholder, 'name': page.name, 'maxlength': page.maxLangth, "minlength": page.minLangth})
     $html.find('.subhead').html(page.subhead)
     if (typeof elattribute === 'object' && elattribute[page.name]) {
       if (elattribute[page.name].ifWrite){
@@ -1073,6 +1152,7 @@ authorize.datetimepicker = {
     </div>`,
   loadDatetimepicker (page, eldata, elattribute) {
     let $html = $(this.datetimepicker.datetimepickerHtml)
+    page.data.value = page.data.value.replace(/\#\{getToday\(\)\}/g, new Date().Format(/^Y.m.d/i.exec(page.data.option.format)[0]))
     $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').html(page.title)
     $html.attr({'id': page.id, 'name': page.name})
@@ -1507,7 +1587,509 @@ authorize.image = {
     })
   }
 }
+authorize.user={
+  userHtml:`<div class="am-form-group group am-u-sm-12" data-xhtml="user">
+    <label for="" class="title"><span></span></label>
+    <div class="subhead"></div>
+    <div class="nameValue">
+      <ul class="user-content  user-radio">
+        <div class="user-btn">点击选择用户</div>
+      </ul>
+    </div>
+  </div>`,
+  userLoad (page, eldata, elattribute) {
+    let _this = this
+    let $html = $(this.user.userHtml)
+    $html.addClass(`am-u-md-${page.grid}`)
+    page.id += 'user'
+    if (elattribute[page.name]) {
+      page.data.ifWrite = elattribute[page.name].ifWrite
+      page.data.ifShow = elattribute[page.name].ifShow
+      page.data.ifEditor = elattribute[page.name].ifEditor
+    }
+    if(eldata[page.name]&& eldata[page.name].length) {
+      page.data.value = eldata[page.name]
+    }
+    if (page.data.ifChoice == 'checkbox') {
+      $html.find('.user-content').addClass('user-checkbox')
+    }
+    if (page.data.ifWrite){
+      $html.find('.title').append(`<sup class="am-text-danger">*</sup>`)
+    }
+    if (!page.data.ifShow) {
+      $html.css({'display': 'none'})
+    }
+    if (page.data.ifEditor){
+      $html.find('.user-content').click(function () {
+        _this.user.addUser.call(this, page, page.data)
+      })
+    } else {
+      $html.find('.user-content').css('background', '#eee')
+    }
+    let li =''
+    page.data.value.forEach(v => {
+      if (v.userID == '#{user.name}') {
+        v.name = this.formData.cache.user.name
+        v.userID = this.formData.cache.user.userID
+      }
+      li += `<li class="user-item"><span data-value=${JSON.stringify(v)}>${v.name}</span></li>`
+    })
+    $html.find(".user-content").html(li|| '<div class="user-btn">点击选择用户</div>')
+    $html.find('.title span').text(page.title)
+    $html.find('.subhead').text(page.subhead)
+    $html.attr({'id': page.id, 'name': page.name})
+    return $html
+  },
+  addUser (userData, condition) {
+    let defaultHtml = `<div id="user-box">
+          <div class="user-model">
+            <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
+            <div class="ul-box">
+              <ul class="list-selecred">
+              </ul>
+            </div>
+            <div class="user-list">
+              <div class="list-search">
+                <input class="input-search">
+                <i class="am-icon-search search"></i>
+                <div class="searchListBox" style="display: none">
+                  <ul class="searchListUl">
+                    <li class="searchItem">linlinlin</li>
+                    <li class="searchItem">linlinlin</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="list-name">
+                <ul class="list-ul">
+                </ul>
+              </div>
+            </div>
+            <div class="btn-box">
+              <div>
+                <button type="button" class="am-btn am-btn-default am-radius previous">上一页</button>
+                <button type="button" class="am-btn am-btn-default am-radius next">下一页</button>
+              </div>
+              <div>
+                <button type="button" class="am-btn am-btn-default am-radius back" >取消</button>
+                <button type="button" class="am-btn am-btn-success am-radius sure">确定</button>
+              </div>
+            </div>
+          </div>
+        </div>`
+      let $defaultHtml = $(defaultHtml)
+      let resData = [
+        {name:"loo1", userID:"21256832676"},
+        {name:"loo2", userID:"21256832675"},
+        {name:"loo4", userID:"21256832677"},
+        {name:"loo3", userID:"21256832673"},
+        {name:"loo5", userID:"21256832674"}
+      ]
+      function getuser (page) {
+        let li = ''
+      //  $.ajax({
+      // //分页查询用户信息
+      //    url: "/ddio/data/getUserByPage.do",
+      //    type: 'POST',
+      //    data: {pageIndex:data,pageSize: 3},
+      //    async: false, 
+      //    success: function (res) {
+      //      resData = res.value.list
+          let liItem = ``
+          if(resData.length == 0) {
+            return ''
+          }
+          resData.forEach(data => {
+            liItem += `<li class="list-item">
+              <label class="am-${condition.ifChoice}">
+              ${data.name} <input type="${condition.ifChoice}" name="${userData.name}" data-value=${JSON.stringify(data)} class ="nameValue" value="${data.name}" data-am-ucheck>
+              </label>
+            </li>`
+          })
+          let $liItem = $(liItem)
+          li = $liItem
+      //    }
+      //  })
+       return li
+      }
+      function getSearch(name) {
+        let li = ''
+        // $.ajax({
+        // //根据用户名查询用户信息
+        //   url:'/ddio/data/userByName.do',
+        //   type: 'POST',
+        //   data: {name: data},
+        //   async: false,
+        //   success: function (res) {
+        //     resData = res.value
+            let liItem = ''
+            if(resData.length == 0) {
+              return ''
+            }
+            resData.forEach(data => {
+              liItem +=  `<li class="searchItem">
+              <span data-value=${JSON.stringify(data)}>${data.name}</span>
+              </label>
+            </li>`
+            })
+            li = liItem
+        //   }
+        // })
+        return li
+    }
+    $defaultHtml.find('.list-ul').append(getuser(1))
+    $(`#${userData.id}`).find('.user-item').each((i, v) => {
+      let val = JSON.parse($(v).find('span').attr('data-value'))
+      let li = `<li><span class="userName" data-value=${$(v).find('span').attr('data-value')} value="${val.name}">${val.name}</span> <span class="del-user">x</span></li>`
+      $defaultHtml.find(`input[value = ${val.name}]`)[0]?$defaultHtml.find(`input[value = ${val.name}]`)[0].checked = true : ''
+      $defaultHtml.find('.list-selecred').append(li)
+    })
+    $defaultHtml.on('change', 'label input', function(){
+      if (this.checked) {
+        $(this).parent().parent().parent().find('li').removeClass('actve')
+        $(this).parent().parent().addClass('actve')
+        if ($(this).attr('type') == 'radio'){
+          radioListFn.call(this)
+        } else {
+          checkboxListFn.call(this)
+        }
+      } else {
+        $(this).parent().parent().removeClass('actve')
+        if ($(this).attr('type') == 'checkbox'){
+          $(`span[value=${$(this).val()}]`).parent().remove()
+        }
+      }
+    })
+    function radioListFn () {
+      let value = $(this).attr('data-value')
+      let li=`<li><span class="userName" data-value= ${value}>${$(this).val()}</span> <span class="del-user">x</span></li>`
+      $('.ul-box .list-selecred').html(li)
+    }
+    function checkboxListFn () {
+      let value = $(this).attr('data-value')
+      let li = `<li><span class="userName" data-value=${value} value="${$(this).val()}">${$(this).val()}</span> <span class="del-user">x</span></li>`
+      $('.ul-box .list-selecred').append(li)
+    }
+    $defaultHtml.find('.ul-box .list-selecred').on('click', '.del-user', function (e) {
+      e.stopPropagation()
+      $(this).parent().remove()
+      let val = $(this).parent().find('.userName').text()
+      $(`input[value = ${val}]`)[0]?$(`input[value = ${val}]`)[0].checked = false: ''
+    })
+    function getSearchList (name) {
+      $('.searchListBox .searchListUl').html(getSearch(name))
+      $('.searchListBox').show()
+    }
+    // $defaultHtml.find('.list-search i').click(function () {
+    //   getSearchList()
+    // })
+    $defaultHtml.find('.input-search').keydown(function (event) {
+      if(event.keyCode==13){
+        getSearchList($(this).val())                           
+      }
+    })
+    $defaultHtml.find('.input-search').on('input',function () {
+      getSearchList($(this).val())
+    })
+    $defaultHtml.find('.input-search').blur(function () {
+      setTimeout(function(){  
+        // input框失去焦点，隐藏下拉框  
+        $('.searchListBox').hide() 
+      }, 300);
+    })
+    $defaultHtml.find('.searchListUl').on('click', '.searchItem', function () {
+      let li = `<li><span class="userName" data-value=${$(this).attr('data-value')} value="${$(this).text()}">${$(this).text()}</span> <span class="del-user">x</span></li>`
+      if (condition.ifChoice == 'checkbox') {
+        $('.ul-box .list-selecred').append(li)
+      } else {
+        $('.ul-box .list-selecred').html(li)
+      }
+      $(`input[value = ${$(this).text()}]`)[0]?$(`input[value = ${$(this).text()}]`)[0].checked = true: ''
+    })
+    $defaultHtml.find('.back').click(function (){
+      $('#user-box').remove()
+    })
+    $defaultHtml.find('.sure').click(function (){
+      // let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let ulLi = ''
+      $('.userName').each((i, v) => {
+        ulLi += `<li class="user-item"><span data-value=${$(v).attr('data-value')}>${$(v).text()}</span></li>`
+      })
+      if (!$('.userName')[0]) {
+        ulLi = '<div class="user-btn">点击选择用户</div>'
+      }
+      $(`#${userData.id}`).find('.user-content').html(ulLi)
+      $(`#${userData.id}`).find('.am-alert').remove()
+      $('#user-box').remove()
+    })
+    let page = 1
+    $defaultHtml.find('.previous').click(function () {
+      page--
+      if(page<1) {
+        app.alert('已经是第一页了')
+        page = 1
+      }
+      $('#user-box .list-ul').html(getuser(page))
+      $('#user-box .list-selecred .userName').each((i,v) => {
+          $(`input[value=${$(v).text().trim()}]`)[0]?$(`input[value = ${$(v).text()}]`)[0].checked = true :''
+       })
+    })
+    $defaultHtml.find('.next').click(function () {
+      page++
+      // if(page > 5) {
+      // }
+      let li = getuser(page)
+      if (li) {
+        $('#user-box .list-ul').html(li)
+        $('#user-box .list-selecred .userName').each((i,v) => {
+          $(`input[value=${$(v).text().trim()}]`)[0]?$(`input[value = ${$(v).text()}]`)[0].checked = true :''
+       })
+      } else {
+        app.alert('已经是最后一页了')
+        page --
+      }
+    })
+    $('body').append($defaultHtml)
+  }
+}
+authorize.organize={
+  organizeHtml:`<div class="am-form-group group am-u-sm-12" data-xhtml="organize">
+    <label for="" class="title"><span>选择用户</span></label>
+    <div class="subhead"></div>
+    <div class="nameValue">
+      <ul class="user-content  user-radio">
+        <div class="user-btn">点击选择组织</div>
+      </ul>
+    </div>
+  </div>`,
+  organizeLoad (page, eldata, elattribute) {
+    let _this = this
+    let $html = $(this.organize.organizeHtml)
+    page.id += 'organize'
+    $html.addClass(`am-u-md-${page.grid}`)
+    if (elattribute[page.name]) {
+      page.data.ifWrite = elattribute[page.name].ifWrite
+      page.data.ifShow = elattribute[page.name].ifShow
+      page.data.ifEditor = elattribute[page.name].ifEditor
+    }
+    if(eldata[page.name]&& eldata[page.name].length) {
+      page.data.value = eldata[page.name]
+    }
+    if (page.data.ifChoice == 'checkbox') {
+      $html.find('.user-content').addClass('user-checkbox')
+    }
+    if (page.data.ifWrite){
+      $html.find('.title').append(`<sup class="am-text-danger">*</sup>`)
+    }
+    if (!page.data.ifShow) {
+      $html.css({'display': 'none'})
+    }
+    if (page.data.ifEditor){
+      $html.find('.user-content').click(function () {
+        _this.organize.addOrganize.call(this, page, page.data)
+      })
+    } else {
+      $html.find('.user-content').css('background', '#eee')
+    }
+    let li =''
+    page.data.value.forEach(v => {
+      if (v.orgID == '#{org.orgName}') {
+        v = this.formData.cache.org
+      }
+      li += `<li class="organize-item"><span data-value=${JSON.stringify(v)}>${v.orgName}</span></li>`
+    })
+    $html.find(".user-content").html(li|| '<div class="user-btn">点击选择组织</div>')
+    $html.find('.title span').text(page.title)
+    $html.find('.subhead').text(page.subhead)
+    $html.attr({'id': page.id, 'name': page.name})
+    
+    return $html
+  },
+  addOrganize (organizeData, condition) {
+    let defaultHtml = `<div id="organize-box">
+      <div class="organize-model">
+        <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
+        <div class="ul-box">
+          <ul class="list-selecred">
+            <li><span class="userName">林泽成</span> <span class="del-user">x</span></li>
+          </ul>
+        </div>
+        <div class="user-list">
+          <div class="am-tabs" data-am-tabs>
+            <ul class="am-tabs-nav am-nav am-nav-tabs">
+              <li class="am-active"><a href="#tab1">部门</a></li>
+              
+            </ul>
+        
+            <div class="am-tabs-bd am-tabs-bd-ofv" style="height:309px">
+              <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-box">
+          <div>
+            
+          </div>
+          <div>
+            <button type="button" class="am-btn am-btn-default am-radius back" >取消</button>
+            <button type="button" class="am-btn am-btn-success am-radius sure">确定</button>
+          </div>
+        </div>
+      </div>
+    </div>`
+    let $defaultHtml = $(defaultHtml)
+    let datali = ''
+    $(`#${organizeData.id}`).find('.organize-item').each((i,v) => {
+      datali +=`<li><span class="userName" data-value=${$(v).find('span').attr('data-value')} value="${$(v).text()}">${$(v).text()}</span> <span class="del-user">x</span></li>`
+    })
+    $defaultHtml.find('.list-selecred').html(datali)
+    let resData = {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"}
+        
+    let resDataChild= [
+      {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
+      {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
+      {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"},
+      {"orgID":"15","enterpriseID":"1267","orgCode":"100110031002","orgName":"g012"},
+      {"orgID":"16","enterpriseID":"1267","orgCode":"100110031003","orgName":"g013"},
+      {"orgID":"14","enterpriseID":"1267","orgCode":"1001100310011001","orgName":"g0111"}
+    ]
+    function getorg() {
+      let ul = ''
+      // $.ajax({
+      // //查询所有根组织机构信息
+      //   url:'/ddio/data/rootOrg.do',
+      //   type: 'POST',
+      //   data: '',
+      //   async: false,
+      //   success: function (res) {
+      //     resData = res.value
+            let orgul = `<ul>`
+             orgul += `<li class="org-item">
+               <i class="am-icon-plus goOrg"></i>
+               <div data-value=${JSON.stringify(resData)}><span>${resData.orgName}</span></div>
+             </li>`
+            orgul += `</ul>`
+            sessionStorage.setItem('orgPageArr',JSON.stringify([resData]))
+            ul = orgul
+      //   }
+      // })
+      return ul
+    }
+    function getorgChild(orgId) {
+      let _this = this
+      // $.ajax({
+      //   //根据ID查询组织机构
+      //   url:'/ddio/data/orgList.do',
+      //   type: 'POST',
+      //   data: {id: orgId},
+      //   success: function (res) {
+      //     resDataChild = res.value
+            if (!resDataChild.length) {
+              $(_this).attr({'class': 'am-icon-minus'})
+              return
+            }
+            let Ul =`<div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
+              <ul>`
+            resDataChild.forEach((v) => {
+              Ul += `<li class="org-item">
+                <i class="am-icon-plus goOrg"></i>
+                <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
+              </li>`
+            })
+            Ul += '</ul>'
+            let orgPageArr = JSON.parse(sessionStorage.orgPageArr)
+            orgPageArr.push(resDataChild)
+            sessionStorage.orgPageArr = JSON.stringify(orgPageArr)
+            $('#tab1').html(Ul)
+      //   }
+      // })
+    }
+    $defaultHtml.find('#tab1').html(getorg())
+    $defaultHtml.on('click', '#tab1 .org-item div', function () {
+      let val = $(this).text()
+      let valData =$(this).attr('data-value')
+      let li =`<li><span class="userName" data-value=${valData}  value="${val}">${val}</span> <span class="del-user">x</span></li>`
+      if (condition.ifChoice == 'radio') {
+        $('.list-selecred').html(li)
+      } else {
+        if (!$(`span[value=${val}]`)[0]) {
+          $('.list-selecred').append(li)
+        }
+      }
+    })
+    $defaultHtml.find('.list-selecred').on('click', '.del-user', function () {
+      $(this).parent().remove()
+    })
+    $defaultHtml.find('#tab1').on('click', '.goOrg', function () {
+      let orgId = JSON.parse($(this).parent().find('div').attr('data-value')).orgID
+      getorgChild.call(this, orgId)
+    })
+    $defaultHtml.find('#tab1').on('click', '.org-back', function () {
+      let orghtmlarr = JSON.parse(sessionStorage.orgPageArr)
+      let orgarr = orghtmlarr[orghtmlarr.length-2]
+      orghtmlarr.pop()
+      sessionStorage.orgPageArr = JSON.stringify(orghtmlarr)
+      let orghtml = ''
+      if (!orgarr.length) {
+        orghtml= `<ul>
+          <li class="org-item">
+            <i class="am-icon-plus goOrg"></i>
+            <div data-value=${JSON.stringify(orgarr)}><span>${orgarr.orgName}</span></div>
+          </li>
+        </ul>`
+      } else {
+        orghtml =`<div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
+              <ul>`
+        orgarr.forEach((v) => {
+          orghtml += `<li class="org-item">
+            <i class="am-icon-plus goOrg"></i>
+            <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
+          </li>`
+        })
+        orghtml += '</ul>'
+      }
+      $('#tab1').html(orghtml)
+    })
+    $defaultHtml.find('.back').click(function (){
+      $('#organize-box').remove()
+    })
+    $defaultHtml.find('.sure').click(function (){
+      let ulLi = ''
+      $('.userName').each((i, v) => {
+        ulLi += `<li class="organize-item"><span data-value=${$(v).attr('data-value')}>${$(v).text()}</span></li>`
+      })
+      if (!$('.userName')[0]) {
+        ulLi = '<div class="user-btn">点击选择组织</div>'
+      }
+      $(`#${organizeData.id}`).find('.user-content').html(ulLi)
+      $(`#${organizeData.id}`).find('.am-alert').remove()
+      $('#organize-box').remove()
+    })
+    $('body').append($defaultHtml)
+  }
+}
 
+
+
+
+Date.prototype.Format = function(fmt)   
+{ //author: meizz
+  var o = {   
+    "M+" : this.getMonth()+1,                 //月份
+    "d+" : this.getDate(),                    //日
+    "h+" : this.getHours(),                   //小时
+    "m+" : this.getMinutes(),                 //分
+    "s+" : this.getSeconds(),                 //秒
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度
+    "S"  : this.getMilliseconds()             //毫秒
+  };   
+  if(/(y+)/i.test(fmt))   
+    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+""));   
+  for(var k in o)   
+    if(new RegExp("("+ k +")", 'i').test(fmt))   
+  fmt = fmt.replace(RegExp.$1,  (("00"+ o[k]).substr((""+ o[k]).length)));   
+  return fmt;   
+}  
 window.authorizeApi = function (json) {
   var authorizeobject = []
   $.extend(true, authorizeobject, authorize)
@@ -1515,3 +2097,41 @@ window.authorizeApi = function (json) {
   return authorizeobject
 }
 })()
+
+
+;(function () {
+  var numberindex = 0;
+  var app = {}
+	app.getNumber = function() {
+		numberindex++;
+		return new Date().getTime() - 1200000000000 + "" + Math.floor(Math.random() * 9 + 1) + "" + Math.floor(Math.random() * 9 + 1) + "" + numberindex;
+	};
+
+	var alert_html = '';
+	alert_html += '<div class="am-modal am-modal-alert" tabindex="-1" id="app-modal-alert">';
+	alert_html += '<div class="am-modal-dialog">';
+	alert_html += '<div class="am-modal-hd title"></div>';
+	alert_html += '<div class="am-modal-bd msg"> </div>';
+	alert_html += '<div class="am-modal-footer">';
+	alert_html += '<span class="am-modal-btn" data-am-modal-confirm>确定</span>';
+	alert_html += '</div>';
+	alert_html += '</div>';
+	alert_html += '</div>';
+
+	app.alert = function(msg, confirmCallback, title) {
+		var $modal = $(alert_html).clone();
+		var id = "app-modal-alert-" + app.getNumber();
+		$modal.attr('id', id);
+		$('body').append($modal);
+		msg = msg || "信息";
+		title = title || "提示信息";
+		$('#' + id).find('.title').html(title);
+		$('#' + id).find('.msg').html(msg);
+		$('#' + id).modal({
+			onConfirm : function() {
+				confirmCallback && confirmCallback();
+			}
+		});
+	};
+  window.app = app;
+})();

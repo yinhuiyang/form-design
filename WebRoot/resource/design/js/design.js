@@ -13,7 +13,10 @@ var design = {
     telephone: '^(0[0-9]{2,3}\\-)?([2-9][0-9]{6,7})+(\\-[0-9]{1,4})?$',
     postalcode: '^\\d{6}$',
     IDnumber: '(^\\d{15}$)|(^\\d{18}$)|(^\\d{17}(\\d|X|x)$)',
-    email: '^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$'
+    email: '^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$',
+    number: '^[-+]?\\d+(\\.\\d+)?$',
+    integer: '^\\d+$',
+    positiveNumber: '^\\d+(\\.\\d+)?$'
   },
   formTypeId: '',
   init () {
@@ -165,7 +168,15 @@ var design = {
       formTmp.title = _this.formTitle
       formTmp.id = _this.formId
       let formList = {
-        form: formTmp
+        form: formTmp,
+        cache :{
+          user:{
+            name: '当前用户'
+          },
+          org:{
+            orgName: '当前组织'
+          }
+        }
       }
       var authorizeObj  = new authorizeApi(formList) // 绑定json
       authorizeObj.loadbind('#formList')
@@ -186,7 +197,7 @@ var design = {
       from.panels[i].id = this.id
       from.panels[i].type = $(this).attr('data-xhtml')
       from.panels[i].name = $(elem).children('.nameValue').attr('name')
-
+      from.panels[i].background = $(this).attr('data-titleBackground')
       if(app.isEmpty(from.panels[i].name) 
         || app.isEmpty(from.panels[i].title)){
         app.alert("布局组件存在标题或字段名称为空")
@@ -256,6 +267,8 @@ var design = {
         content[i].placeholder = data.placeholder
         content[i].data.value = data.value
         content[i].data.option = data.option
+        content[i].maxLangth = data.maxLangth
+        content[i].minLangth = data.minLangth
       } else if ($(el).attr('data-type') == 'select') {
         data = JSON.parse($(el).attr('data-select'))
         content[i].data.value = data.value
@@ -287,6 +300,10 @@ var design = {
       content[i].type = $(el).attr('data-xhtml')
       content[i].name = $(el).find('.nameValue').attr('name')
       content[i].grid = !$(el).attr('class').replace(/[^0-9]/ig,"") ? '12' : $(el).attr('class').replace(/[^0-9]/ig,"")
+      if ($(el).attr('data-xhtml') == 'text' || $(el).attr('data-xhtml') == 'textarea') {
+        content[i].maxLangth = ifField.maxLangth
+        content[i].minLangth = ifField.minLangth
+      }
       if(app.isEmpty(content[i].name) 
         || app.isEmpty(content[i].title)){
         app.alert("基础组件存在标题或字段名称为空")
@@ -487,10 +504,21 @@ var design = {
   setdata: {
     form () {
       let id = $(this).attr('id')
+      let background = $(this).attr('data-titleBackground')
       let html = setData.title(id,'基础面板', $(`#${id}`).find('#title span').text())+
                 setData.underline()+
-                setData.setFormNmae(id, $(`#${id} .nameValue`).attr('name'))
+                setData.setFormNmae(id, $(`#${id} .nameValue`).attr('name'))+
+                setData.underline()+
+                setData.background()
       $('.set-content').html(html)
+      $('#backgroundFrom').val(background)
+      $('#backgroundFrom').change(function(){
+        $('#'+id).find('.am-panel-hd').css({"background":$(this).val(), 'color': '#fff'})
+        if ($(this).val() == '#f5f5f5') {
+          $('#'+id).find('.am-panel-hd').css({'color': '#444'})
+        }
+        $('#'+id).attr('data-titleBackground', $(this).val())
+      })
     },
     radio: function () {
       let id = $(this).attr('id')
@@ -567,6 +595,8 @@ var design = {
       setData.underline()+
       setData.text(id)+
       setData.underline()+
+      setData.inputLength(id)+
+      setData.underline()+
       setData.textInput(id)+
       setData.underline()+
       setData.ifField(id, condition)
@@ -620,6 +650,8 @@ var design = {
       setData.grid(id)+
       setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
+      setData.underline()+
+      setData.inputLength(id)+
       setData.underline()+
       setData.textInput(id)+
       setData.underline()+
@@ -890,12 +922,23 @@ var design = {
     },
     table () {
       let id = $(this).attr('id')
+      let background = $(this).attr('data-titleBackground')
       let html = setData.title(id,'表格', $(`#${id}`).find('#title span').text()) +
         setData.underline()+
         setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
         setData.underline()+
+        setData.background()+
+        setData.underline()+
         setData.tableAddTh(id)
       $('.set-content').html(html)
+      $('#backgroundFrom').val(background)
+      $('#backgroundFrom').change(function(){
+        $('#'+id).find('.am-panel-hd').css({"background":$(this).val(), 'color': '#fff'})
+        if ($(this).val() == '#f5f5f5') {
+          $('#'+id).find('.am-panel-hd').css({'color': '#444'})
+        }
+        $('#'+id).attr('data-titleBackground', $(this).val())
+      })
     },
     user () {
       let id = $(this).attr('id')
@@ -916,7 +959,7 @@ var design = {
       $('#userOrg').click(function () {
         let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
         let defaultHtml = `<div id="user-box">
-          <div class="user-content">
+          <div class="user-model">
             <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
             <div class="ul-box">
               <ul class="list-selecred">
@@ -959,13 +1002,15 @@ var design = {
           {name:"loo5", userID:"21256832674"}
         ]
         function getuser (data) {
-          // $.ajax({
-        //   url: url,
-        //   type: 'POST',
-        //   data: '',
-        //   async: false,
-        //   success: function (res) {
-            // resData = res.value
+        	let li = ''
+         $.ajax({
+        //分页查询用户信息
+           url: "/ddio/data/getUserByPage.do",
+           type: 'POST',
+           data: {pageIndex:data,pageSize: 3},
+           async: false, 
+           success: function (res) {
+             resData = res.value.list
             let liItem = `<li class="list-item">
             <label class="am-${condition.ifChoice}">
             当前用户 <input type="${condition.ifChoice}" name="${name}" data-value=${JSON.stringify({name: '当前用户', userID: '#{user.name}'})} class ="nameValue" value="当前用户" data-am-ucheck>
@@ -981,18 +1026,23 @@ var design = {
                 </label>
               </li>`
             })
-            return liItem
-        //   }
-        // })
+//            $('#user-box .list-ul').html(liItem)
+            let $liItem = $(liItem)
+            li = $liItem
+           }
+         })
+         return li
         }
-        function getSearch() {
-          // $.aiax({
-          //   url:url,
-          //   type: 'POST',
-          //   data: '',
-          //   async: false,
-          //   success: function (res) {
-          //     resData = res.value
+        function getSearch(data) {
+        let li = ''
+           $.ajax({
+        	 //根据用户名查询用户信息
+             url:'/ddio/data/userByName.do',
+             type: 'POST',
+             data: {name: data},
+             async: false,
+             success: function (res) {
+               resData = res.value
                 let liItem = ''
                 if(resData.length == 0) {
                   return ''
@@ -1003,18 +1053,19 @@ var design = {
                   </label>
                 </li>`
                 })
-                return liItem
-          //   }
-          // })
+                li = liItem
+             }
+           })
+           return li
         }
-        $defaultHtml.find('.list-ul').append(getuser())
+        $defaultHtml.find('.list-ul').append(getuser(1))
         $(`#${id}`).find('.user-item').each((i, v) => {
           let val = JSON.parse($(v).find('span').attr('data-value'))
           let li = `<li><span class="userName" data-value=${$(v).find('span').attr('data-value')} value="${val.name}">${val.name}</span> <span class="del-user">x</span></li>`
-          $defaultHtml.find(`input[value = ${val.name}]`)[0].checked = true
+          $defaultHtml.find(`input[value = ${val.name}]`)[0]?$defaultHtml.find(`input[value = ${val.name}]`)[0].checked = true : ''
           $defaultHtml.find('.list-selecred').append(li)
         })
-        $defaultHtml.find('label input').change(function(){
+        $defaultHtml.on('change', 'label input', function(){
           if (this.checked) {
             $(this).parent().parent().parent().find('li').removeClass('actve')
             $(this).parent().parent().addClass('actve')
@@ -1046,8 +1097,8 @@ var design = {
           let val = $(this).parent().find('.userName').text()
           $(`input[value = ${val}]`)[0].checked = false
         })
-        function getSearchList () {
-          $('.searchListBox .searchListUl').html(getSearch())
+        function getSearchList (name) {
+          $('.searchListBox .searchListUl').html(getSearch(name))
           $('.searchListBox').show()
         }
         // $defaultHtml.find('.list-search i').click(function () {
@@ -1055,11 +1106,11 @@ var design = {
         // })
         $defaultHtml.find('.input-search').keydown(function (event) {
           if(event.keyCode==13){
-            getSearchList()                           
+            getSearchList($(this).val())                           
           }
         })
         $defaultHtml.find('.input-search').on('input',function () {
-          getSearchList()
+          getSearchList($(this).val())
         })
         $defaultHtml.find('.input-search').blur(function () {
           setTimeout(function(){  
@@ -1074,7 +1125,7 @@ var design = {
           } else {
             $('.ul-box .list-selecred').html(li)
           }
-          $(`input[value = ${$(this).text()}]`)[0].checked = true
+          $(`input[value = ${$(this).text()}]`)[0]?$(`input[value = ${$(this).text()}]`)[0].checked = true: ''
         })
         $defaultHtml.find('.back').click(function (){
           $('#user-box').remove()
@@ -1088,21 +1139,28 @@ var design = {
           $(`#${id}`).find('.user-content').html(ulLi)
           $('#user-box').remove()
         })
-        let page = 0
+        let page = 1
         $defaultHtml.find('.previous').click(function () {
           page--
           if(page<1) {
             app.alert('已经是第一页了')
+            page = 1
           }
-          $('#user-box .list-ul').html(getuser())
+          $('#user-box .list-ul').html(getuser(page))
+          $('#user-box .list-selecred .userName').each((i,v) => {
+            	$(`input[value=${$(v).text().trim()}]`)[0]?$(`input[value = ${$(v).text()}]`)[0].checked = true :''
+           })
         })
         $defaultHtml.find('.next').click(function () {
           page++
           // if(page > 5) {
           // }
-          let li = getuser()
+          let li = getuser(page)
           if (li) {
             $('#user-box .list-ul').html(li)
+            $('#user-box .list-selecred .userName').each((i,v) => {
+            	$(`input[value=${$(v).text().trim()}]`)[0]?$(`input[value = ${$(v).text()}]`)[0].checked = true :''
+           })
           } else {
             app.alert('已经是最后一页了')
             page --
@@ -1130,7 +1188,7 @@ var design = {
       $('#userOrg').click(function () {
         let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
         let defaultHtml = `<div id="organize-box">
-          <div class="user-content">
+          <div class="organize-model">
             <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
             <div class="ul-box">
               <ul class="list-selecred">
@@ -1141,18 +1199,11 @@ var design = {
               <div class="am-tabs" data-am-tabs>
                 <ul class="am-tabs-nav am-nav am-nav-tabs">
                   <li class="am-active"><a href="#tab1">部门</a></li>
-                  <li><a href="#tab2">动态产数</a></li>
+                  <li><a href="#tab2">动态参数</a></li>
                 </ul>
             
                 <div class="am-tabs-bd am-tabs-bd-ofv" style="height:309px">
                   <div class="am-tab-panel am-fade am-in am-active" id="tab1">
-                    <div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
-                    <ul>
-                      <li class="org-item">
-                        <i class="am-icon-plus goOrg"></i>
-                        <div><span>大数据</span></div>
-                      </li>
-                    </ul>
                   </div>
                   <div class="am-tab-panel am-fade" id="tab2">
                     <ul>
@@ -1181,22 +1232,22 @@ var design = {
         $defaultHtml.find('.list-selecred').html(datali)
         let resData = {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"}
         
-        let resDataChild= ''
-        // [
-        //   {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
-        //   {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
-        //   {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"},
-        //   {"orgID":"15","enterpriseID":"1267","orgCode":"100110031002","orgName":"g012"},
-        //   {"orgID":"16","enterpriseID":"1267","orgCode":"100110031003","orgName":"g013"},
-        //   {"orgID":"14","enterpriseID":"1267","orgCode":"1001100310011001","orgName":"g0111"}
-        // ]
+        let resDataChild= [
+          {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
+          {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
+          {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"},
+          {"orgID":"15","enterpriseID":"1267","orgCode":"100110031002","orgName":"g012"},
+          {"orgID":"16","enterpriseID":"1267","orgCode":"100110031003","orgName":"g013"},
+          {"orgID":"14","enterpriseID":"1267","orgCode":"1001100310011001","orgName":"g0111"}
+        ]
         function getorg() {
-          // $.ajax({
-          //   url:url,
-          //   type: 'POST',
-          //   data: '',
-          //   success: function (res) {
-          //     resData = res.value
+           $.ajax({
+        	 //查询所有根组织机构信息
+             url:'/ddio/data/rootOrg.do',
+             type: 'POST',
+             data: '',
+             success: function (res) {
+               resData = res.value
                  let orgul = `<ul>`
                   orgul += `<li class="org-item">
                     <i class="am-icon-plus goOrg"></i>
@@ -1205,18 +1256,19 @@ var design = {
                  orgul += `</ul>`
                  sessionStorage.setItem('orgPageArr',JSON.stringify([resData]))
                 $('#tab1').html(orgul)
-          //   }
-          // })
+             }
+           })
         }
-        function getorgChild( i) {
-          let _this = this
-          // $.ajax({
-          //   url:url,
-          //   type: 'POST',
-          //   data: '',
-          //   success: function (res) {
-          //     resDataChild = res.value
-                if (!resDataChild) {
+        function getorgChild( orgId) {
+	   let _this = this
+           $.ajax({
+        	  //根据ID查询组织机构
+             url:'/ddio/data/orgList.do',
+             type: 'POST',
+             data: {id: orgId},
+             success: function (res) {
+               resDataChild = res.value
+                if (!resDataChild.length) {
                   $(_this).attr({'class': 'am-icon-minus'})
                   return
                 }
@@ -1225,7 +1277,7 @@ var design = {
                 resDataChild.forEach((v) => {
                   Ul += `<li class="org-item">
                     <i class="am-icon-plus goOrg"></i>
-                    <div data-value=${JSON.stringify(v)}><span>${v.orgName+ i}</span></div>
+                    <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
                   </li>`
                 })
                 Ul += '</ul>'
@@ -1233,8 +1285,8 @@ var design = {
                 orgPageArr.push(resDataChild)
                 sessionStorage.orgPageArr = JSON.stringify(orgPageArr)
                 $('#tab1').html(Ul)
-          //   }
-          // })
+             }
+           })
         }
         
         $defaultHtml.on('click', '#tab1 .org-item div, #tab2 li', function () {
@@ -1255,19 +1307,9 @@ var design = {
         // $defaultHtml.find('#tab2 li').click(function () {
 
         // })
-        let i= 0
         $defaultHtml.find('#tab1').on('click', '.goOrg', function () {
-          i++
-          // let orghtmlarr = JSON.parse($('#tab1').find('.org-back').attr('data-backHtml')|| "[]") 
-          // $('#tab1').find('.org-back').attr('data-backHtml', '')
-          // let orghtml = $('#tab1').html()
-          // if (orghtmlarr&&  orghtmlarr.length) {
-          //   orghtmlarr.push(orghtml)
-          // } else {
-          //   orghtmlarr = []
-          //   orghtmlarr.push(orghtml)
-          // }
-          getorgChild.call(this, i)
+          let orgId = JSON.parse($(this).parent().find('div').attr('data-value')).orgID
+          getorgChild.call(this, orgId)
         })
         $defaultHtml.find('#tab1').on('click', '.org-back', function () {
           let orghtmlarr = JSON.parse(sessionStorage.orgPageArr)
@@ -1317,6 +1359,8 @@ var design = {
       let textData = JSON.parse($(this).attr('data-text'))
       let html = setData.underline()+
       setData.textTh(textData.option.reg, textData.option.err)+
+      setData.underline()+
+      setData.inputLength(id)+
       setData.underline()+
       setData.textInput(id, 'data-text')+
       setData.underline()+

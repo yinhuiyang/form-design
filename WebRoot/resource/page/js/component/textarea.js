@@ -14,6 +14,8 @@ Object.assign(design, {
     name: '0textarea',
     subhead: '',
     grid: '12',
+    maxLangth: '',
+    minLangth:'',
     data: {
       value: '',
       ifWrite: false,
@@ -27,7 +29,7 @@ Object.assign(design, {
       this.textareaData.name = `${parseInt(this.textareaData.name)+1}textarea`
       page = this.textareaData
     }
-    let html = $(this.textareaHtml).attr({'id': page.id, 'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite,ifShow:page.data.ifShow,ifEditor:page.data.ifEditor})})
+    let html = $(this.textareaHtml).attr({'id': page.id, 'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite,ifShow:page.data.ifShow,ifEditor:page.data.ifEditor, maxLangth: page.maxLangth, minLangth: page.minLangth})})
     html.find('.title span').html(page.title)
     html.find('.subhead').html(page.subhead)
     html.find('label span').html(page.title)

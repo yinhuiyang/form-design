@@ -14,6 +14,8 @@ Object.assign(design, {
     name: '0text',
     subhead: '',
     grid: '12',
+    maxLangth: '',
+    minLangth:'',
     data:{
       option: {reg: '', err: ''},
       value: '',
@@ -29,7 +31,7 @@ Object.assign(design, {
       page = this.textData
     }
     let html = $(this.textHtml).attr('id', page.id)
-    html.attr({'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor}), 'data-option': JSON.stringify(page.data.option)})
+    html.attr({'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor, maxLangth: page.maxLangth, minLangth: page.minLangth}), 'data-option': JSON.stringify(page.data.option)})
     html.find('.subhead').html(page.subhead)
     html.find('label span').html(page.title)
     if (page.data.ifWrite){

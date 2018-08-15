@@ -14,6 +14,21 @@ var setData = {
       }
     return titleHtml
   },
+  background () {
+    let html =`<div class="setElementTitle">
+      <span>标题背景色</span>
+    </div>
+    <select id="backgroundFrom" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+      <option value="#f5f5f5" selected>灰色</option>
+      <option value="#2196F3">蓝色</option>
+      <option value="#00BCD4">青色</option>
+      <option value="#4CAF50">绿色</option>
+      <option value="#CDDC39">青柠</option>
+      <option value="#FF9800">橙色</option>
+      <option value="#F44336">红色</option>
+    </select>`
+    return html
+  },
   titleTh (id,value) {
     let titleHtml = `<div class="setElementTitle">
         <span>标题</span>
@@ -133,23 +148,89 @@ var setData = {
       }
     return subhead
   },
+  inputLength(id){
+    let condition = {}
+    if($(`#${id}`).attr('data-xhtml') == 'table') {
+      condition = JSON.parse($('#'+id).find('th.active').attr('data-text'))
+    }else {
+      condition= JSON.parse($(`#${id}`).attr('data-xdata'))
+    }
+    
+    let html = `<div class="setElementTitle">
+      <span>字符长度</span>
+    </div>
+    <div>
+      <div class="am-form-group custom-group langth-group">
+        <span style="width: 100px;">最大长度:</span><input id='max' step="1" min='0' oninput="${maxValue};maxValue.call(this, '${id}')" type="number" value="${condition.maxLangth}"  class="am-form-field custom">
+      </div>
+      <div class="am-form-group custom-group langth-group">
+        <span style="width: 100px;">最小长度:</span><input id='min' step="1" min='0' oninput="${minValue};minValue.call(this, '${id}')" type="number" value="${condition.minLangth}" class="am-form-field custom">
+      </div>
+    </div>`
+    function maxValue (id) {
+      let condition = {}
+      if($(`#${id}`).attr('data-xhtml') == 'table') {
+        condition = JSON.parse($('#'+id).find('th.active').attr('data-text'))
+      }else {
+        condition= JSON.parse($(`#${id}`).attr('data-xdata'))
+      }
+      if (condition.minLangth > parseInt($(this).val()) ){
+        if (!$(this).parent().parent().find('.am-alert')[0]) {
+          $(this).parent().parent().append('<div class=\'am-alert am-alert-danger\' style=\' display: block;\'>最小长度不能大于最大长度</div>')
+        }
+      } else {
+        condition.maxLangth = parseInt($(this).val())
+        $(`#${id}`).attr('data-xhtml') == 'table'? $('#'+id).find('th.active').attr('data-text', JSON.stringify(condition)):$(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        $(this).parent().parent().find('.am-alert').remove()
+        $('#default').attr('maxlength', $(this).val())
+      }
+    }
+    function minValue (id) {
+      let condition = {}
+      if($(`#${id}`).attr('data-xhtml') == 'table') {
+        condition = JSON.parse($('#'+id).find('th.active').attr('data-text'))
+      }else {
+        condition= JSON.parse($(`#${id}`).attr('data-xdata'))
+      }
+      if (condition.maxLangth < parseInt($(this).val()) ){
+        if (!$(this).parent().parent().find('.am-alert')[0]) {
+          $(this).parent().parent().append(`<div class='am-alert am-alert-danger' style='display: block;'>最小长度不能大于最大长度</div>`)
+        }
+      } else {
+        condition.minLangth = parseInt($(this).val())
+        $(`#${id}`).attr('data-xhtml') == 'table'? $('#'+id).find('th.active').attr('data-text', JSON.stringify(condition)):$(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        $(this).parent().parent().find('.am-alert').remove()
+      }
+    }
+    return html
+  },
   textInput (id, type) {
     let inputHtml = `<div class="setElementTitle">
         <span>默认值</span>
       </div>
-      <div class="am-form-group custom-group">`
+      <div>
+        <div class="am-form-group custom-group">`
       if ($(`#${id}`).attr('data-xhtml') == 'textarea') {
-        inputHtml += `<textarea  id="default" rows="2" oninput="${iptvalue};iptvalue.call(this, '${id}')"  placeholder="" class="am-form-field">${$('#'+id).find('.input').val()}</textarea>`
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        inputHtml += `<textarea  id="default" rows="2" maxlength="${condition.maxLangth}" onchange="${iptvalue};iptvalue.call(this, '${id}')" oninput="${iptvalue};iptvalue.call(this, '${id}')"  placeholder="" class="am-form-field">${$('#'+id).find('.input').val()}</textarea>`
       }else if($(`#${id}`).attr('data-xhtml') == 'datetimepicker'){
         inputHtml += `<input type="text" id="default" class="am-form-field custom datetimepicker" onchange="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
         +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
       } else if ($(`#${id}`).attr('data-xhtml') == 'table') {
-        inputHtml += `<input type="text" id="default" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${(JSON.parse($('#'+id).find('th.active').attr(type))).value}"/>`
-        +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
+        if (type == 'data-text') {
+          condition = JSON.parse($('#'+id).find('th.active').attr('data-text'))
+          inputHtml += `<input type="text" id="default" maxlength="${condition.maxLangth}" class="am-form-field custom" onchange="${iptvalue};iptvalue.call(this, '${id}')" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${(JSON.parse($('#'+id).find('th.active').attr(type))).value}"/>`
+          +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
+        } else {
+          inputHtml += `<input type="text" id="default" onchange="${iptvalue};iptvalue.call(this, '${id}')" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${(JSON.parse($('#'+id).find('th.active').attr(type))).value}"/>`
+          +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
+        }
       }else{
-        inputHtml += `<input type="text" id="default" class="am-form-field custom" onchange="${iptvalue};iptvalue.call(this, '${id}')"  oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        inputHtml += `<input type="text" id="default" maxlength="${condition.maxLangth|| ''}" class="am-form-field custom" onchange="${iptvalue};iptvalue.call(this, '${id}')"  oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
         +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
       }
+    inputHtml += '</div>'
     inputHtml += `</div>
       <div class="cfg_split"></div>
       <div class="setElementTitle">
@@ -168,15 +249,32 @@ var setData = {
       if($(`#${id}`).attr('data-xhtml') == 'table') {
         if ($('#'+id).find('th.active').attr('data-type') == 'text') {
           let data = JSON.parse($('#'+id).find('th.active').attr('data-text'))
-          data.value = $(this).val()
-          $('#'+id).find('th.active').attr('data-text', JSON.stringify(data))
+          if($(this).val().length < data.minLangth && $(this).val().length != 0) {
+            $(this).parent().parent().find('.am-alert')[0]?$(this).parent().parent().find('.am-alert').remove(): $(this).parent().parent().append('<div class=\'am-alert am-alert-danger\' style=\' display: block;\'>最少输入'+data.minLangth+'个字符</div>')
+            $(this).parent().parent().find('.am-alert')[0]? '' : $(this).parent().parent().append('<div class=\'am-alert am-alert-danger\' style=\' display: block;\'>最少输入'+data.minLangth+'个字符</div>')
+          } else {
+            $(this).parent().parent().find('.am-alert').remove()
+            data.value = $(this).val()
+            $('#'+id).find('th.active').attr('data-text', JSON.stringify(data))
+          }
         } else {
           let data = JSON.parse($('#'+id).find('th.active').attr('data-datetimepicker'))
           data.value = $(this).val()
           $('#'+id).find('th.active').attr('data-datetimepicker', JSON.stringify(data))
         }
       } else {
-        $(`#${id}`).find('.input').val($(this).val())
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        if ($(`#${id}`).attr('data-xhtml') == 'text' || $(`#${id}`).attr('data-xhtml') == 'textarea'){
+          if($(this).val().length < condition.minLangth && $(this).val().length != 0) {
+            $(this).parent().parent().find('.am-alert')[0]?$(this).parent().parent().find('.am-alert').remove(): $(this).parent().parent().append('<div class=\'am-alert am-alert-danger\' style=\' display: block;\'>最少输入'+condition.minLangth+'个字符</div>')
+            $(this).parent().parent().find('.am-alert')[0]? '' : $(this).parent().parent().append('<div class=\'am-alert am-alert-danger\' style=\' display: block;\'>最少输入'+condition.minLangth+'个字符</div>')
+          } else {
+            $(this).parent().parent().find('.am-alert').remove()
+            $(`#${id}`).find('.input').val($(this).val())
+          }
+        } else {
+          $(`#${id}`).find('.input').val($(this).val())
+        }
       }
     }
     function iptPlaceholder (id) {
@@ -229,7 +327,8 @@ var setData = {
           val = $(this).parent().find(".default-value").text()
         }
         $("#default").val(val)
-        $(`#${id}`).find("input").val(val)
+        // $(`#${id}`).find("input").val(val)
+        $("#default").change()
         $(this).parent().parent().parent().parent().parent().modal("close")
       })
       $("body").append($html)
@@ -249,6 +348,9 @@ var setData = {
             <option value="postalcode">邮政编码</option>
             <option value="IDnumber" >身份号码</option>
             <option value="email" >邮箱</option>
+            <option value="number" >数字</option>
+            <option value="positiveNumber" >正数</option>
+            <option value="integer" >正整数</option>
         </select>
         </div>
         <div class="am-form-group" id='textBox'>
@@ -271,6 +373,9 @@ var setData = {
             <option value="postalcode">邮政编码</option>
             <option value="IDnumber" >身份号码</option>
             <option value="email" >邮箱</option>
+            <option value="number" >数字</option>
+            <option value="positiveNumber" >正数</option>
+            <option value="integer" >正整数</option>
         </select>
         </div>
         <div class="am-form-group" id='textBox'>

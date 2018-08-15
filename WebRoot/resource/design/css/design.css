@@ -547,7 +547,7 @@ h3{
   align-items: center;
   justify-content: center;
 }
-.user-content{
+.user-model, .organize-model{
 	background-color: #fff;
 	width: 610px;
 }
@@ -719,4 +719,10 @@ h3{
 }
 .org-item:hover,#tab2 li:hover{
 	background: #eee;
+}
+.langth-group{
+	margin-bottom: 5px;
+}
+.langth-group input {
+	margin: 0;
 }

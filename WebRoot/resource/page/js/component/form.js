@@ -4,9 +4,10 @@ Object.assign(design, {
     title: '这是新面板',
     id: '1000',
     content: [],
-    name: '1form'
+    name: '1form',
+    background: '#f5f5f5'
   },
-  panelHtml: `<div class="group" data-xhtml="form">
+  panelHtml: `<div class="group" data-xhtml="form" data-titleBackground = "">
             <div class="am-panel am-panel-default nameValue" id='' ">
             <header class="am-panel-hd">
               <h3 class="am-panel-title " id="title"><span></span></h3>
@@ -24,8 +25,13 @@ Object.assign(design, {
     }
     let html = $(this.panelHtml).attr('id', page.id)
     html.find('.delete').hide()
+    html.attr('data-titleBackground', page.background)
     html.find('h3 span').html(page.title)
     html.find('.nameValue').attr('name', page.name)
+    html.find('.am-panel-hd').css({"background": page.background, 'color': '#fff'})
+    if (page.background == '#f5f5f5') {
+      html.find('.am-panel-hd').css({'color': '#444'})
+    }
     return html[0]
   }
 })
