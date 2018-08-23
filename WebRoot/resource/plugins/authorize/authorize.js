@@ -92,12 +92,21 @@
     let elattribute = ''
     var data = this.formData.data || {}
     var attribute = this.formData.attribute || {}
-    form.panels.forEach(element => { 
-      eldata =  data[element.name] || {}
-      elattribute =  attribute[element.name] || {}
+    form.panels.forEach(element => {
+      if (element.name == '') {
+        eldata = {}
+        element.content.forEach(el => {
+          data[el.name]? eldata[el.name] = data[el.name] : ''
+          attribute[el.name]? elattribute[el.name] =  attribute[el.name] : ''
+        })
+      } else {
+        eldata =  data[element.name] || {}
+        elattribute =  attribute[element.name] || {}
+      }
+      
       let $formHtml = this.uphtml[element.type](element, eldata, elattribute)
       if (element.type !== 'table') {
-        $formHtml = this.addChild($formHtml,element)
+        $formHtml = this.addChild($formHtml,element, eldata, elattribute)
       }
       // $formHtml.find('fieldset').html(childHtml)
       this.addHTml($html.find('.form').attr('id'), $formHtml)
@@ -197,15 +206,8 @@
   addHTml (id,html) {
     $(`#${id}`).append(html)
   },
-  addChild ($formHtml,elem) {
-    let ChildHtml = ''
-    var data = this.formData.data || {}
-    var attribute = this.formData.attribute || {}
-    let eldata =  ''
-    let elattribute = ''
+  addChild ($formHtml,elem, eldata, elattribute) {
     let grid = 0
-    elattribute =  attribute[elem.name] || {}
-    eldata =  data[elem.name] || {}
     let gridHtml = `<div class="am-g"></div>`
     let $gridHtml = $(gridHtml)
     elem.content.forEach((value, i) => {
@@ -244,6 +246,7 @@
       if ($(elem).attr('data-xhtml') == 'table') {
         data[$(elem).attr('name')] =_this.getdataTable(elem)
       }else {
+        !$(elem).attr('name') ? Object.assign(data, _this.getdatachild(elem)) :
         data[$(elem).attr('name')] = _this.getdatachild(elem)
       }
     })
@@ -1686,14 +1689,14 @@ authorize.user={
       ]
       function getuser (page) {
         let li = ''
-      //  $.ajax({
-      // //分页查询用户信息
-      //    url: "/ddio/data/getUserByPage.do",
-      //    type: 'POST',
-      //    data: {pageIndex:data,pageSize: 3},
-      //    async: false, 
-      //    success: function (res) {
-      //      resData = res.value.list
+       $.ajax({
+      //分页查询用户信息
+         url: "/ddio/data/getUserByPage.do",
+         type: 'POST',
+         data: {pageIndex:data,pageSize: 3},
+         async: false, 
+         success: function (res) {
+           resData = res.value.list
           let liItem = ``
           if(resData.length == 0) {
             return ''
@@ -1707,20 +1710,20 @@ authorize.user={
           })
           let $liItem = $(liItem)
           li = $liItem
-      //    }
-      //  })
+         }
+       })
        return li
       }
       function getSearch(name) {
         let li = ''
-        // $.ajax({
-        // //根据用户名查询用户信息
-        //   url:'/ddio/data/userByName.do',
-        //   type: 'POST',
-        //   data: {name: data},
-        //   async: false,
-        //   success: function (res) {
-        //     resData = res.value
+        $.ajax({
+        //根据用户名查询用户信息
+          url:'/ddio/data/userByName.do',
+          type: 'POST',
+          data: {name: data},
+          async: false,
+          success: function (res) {
+            resData = res.value
             let liItem = ''
             if(resData.length == 0) {
               return ''
@@ -1732,8 +1735,8 @@ authorize.user={
             </li>`
             })
             li = liItem
-        //   }
-        // })
+          }
+        })
         return li
     }
     $defaultHtml.find('.list-ul').append(getuser(1))
@@ -1955,14 +1958,14 @@ authorize.organize={
     ]
     function getorg() {
       let ul = ''
-      // $.ajax({
-      // //查询所有根组织机构信息
-      //   url:'/ddio/data/rootOrg.do',
-      //   type: 'POST',
-      //   data: '',
-      //   async: false,
-      //   success: function (res) {
-      //     resData = res.value
+      $.ajax({
+      //查询所有根组织机构信息
+        url:'/ddio/data/rootOrg.do',
+        type: 'POST',
+        data: '',
+        async: false,
+        success: function (res) {
+          resData = res.value
             let orgul = `<ul>`
              orgul += `<li class="org-item">
                <i class="am-icon-plus goOrg"></i>
@@ -1971,19 +1974,19 @@ authorize.organize={
             orgul += `</ul>`
             sessionStorage.setItem('orgPageArr',JSON.stringify([resData]))
             ul = orgul
-      //   }
-      // })
+        }
+      })
       return ul
     }
     function getorgChild(orgId) {
       let _this = this
-      // $.ajax({
-      //   //根据ID查询组织机构
-      //   url:'/ddio/data/orgList.do',
-      //   type: 'POST',
-      //   data: {id: orgId},
-      //   success: function (res) {
-      //     resDataChild = res.value
+      $.ajax({
+        //根据ID查询组织机构
+        url:'/ddio/data/orgList.do',
+        type: 'POST',
+        data: {id: orgId},
+        success: function (res) {
+          resDataChild = res.value
             if (!resDataChild.length) {
               $(_this).attr({'class': 'am-icon-minus'})
               return
@@ -2001,8 +2004,8 @@ authorize.organize={
             orgPageArr.push(resDataChild)
             sessionStorage.orgPageArr = JSON.stringify(orgPageArr)
             $('#tab1').html(Ul)
-      //   }
-      // })
+        }
+      })
     }
     $defaultHtml.find('#tab1').html(getorg())
     $defaultHtml.on('click', '#tab1 .org-item div', function () {

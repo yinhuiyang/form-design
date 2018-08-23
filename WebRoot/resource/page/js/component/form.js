@@ -4,7 +4,7 @@ Object.assign(design, {
     title: '这是新面板',
     id: '1000',
     content: [],
-    name: '1form',
+    name: '',
     background: '#f5f5f5'
   },
   panelHtml: `<div class="group" data-xhtml="form" data-titleBackground = "">
@@ -20,7 +20,7 @@ Object.assign(design, {
   panelLoad (page) {
     if (!page.id) {
       this.paneldata.id = app.getNumber()
-      this.paneldata.name = `${parseInt(this.paneldata.name)+1}form`
+      // this.paneldata.name = `${parseInt(this.paneldata.name)+1}form`
       page =this.paneldata 
     }
     let html = $(this.panelHtml).attr('id', page.id)

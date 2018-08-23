@@ -81,7 +81,7 @@ Object.assign(design, {
           'data-text': JSON.stringify(this.tableType.text), 
           'data-select': JSON.stringify(this.tableType.select), 
           'data-datetimepicker': JSON.stringify(this.tableType.datetimepicker), 
-          'name': i+'th',
+          'name': i+'item',
           'data-type': ''
         })
         $html.find('tr').append($thHtml)

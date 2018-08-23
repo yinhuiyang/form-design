@@ -8,6 +8,7 @@ var design = {
   },
   form:'',
   formTitle:'',
+  panelName: [],
   textFormat: {
     phone: '^((\\(\\d{2,3}\\))|(\\d{3}\\-))?1\\d{10}$',
     telephone: '^(0[0-9]{2,3}\\-)?([2-9][0-9]{6,7})+(\\-[0-9]{1,4})?$',
@@ -187,9 +188,8 @@ var design = {
   getFrom () {
     let from ={panels:[]}
     let _this = this
-
     var checkPanelName = {}
-
+    var panelName = []
     $('.view-content').children('.group').each(function(i, elem) {
 
       from.panels[i] = {}
@@ -198,21 +198,40 @@ var design = {
       from.panels[i].type = $(this).attr('data-xhtml')
       from.panels[i].name = $(elem).children('.nameValue').attr('name')
       from.panels[i].background = $(this).attr('data-titleBackground')
-      if(app.isEmpty(from.panels[i].name) 
-        || app.isEmpty(from.panels[i].title)){
-        app.alert("布局组件存在标题或字段名称为空")
+      // if(app.isEmpty(from.panels[i].name) 
+      //   || app.isEmpty(from.panels[i].title)){
+      //   app.alert("布局组件存在标题或字段名称为空")
+      //   $(`#${from.panels[i].id}`).click()
+      //   from  = false
+      //   return false
+      // }
+      if (panelName.length > 1){
+        app.alert("布局组件字段名称只能有一个为空")
         $(`#${from.panels[i].id}`).click()
         from  = false
         return false
+      } else if (from.panels[i].name == '') {
+        panelName.push(from.panels[i].name)
       }
-
-      if(app.isEmpty(checkPanelName[from.panels[i].name])){
+      
+      
+      if(app.isEmpty(checkPanelName[from.panels[i].name]) ){
         checkPanelName[from.panels[i].name]=from.panels[i].title
-      }else{
+      }else if (from.panels[i].name !== ''){
         app.alert(from.panels[i].title+"：其字段名称与其它布局组件字段重名")
         $(`#${from.panels[i].id}`).click()
         from  = false
         return false
+      }
+      if (_this.panelName.indexOf(from.panels[i].name) > -1) {
+        app.alert(from.panels[i].title+"：其字段名称与其name为空的布局组件中的基础组件重名")
+        $(`#${from.panels[i].id}`).click()
+        _this.panelName = []
+        from  = false
+        return false
+      }
+      if (from.panels[i].name !== '') {
+        _this.panelName.push(from.panels[i].name)
       }
       let content = ''
       if ($(this).attr('data-xhtml') == 'table') {
@@ -316,12 +335,21 @@ var design = {
       if(app.isEmpty(checkElementName[content[i].name])){
         checkElementName[content[i].name]=content[i].title
       }else{
-        app.alert(content[i].title+"：其字段名称与该布局组件中的其它基础组件字段重名")
+        app.alert(content[i].title+"：其字段名称与该布局组件中的其它基础组件重名")
         $(`#${content[i].id}`).click()
         content  = false
         return false
       }
-
+      if (_this.panelName.indexOf(content[i].name) > -1 ) {
+        app.alert(content[i].title+"：其字段名称其他布局组件重名")
+        $(`#${content[i].id}`).click()
+        _this.panelName = []
+        content  = false
+        return false
+      }
+      if (!$(elem).children('.nameValue').attr('name') && _this.panelName.indexOf(content[i].name) == -1) {
+        _this.panelName.push(content[i].name)
+      }
       content[i].subhead = $(el).find('.subhead').text()
       content[i].data = {
         ifWrite: ifField.ifWrite,
