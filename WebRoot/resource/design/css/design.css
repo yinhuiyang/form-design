@@ -726,3 +726,42 @@ h3{
 .langth-group input {
 	margin: 0;
 }
+.am-form-row{
+	display: flex;
+  align-items: center;
+}
+.am-form-row label{
+	text-align: center;
+	padding: 0;
+	margin: 0;
+}
+.am-form-row2{
+	display: flex;
+}
+.am-form-row2 label{
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	padding-top: 7px;
+}
+.am-form-input9{
+	width: 75%;
+}
+.am-form-input8{
+	width: 66.66666667%;
+}
+.am-form-input6{
+	width: 50%;
+}
+.label{
+	width: 100%;
+}
+.am-form-row3{
+	display: flex;
+}
+.am-form-row3 h3 {
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	padding-top: 7px;
+}

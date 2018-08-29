@@ -38,6 +38,6 @@ Object.assign(design, {
     $html.find('.title span').text(page.title)
     $html.find('.nameValue').attr( 'name', page.name)
     $html.addClass(`am-u-sm-${page.grid?page.grid: 12}`)
-    return $html
+    return $html[0].outerHTML
   }
 })

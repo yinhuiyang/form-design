@@ -180,6 +180,7 @@ var design = {
         }
       }
       var authorizeObj  = new authorizeApi(formList) // 绑定json
+      authorizeObj.preview_flag = true
       authorizeObj.loadbind('#formList')
       console.log(formTmp)
       
@@ -245,6 +246,7 @@ var design = {
       }
       from.panels[i].content =content
     })
+    _this.panelName = []
     return from
   },
   getElementTable (elem){
@@ -318,6 +320,7 @@ var design = {
       content[i].title = $(el).find('.title span').text()
       content[i].type = $(el).attr('data-xhtml')
       content[i].name = $(el).find('.nameValue').attr('name')
+      content[i].ComponentType = ifField.ComponentType
       content[i].grid = !$(el).attr('class').replace(/[^0-9]/ig,"") ? '12' : $(el).attr('class').replace(/[^0-9]/ig,"")
       if ($(el).attr('data-xhtml') == 'text' || $(el).attr('data-xhtml') == 'textarea') {
         content[i].maxLangth = ifField.maxLangth
@@ -341,7 +344,7 @@ var design = {
         return false
       }
       if (_this.panelName.indexOf(content[i].name) > -1 ) {
-        app.alert(content[i].title+"：其字段名称其他布局组件重名")
+        app.alert(content[i].title+"：其字段名称与其他布局组件重名")
         $(`#${content[i].id}`).click()
         _this.panelName = []
         content  = false
@@ -548,7 +551,7 @@ var design = {
         $('#'+id).attr('data-titleBackground', $(this).val())
       })
     },
-    radio: function () {
+    radio: function (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'单选', $(`#${id}`).find('.title span').text()) +
@@ -557,12 +560,33 @@ var design = {
                 setData.underline()+
                 setData.grid(id)+
                 setData.underline()+
+                setData.ComponentType()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
                 setData.radio(id)+
                 setData.underline()+
                 setData.ifField(id, condition)
       $('.set-content').html(html)
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.radio(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
       $('#selecd-ul').on('click', '.minus',function () {
         $(this).parent().remove()
         radioData()
@@ -610,7 +634,7 @@ var design = {
         $(`#${id} .label`).html(label)
       }
     },
-    text () {
+    text (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'输入框', $(`#${id}`).find('.title span').text()) +
@@ -619,6 +643,7 @@ var design = {
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
+      setData.ComponentType()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.text(id)+
@@ -629,6 +654,11 @@ var design = {
       setData.underline()+
       setData.ifField(id, condition)
       $('.set-content').html(html)
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
       let reg = (JSON.parse($('#'+id).attr('data-option'))).reg
       for (let k in design.textFormat) {
         if (design.textFormat[k] == reg) {
@@ -643,6 +673,21 @@ var design = {
       if (reg && optiotype) {
         $('#textBox').hide()
       }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.text(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
       $('#text-option').change(function (){
         if($(this).val() === 'text') {
           $('#textBox').show()
@@ -668,7 +713,7 @@ var design = {
         $(`#${id}`).attr('data-option', JSON.stringify(option))
       })
     },
-    textarea () {
+    textarea (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'输入框', $(`#${id}`).find('.title span').text()) +
@@ -677,6 +722,7 @@ var design = {
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
+      setData.ComponentType()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.inputLength(id)+
@@ -686,10 +732,29 @@ var design = {
       setData.ifField(id, condition)
       $('.set-content').html(html)
 
-
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.textarea(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
 
     },
-    datetimepicker () {
+    datetimepicker (_this) {
       $('#default').datetimepicker('destroy')
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
@@ -699,6 +764,7 @@ var design = {
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
+      setData.ComponentType()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.datatimeFormat(id)+
@@ -708,7 +774,26 @@ var design = {
       setData.ifField(id, condition)
       
       $('.set-content').html(html)
-
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.datetimepicker(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
       let lang = (JSON.parse($('#'+id).attr('data-option'))).lang
       $('#lang').val(lang)
 
@@ -794,7 +879,7 @@ var design = {
       })
 
       design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
-    },file () {
+    },file (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'附件', $(`#${id}`).find('.title span').text()) +
@@ -803,12 +888,33 @@ var design = {
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
+      setData.ComponentType()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.ifField(id, condition)
       $('.set-content').html(html)
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.file(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
 
-    },image () {
+    },image (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'图片', $(`#${id}`).find('.title span').text()) +
@@ -817,14 +923,34 @@ var design = {
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
+      setData.ComponentType()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.ifField(id, condition)
       $('.set-content').html(html)
-
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.image(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
     },
 
-    checkbox: function () {
+    checkbox: function (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'多选', $(`#${id}`).find('.title span').text()) +
@@ -833,12 +959,33 @@ var design = {
                 setData.underline()+
                 setData.grid(id)+
                 setData.underline()+
+                setData.ComponentType()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
                 setData.checkbox(id)+
                 setData.underline()+
                 setData.ifField(id, condition)
       $('.set-content').html(html)
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.checkbox(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
       $('#selecd-ul').on('click', '.minus',function () {
         $(this).parent().remove()
         checkData()
@@ -888,7 +1035,7 @@ var design = {
         $(`#${id} .label`).html(label)
       } 
     },
-    select: function () {
+    select: function (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'下拉', $(`#${id}`).find('.title span').text()) +
@@ -897,12 +1044,33 @@ var design = {
                 setData.underline()+
                 setData.grid(id)+
                 setData.underline()+
+                setData.ComponentType()+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
                 setData.select(id)+
                 setData.underline()+
                 setData.ifField(id, condition)
       $('.set-content').html(html)
+      if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+        $("#Help").hide()
+      } else {
+        $("#Help").show()
+      }
+      $('#ComponentType').val(condition.ComponentType)
+      $('#ComponentType').change(function () {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.ComponentType = $(this).val()
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowsAndOneColumn') {
+          $("#Help").hide()
+        } else {
+          $("#Help").show()
+        }
+        let page = _this.ComponentTypeChange(id)
+        let html = _this.updata.select(page)
+        $('#'+ id).replaceWith(html)
+        $("#"+id).click()
+      })
       $('#selecd-ul').on('click', '.minus',function () {
         $(this).parent().remove()
         selectData()
@@ -1575,12 +1743,39 @@ var design = {
       })
     }
   },
+  ComponentTypeChange (id) {
+      let el = '#' + id
+      let content = {}
+      let ifField = JSON.parse($(el).attr('data-xdata'))
+      content.id = id
+      content.title = $(el).find('.title span').text()
+      content.type = $(el).attr('data-xhtml')
+      content.name = $(el).find('.nameValue').attr('name')
+      content.grid = !$(el).attr('class').replace(/[^0-9]/ig,"") ? '12' : $(el).attr('class').replace(/[^0-9]/ig,"")
+      content.subhead = $(el).find('.subhead').text()
+      content.ComponentType = ifField.ComponentType
+      content.data = {
+        ifWrite: ifField.ifWrite,
+        ifShow: ifField.ifShow,
+        ifEditor: ifField.ifEditor
+      }
+      if ($(el).attr('data-xhtml') == 'text' || $(el).attr('data-xhtml') == 'textarea') {
+        content.maxLangth = ifField.maxLangth
+        content.minLangth = ifField.minLangth
+      }
+      let obj = this.getElementData[$(el).attr('data-xhtml')].call(this, el)
+      if (obj.data) {
+        obj.data = Object.assign(content.data, obj.data)
+      }
+      Object.assign(content, obj)
+      return content
+  },
   designSet () {
     var _this = this  
    
     $('.design-view').on('click','.group',function (e) {
       e.stopPropagation()
-      _this.setdata[$(this).attr('data-xhtml')].call(this)
+      _this.setdata[$(this).attr('data-xhtml')].call(this, _this)
       $('.group').removeClass('active')
       $('.th-item').removeClass('active')
       $(this).addClass('active')

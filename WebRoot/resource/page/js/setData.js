@@ -139,10 +139,13 @@ var setData = {
     return gridHtml
   },
   subhead (id, value) {
-    let subhead = `<div class="setElementTitle">
-        <span>描述信息</span>
-      </div>
-      <textarea  rows="2" oninput="${fn};fn.call(this, '${id}')">${value}</textarea>`
+    let subhead = `<div id="Help">
+        <div class="cfg_split"></div>
+        <div class="setElementTitle">
+          <span>描述信息</span>
+        </div>
+        <textarea  rows="2" oninput="${fn};fn.call(this, '${id}')">${value}</textarea>
+      </div>`
        function fn(id) {
         $(`#${id}`).find('.subhead').text($(this).val())
       }
@@ -202,6 +205,21 @@ var setData = {
         $(this).parent().parent().find('.am-alert').remove()
       }
     }
+    return html
+  },
+  ComponentType () {
+    let html = `<div class="setElementTitle">
+      <span>组件类型</span>
+    </div>
+    <div>
+    <select id="ComponentType" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+        <option value="ThreeRowsAndOneColumn" selected>三行一列</option>
+        <option value="OneRowAndTwoColumns" >一行两列</option></option>
+        <option value="TwoRowAndTwoColumns">两行两列（帮助信息在下）</option>
+        <option value="TwoRowAndTwoColumnsSub">两行两列（帮助信息和输入框在下）</option>
+        <option value="OneRowAndThreeColumns">一行三列（有帮助信息）</option>
+        <option value="TwoRowsAndOneColumn" >两行一列</option>
+    </select>`
     return html
   },
   textInput (id, type) {

@@ -6,6 +6,44 @@ Object.assign(design, {
     </div>
     <div class="delete"><i class="am-icon-trash"></i></div>
     </div>`,
+  textHtml1: `<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row">
+    <label for="doc-vld-name " class="title am-u-sm-3"><span></span>:</label>
+    <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue am-u-sm-9 am-form-input9" pattern="" disabled/>
+  </div>
+  <div class="delete"><i class="am-icon-trash"></i></div>
+  </div>`,
+  textHtml2: `<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row2">
+      <label for="doc-vld-name " class="title am-u-sm-3"><span></span>:</label>
+      <div class="am-form-input9">
+        <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue" pattern="" disabled/>
+        <div class="subhead"></div>
+      </div>
+    </div>
+    <div class="delete"><i class="am-icon-trash"></i></div>
+    </div>`,
+  textHtml3:`<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group ">
+  <label for="doc-vld-name " class="title" style="display: block;"><span></span>:</label>
+  <div class="am-form-row">
+    <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue am-form-input8" pattern="" disabled/>
+    <div class="subhead am-u-sm-4"></div>
+  </div>
+</div>
+<div class="delete"><i class="am-icon-trash"></i></div>
+</div>`,
+  textHtml4:`<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row">
+  <label for="doc-vld-name " class="title am-u-sm-3"><span></span>:</label>
+  <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue am-form-input6" pattern="" disabled/>
+  <div class="subhead am-u-sm-4"></div>
+</div>
+<div class="delete"><i class="am-icon-trash"></i></div>
+</div>`,
+  textHtml5:`<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group">
+  <label for="doc-vld-name" class="title"><span></span></label>
+  <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue" pattern="" disabled/>
+  <div class="subhead am-u-sm-4"></div>
+</div>
+<div class="delete"><i class="am-icon-trash"></i></div>
+</div>`,
   textData: {
     title: '新输入框',
     id: '100',
@@ -16,6 +54,7 @@ Object.assign(design, {
     grid: '12',
     maxLangth: '',
     minLangth:'',
+    ComponentType: 'ThreeRowsAndOneColumn',
     data:{
       option: {reg: '', err: ''},
       value: '',
@@ -30,8 +69,22 @@ Object.assign(design, {
       this.textData.name = `${parseInt(this.textData.name)+1}text`
       page = this.textData
     }
-    let html = $(this.textHtml).attr('id', page.id)
-    html.attr({'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor, maxLangth: page.maxLangth, minLangth: page.minLangth}), 'data-option': JSON.stringify(page.data.option)})
+    let html =  ''
+    if (page.ComponentType == 'ThreeRowsAndOneColumn') {
+      html = $(this.textHtml)
+    } else if (page.ComponentType == 'OneRowAndTwoColumns'){
+      html = $(this.textHtml1)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      html = $(this.textHtml2)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      html = $(this.textHtml3)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      html = $(this.textHtml4)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      html = $(this.textHtml5)
+    }
+    html.attr('id', page.id)
+    html.attr({'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor, maxLangth: page.maxLangth, minLangth: page.minLangth, ComponentType: page.ComponentType}), 'data-option': JSON.stringify(page.data.option)})
     html.find('.subhead').html(page.subhead)
     html.find('label span').html(page.title)
     if (page.data.ifWrite){
