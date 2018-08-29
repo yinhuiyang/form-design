@@ -73,6 +73,9 @@ Object.assign(design, {
       this.datetimepickerData.name = `${parseInt(this.datetimepickerData.name)+1}datatimepicker`
       page = this.datetimepickerData
     }
+    if (!page.ComponentType) {
+      page.ComponentType = 'ThreeRowsAndOneColumn'
+    }
     let html= ''
     if (page.ComponentType == 'ThreeRowsAndOneColumn') {
       html = $(this.datetimepickerHtml)

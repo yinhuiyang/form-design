@@ -68,6 +68,9 @@ Object.assign(design,{
       this.radioData.name = `${parseInt(this.radioData.name)+1}radio`
       page = this.radioData  
     }
+    if (!page.ComponentType) {
+      page.ComponentType = 'ThreeRowsAndOneColumn'
+    }
     let html =  ''
     if (page.ComponentType == 'ThreeRowsAndOneColumn') {
       html = $(this.radioHtml)

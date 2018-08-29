@@ -69,6 +69,9 @@ Object.assign(design, {
       this.textData.name = `${parseInt(this.textData.name)+1}text`
       page = this.textData
     }
+    if (!page.ComponentType) {
+      page.ComponentType = 'ThreeRowsAndOneColumn'
+    }
     let html =  ''
     if (page.ComponentType == 'ThreeRowsAndOneColumn') {
       html = $(this.textHtml)

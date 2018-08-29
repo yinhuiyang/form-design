@@ -73,9 +73,7 @@ Object.assign(design, {
       page = this.textareaData
     }
     let html =  ''
-    if (page.ComponentType == 'ThreeRowsAndOneColumn') {
-      html = $(this.textareaHtml)
-    } else if (page.ComponentType == 'OneRowAndTwoColumns'){
+    if (page.ComponentType == 'OneRowAndTwoColumns'){
       html = $(this.textareaHtml1)
     } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
       html = $(this.textareaHtml2)
@@ -85,6 +83,8 @@ Object.assign(design, {
       html = $(this.textareaHtml4)
     }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
       html = $(this.textareaHtml5)
+    }else {
+      html = $(this.textareaHtml)
     }
     html.attr({'id': page.id, 'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite,ifShow:page.data.ifShow,ifEditor:page.data.ifEditor, maxLangth: page.maxLangth, minLangth: page.minLangth, ComponentType: page.ComponentType})})
     html.find('.title span').html(page.title)

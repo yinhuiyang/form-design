@@ -64,6 +64,9 @@ Object.assign(design, {
       this.selectData.name = `${parseInt(this.selectData.name)+1}select`
       page = this.selectData 
     }
+    if (!page.ComponentType) {
+      page.ComponentType = 'ThreeRowsAndOneColumn'
+    }
     let html =  ''
     if (page.ComponentType == 'ThreeRowsAndOneColumn') {
       html = $(this.selectHtml)
@@ -77,7 +80,7 @@ Object.assign(design, {
       html = $(this.selectHtml4)
     }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
       html = $(this.selectHtml5)
-    }
+    } 
     html.attr('id', page.id)
     html.find('.subhead').html(page.subhead)
     html.find('.title span').text(page.title)

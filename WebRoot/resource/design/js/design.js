@@ -36,7 +36,7 @@ var design = {
     //    _this.formTypeId = res.value.formTypeId
     //  })
     this.form = from
-      _this.loadinit(from)
+    _this.loadinit(from)
   },
   loadinit (from) {
     this.$page = $('.design-view')

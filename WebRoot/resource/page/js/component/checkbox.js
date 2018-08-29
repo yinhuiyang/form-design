@@ -69,6 +69,9 @@ Object.assign(design,{
       this.checkboxData.name = `${parseInt(this.checkboxData.name)+1}checkbox`
       page = this.checkboxData  
     }
+    if (!page.ComponentType) {
+      page.ComponentType = 'ThreeRowsAndOneColumn'
+    }
     let html =  ''
     if (page.ComponentType == 'ThreeRowsAndOneColumn') {
       html = $(this.checkboxHtml)

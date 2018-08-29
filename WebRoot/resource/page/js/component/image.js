@@ -106,9 +106,10 @@ Object.assign(design, {
       page = this.imageData
     }
     let html =  ''
-    if (page.ComponentType == 'ThreeRowsAndOneColumn') {
-      html = $(this.imageHtml)
-    } else if (page.ComponentType == 'OneRowAndTwoColumns'){
+    if (!page.ComponentType) {
+      page.ComponentType = 'ThreeRowsAndOneColumn'
+    }
+    if(page.ComponentType == 'OneRowAndTwoColumns'){
       html = $(this.imageHtml1)
     } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
       html = $(this.imageHtml2)
@@ -118,6 +119,8 @@ Object.assign(design, {
       html = $(this.imageHtml4)
     }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
       html = $(this.imageHtml5)
+    } else {
+      html = $(this.imageHtml)
     }
     html.attr('id', page.id)
     html.attr({'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor, ComponentType: page.ComponentType}), 'data-option': JSON.stringify(page.data.option)})

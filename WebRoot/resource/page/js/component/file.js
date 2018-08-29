@@ -106,6 +106,9 @@ Object.assign(design, {
       this.fileData.name = `${parseInt(this.fileData.name)+1}file`
       page = this.fileData
     }
+    if (!page.ComponentType) {
+      page.ComponentType = 'ThreeRowsAndOneColumn'
+    }
     let html =  ''
     if (page.ComponentType == 'ThreeRowsAndOneColumn') {
       html = $(this.fileHtml)
