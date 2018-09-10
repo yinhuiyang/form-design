@@ -7,14 +7,14 @@ Object.assign(design, {
     <div class="delete"><i class="am-icon-trash"></i></div>
     </div>`,
   textHtml1: `<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row">
-    <label for="doc-vld-name " class="title am-u-sm-3"><span></span>:</label>
-    <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue am-u-sm-9 am-form-input9" pattern="" disabled/>
+    <label for="doc-vld-name " class="title"><span></span>:</label>
+    <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue gridContent" pattern="" disabled/>
   </div>
   <div class="delete"><i class="am-icon-trash"></i></div>
   </div>`,
   textHtml2: `<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row2">
-      <label for="doc-vld-name " class="title am-u-sm-3"><span></span>:</label>
-      <div class="am-form-input9">
+      <label for="doc-vld-name " class="title"><span></span>:</label>
+      <div class="gridContent">
         <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue" pattern="" disabled/>
         <div class="subhead"></div>
       </div>
@@ -24,23 +24,22 @@ Object.assign(design, {
   textHtml3:`<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group ">
   <label for="doc-vld-name " class="title" style="display: block;"><span></span>:</label>
   <div class="am-form-row">
-    <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue am-form-input8" pattern="" disabled/>
-    <div class="subhead am-u-sm-4"></div>
+    <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue gridContent" pattern="" disabled/>
+    <div class="subhead"></div>
   </div>
 </div>
 <div class="delete"><i class="am-icon-trash"></i></div>
 </div>`,
   textHtml4:`<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row">
   <label for="doc-vld-name " class="title am-u-sm-3"><span></span>:</label>
-  <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue am-form-input6" pattern="" disabled/>
-  <div class="subhead am-u-sm-4"></div>
+  <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue am-u-sm-6 gridContent" pattern="" disabled/>
+  <div class="subhead"></div>
 </div>
 <div class="delete"><i class="am-icon-trash"></i></div>
 </div>`,
   textHtml5:`<div class="group" data-xhtml="text" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group">
   <label for="doc-vld-name" class="title"><span></span></label>
   <input type="text" id="doc-vld-name"  placeholder="" class="am-form-field input nameValue" pattern="" disabled/>
-  <div class="subhead am-u-sm-4"></div>
 </div>
 <div class="delete"><i class="am-icon-trash"></i></div>
 </div>`,
@@ -51,6 +50,8 @@ Object.assign(design, {
     placeholder: '',
     name: '0text',
     subhead: '',
+    labelGrid: '',
+    inputGrid: '',
     grid: '12',
     maxLangth: '',
     minLangth:'',
@@ -77,17 +78,56 @@ Object.assign(design, {
       html = $(this.textHtml)
     } else if (page.ComponentType == 'OneRowAndTwoColumns'){
       html = $(this.textHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
       html = $(this.textHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - page.labelGrid
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
       html = $(this.textHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
     }else if (page.ComponentType == 'OneRowAndThreeColumns') {
       html = $(this.textHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
       html = $(this.textHtml5)
     }
     html.attr('id', page.id)
-    html.attr({'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor, maxLangth: page.maxLangth, minLangth: page.minLangth, ComponentType: page.ComponentType}), 'data-option': JSON.stringify(page.data.option)})
+    html.attr({'data-xdata': JSON.stringify({
+      ifWrite: page.data.ifWrite, 
+      ifShow: page.data.ifShow, 
+      ifEditor: page.data.ifEditor, 
+      maxLangth: page.maxLangth, 
+      minLangth: page.minLangth, 
+      ComponentType: page.ComponentType,
+      labelGrid: page.labelGrid,
+      inputGrid: page.inputGrid
+    }), 'data-option': JSON.stringify(page.data.option)})
     html.find('.subhead').html(page.subhead)
     html.find('label span').html(page.title)
     if (page.data.ifWrite){

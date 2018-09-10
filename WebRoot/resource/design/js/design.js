@@ -321,6 +321,8 @@ var design = {
       content[i].type = $(el).attr('data-xhtml')
       content[i].name = $(el).find('.nameValue').attr('name')
       content[i].ComponentType = ifField.ComponentType
+      content[i].labelGrid = ifField.labelGrid
+      content[i].inputGrid = ifField.inputGrid
       content[i].grid = !$(el).attr('class').replace(/[^0-9]/ig,"") ? '12' : $(el).attr('class').replace(/[^0-9]/ig,"")
       if ($(el).attr('data-xhtml') == 'text' || $(el).attr('data-xhtml') == 'textarea') {
         content[i].maxLangth = ifField.maxLangth
@@ -532,6 +534,19 @@ var design = {
       }
     });
   },
+  gridChoice (id) {
+    let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+    let html = ''
+    if (condition.ComponentType == 'OneRowAndTwoColumns' || condition.ComponentType == 'TwoRowAndTwoColumns') {
+      html = setData.labelGrid(id)
+    } else if(condition.ComponentType == 'TwoRowAndTwoColumnsSub'){
+      html = setData.inputGrid(id)
+    } else if (condition.ComponentType == 'OneRowAndThreeColumns'){
+      html = setData.labelGrid(id)+
+            setData.inputGrid(id)
+    }
+    return html
+  },
   setdata: {
     form () {
       let id = $(this).attr('id')
@@ -557,6 +572,7 @@ var design = {
       let html = setData.title(id,'单选', $(`#${id}`).find('.title span').text()) +
                 setData.underline()+
                 setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+                _this.gridChoice(id)+
                 setData.underline()+
                 setData.grid(id)+
                 setData.underline()+
@@ -640,6 +656,7 @@ var design = {
       let html = setData.title(id,'输入框', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      _this.gridChoice(id)+
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
@@ -719,6 +736,7 @@ var design = {
       let html = setData.title(id,'输入框', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      _this.gridChoice(id)+
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
@@ -761,6 +779,7 @@ var design = {
       let html = setData.title(id,'日期时间', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      _this.gridChoice(id)+
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
@@ -885,6 +904,7 @@ var design = {
       let html = setData.title(id,'附件', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      _this.gridChoice(id)+
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
@@ -914,12 +934,14 @@ var design = {
         $("#"+id).click()
       })
 
-    },image (_this) {
+    },
+    image (_this) {
       let id = $(this).attr('id')
       let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
       let html = setData.title(id,'图片', $(`#${id}`).find('.title span').text()) +
       setData.underline()+
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+      _this.gridChoice(id)+
       setData.underline()+
       setData.grid(id)+
       setData.underline()+
@@ -956,6 +978,7 @@ var design = {
       let html = setData.title(id,'多选', $(`#${id}`).find('.title span').text()) +
                 setData.underline()+
                 setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+                _this.gridChoice(id)+
                 setData.underline()+
                 setData.grid(id)+
                 setData.underline()+
@@ -1041,6 +1064,7 @@ var design = {
       let html = setData.title(id,'下拉', $(`#${id}`).find('.title span').text()) +
                 setData.underline()+
                 setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
+                _this.gridChoice(id)+
                 setData.underline()+
                 setData.grid(id)+
                 setData.underline()+
@@ -1145,7 +1169,6 @@ var design = {
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
       setData.underline()+
       setData.grid(id)+
-      setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.userOrg(id)+
@@ -1374,7 +1397,6 @@ var design = {
       setData.setNmae(id, $(`#${id}`).find('.nameValue').attr('name'))+
       setData.underline()+
       setData.grid(id)+
-      setData.underline()+
       setData.subhead(id, $(`#${id}`).find('.subhead').text())+
       setData.underline()+
       setData.userOrg(id)+
@@ -1752,6 +1774,8 @@ var design = {
       content.type = $(el).attr('data-xhtml')
       content.name = $(el).find('.nameValue').attr('name')
       content.grid = !$(el).attr('class').replace(/[^0-9]/ig,"") ? '12' : $(el).attr('class').replace(/[^0-9]/ig,"")
+      content.labelGrid = ifField.labelGrid
+      content.inputGrid = ifField.inputGrid
       content.subhead = $(el).find('.subhead').text()
       content.ComponentType = ifField.ComponentType
       content.data = {

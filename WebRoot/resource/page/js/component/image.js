@@ -15,20 +15,23 @@ Object.assign(design, {
   imageHtml1:`
   <div class="group" data-xhtml="image" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row">
       <label for="doc-vld-name" class="title am-u-sm-3"><span></span></label>
+      <div class="gridContent">
         <div class="upload-btn x-btn" style="border: 1px solid #ccc;">
-            <i class="am-icon-image"></i>
-            <span>选择图片</span>
-            <form class="upload-form" >
-                <input type="file" id=""  class="am-form-field input nameValue"  disabled/>
-            </form>
-          </div>
+          <i class="am-icon-image"></i>
+          <span>选择图片</span>
+          <form class="upload-form" >
+              <input type="file" id=""  class="am-form-field input nameValue"  disabled/>
+          </form>
+        </div>
+      </div>
+      
       </div>
     <div class="delete"><i class="am-icon-trash"></i></div>
   </div>`,
   imageHtml2:`
   <div class="group" data-xhtml="image" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row2">
       <label for="doc-vld-name" class="title am-u-sm-3"><span></span></label>
-      <div>
+      <div class="gridContent">
         <div class="upload-btn x-btn" style="border: 1px solid #ccc;">
             <i class="am-icon-image"></i>
             <span>选择图片</span>
@@ -45,13 +48,16 @@ Object.assign(design, {
   <div class="group" data-xhtml="image" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group">
       <label for="doc-vld-name" class="title"><span></span></label>
       <div class=" am-form-row">
-        <div class="upload-btn x-btn" style="border: 1px solid #ccc;">
+        <div class="gridContent">
+          <div class="upload-btn x-btn" style="border: 1px solid #ccc;">
             <i class="am-icon-image"></i>
             <span>选择图片</span>
             <form class="upload-form" >
                 <input type="file" id=""  class="am-form-field input nameValue"  disabled/>
             </form>
+          </div>
         </div>
+        
         <div class="subhead am-u-sm-5"></div>
       </div>
       </div>
@@ -60,6 +66,7 @@ Object.assign(design, {
   imageHtml4:`
   <div class="group" data-xhtml="image" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}" data-option=""><div class="am-form-group am-form-row">
       <label for="doc-vld-name" class="title am-u-sm-3"><span></span></label>
+      <div class="gridContent">
         <div class="upload-btn x-btn" style="border: 1px solid #ccc;">
             <i class="am-icon-image"></i>
             <span>选择图片</span>
@@ -67,6 +74,8 @@ Object.assign(design, {
                 <input type="file" id=""  class="am-form-field input nameValue"  disabled/>
             </form>
         </div>
+      </div>
+      
         <div class="subhead am-u-sm-4"></div>
       </div>
     <div class="delete"><i class="am-icon-trash"></i></div>
@@ -90,6 +99,8 @@ Object.assign(design, {
     placeholder: '',
     name: '0image',
     subhead: '',
+    labelGrid: '',
+    inputGrid: '',
     grid: '12',
     ComponentType: 'ThreeRowsAndOneColumn',
     data:{
@@ -111,19 +122,56 @@ Object.assign(design, {
     }
     if(page.ComponentType == 'OneRowAndTwoColumns'){
       html = $(this.imageHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
       html = $(this.imageHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
       html = $(this.imageHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
     }else if (page.ComponentType == 'OneRowAndThreeColumns') {
       html = $(this.imageHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
       html = $(this.imageHtml5)
     } else {
       html = $(this.imageHtml)
     }
     html.attr('id', page.id)
-    html.attr({'data-xdata': JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor: page.data.ifEditor, ComponentType: page.ComponentType}), 'data-option': JSON.stringify(page.data.option)})
+    html.attr({'data-xdata': JSON.stringify({
+      ifWrite: page.data.ifWrite, 
+      ifShow: page.data.ifShow, 
+      ifEditor: page.data.ifEditor, 
+      ComponentType: page.ComponentType,
+      labelGrid: page.labelGrid,
+      inputGrid: page.inputGrid,
+    }), 'data-option': JSON.stringify(page.data.option)})
     html.find('.subhead').html(page.subhead)
     html.find('label span').html(page.title)
     if (page.data.ifWrite){

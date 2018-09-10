@@ -7,14 +7,14 @@ Object.assign(design, {
     <div class="delete"><i class="am-icon-trash"></i></div>
     </div>`,
     selectHtml1:`<div class="group" data-xhtml="select"  data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"> <div class="am-form-group am-form-row">
-        <label for="" class="title  am-u-sm-3"><span></span>:</label>
-        <select id="" class="am-form-field nameValue" disabled/>
+        <label for="" class="title"><span></span>:</label>
+        <select id="" class="am-form-field nameValue gridContent" disabled/>
       </div>
       <div class="delete"><i class="am-icon-trash"></i></div>
     </div>`,
     selectHtml2:`<div class="group" data-xhtml="select"  data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"> <div class="am-form-group am-form-row2">
-        <label for="" class="title  am-u-sm-3"><span></span>:</label>
-        <div class="am-form-input9">
+        <label for="" class="title "><span></span>:</label>
+        <div class="gridContent">
           <select id="" class="am-form-field nameValue" disabled/>
           <div class="subhead"></div>
         </div>
@@ -24,16 +24,16 @@ Object.assign(design, {
     selectHtml3:`<div class="group" data-xhtml="select"  data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"> <div class="am-form-group">
         <label for="" class="title"><span></span>:</label>
         <div class=" am-form-row">
-          <select id="" class="am-form-field nameValue " disabled/>
-          <div class="subhead am-u-sm-4"></div>
+          <select id="" class="am-form-field nameValue gridContent" disabled/>
+          <div class="subhead"></div>
         </div>
       </div>
       <div class="delete"><i class="am-icon-trash"></i></div>
     </div>`,
     selectHtml4: `<div class="group" data-xhtml="select"  data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"> <div class="am-form-group am-form-row">
-        <label for="" class="title  am-u-sm-3"><span></span>:</label>
-        <select id="" class="am-form-field nameValue" disabled/>
-        <div class="subhead am-u-sm-4"></div>
+        <label for="" class="title "><span></span>:</label>
+        <select id="" class="am-form-field nameValue gridContent" disabled/>
+        <div class="subhead"></div>
       </div>
       <div class="delete"><i class="am-icon-trash"></i></div>
     </div>`,
@@ -49,6 +49,8 @@ Object.assign(design, {
       type: 'select',
       name: '0select',
       subhead: '',
+      labelGrid: '',
+      inputGrid: '',
       grid: '12',
       ComponentType: 'ThreeRowsAndOneColumn',
       data: {
@@ -72,12 +74,42 @@ Object.assign(design, {
       html = $(this.selectHtml)
     } else if (page.ComponentType == 'OneRowAndTwoColumns'){
       html = $(this.selectHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
       html = $(this.selectHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
       html = $(this.selectHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
     }else if (page.ComponentType == 'OneRowAndThreeColumns') {
       html = $(this.selectHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
       html = $(this.selectHtml5)
     } 
@@ -92,7 +124,14 @@ Object.assign(design, {
     html.find('.delete').hide()
     html.find('label').attr({'for': page.id+1})
     html.find('select').attr({'id': page.id+1})
-    html.attr('data-xdata', JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor:page.data.ifEditor, ComponentType: page.ComponentType}))
+    html.attr('data-xdata', JSON.stringify({
+      ifWrite: page.data.ifWrite, 
+      ifShow: page.data.ifShow, 
+      ifEditor:page.data.ifEditor, 
+      ComponentType: page.ComponentType,
+      labelGrid: page.labelGrid,
+      inputGrid: page.inputGrid,
+    }))
     page.data.value.forEach(element => {
       let label = `<option value="${element.value}" >${element.name}</option>`
       let $label = $(label)

@@ -107,6 +107,93 @@ var setData = {
   underline () {
     return `<div class="cfg_split"></div>`
   },
+  labelGrid (id) {
+    let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+    let labelGrid = `
+    <div>
+      <div class="cfg_split"></div>
+      <div class="setElementTitle">
+        <span>标题长度</span>
+      </div>
+      <input type="number" id="grid-label" max="12" min="0" class="input_title" oninput="${labelGridfn};labelGridfn.call(this, '${id}')" value="${condition.labelGrid}">
+      <div class="am-alert am-alert-danger" style="display: none;">最大值为12，最小为0</div>
+    </div>`
+    function labelGridfn (id) {
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let num = parseInt($(this).val())
+      if(num > 12 || num < 0) {
+        $(this).val(3)
+        $('.am-alert').show()
+        return
+      } else {
+        $('.am-alert').hide()
+      }
+      let reg = /am-u-sm-\d*/ig
+      let className = reg.exec($(`#${id}`).find('.title').attr('class'))[0]
+      $(`#${id}`).find('.title').removeClass(className)
+      if (condition.ComponentType != 'OneRowAndThreeColumns') {
+        let className1 = $(`#${id}`).find('.gridContent').attr('class').match(reg)[0]
+        $(`#${id}`).find('.gridContent').removeClass(className1)
+        $(`#${id}`).find('.gridContent').addClass(`am-u-sm-${12-$(this).val()}`)
+        condition.inputGrid = 12 - $(this).val()
+      } else {
+        let className1 = $(`#${id}`).find('.subhead').attr('class').match(reg)[0]
+        $(`#${id}`).find('.subhead').removeClass(className1)
+        parseInt(condition.inputGrid) + parseInt($(this).val()) > 12 ? 
+        $(`#${id}`).find('.subhead').addClass(`am-u-sm-0`):
+        $(`#${id}`).find('.subhead').addClass(`am-u-sm-${12-$(this).val()-condition.inputGrid}`);
+        parseInt(condition.inputGrid) + parseInt($(this).val()) >= 12? $(this).val(12-condition.inputGrid): '';
+      }
+      $(`#${id}`).find('.title').addClass(`am-u-sm-${$(this).val()}`)
+      condition.labelGrid = $(this).val()
+      $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+    }
+    return labelGrid
+  },
+  inputGrid (id){
+    let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+    let inputGrid = `
+    <div>
+      <div class="cfg_split"></div>
+      <div class="setElementTitle">
+        <span>输入框长度</span>
+      </div>
+      <input type="number" id="grid-inputGrid" max="12" min="1"  class="input_title" oninput="${inputGridfn};inputGridfn.call(this, '${id}')" class="input_title" value="${condition.inputGrid}">
+      <div class="am-alert am-alert-danger" style="display: none;">最大值为12，最小为1</div>
+    </div>`
+     function inputGridfn (id) {
+      let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let num = parseInt($(this).val())
+      if(num > 12 || num < 1) {
+        $(this).val(3)
+        $('.am-alert').show()
+        return
+      } else {
+        $('.am-alert').hide()
+      }
+      let reg = /am-u-sm-\d*/ig
+      let className = $(`#${id}`).find('.gridContent').attr('class').match(reg)[0]
+      $(`#${id}`).find('.gridContent').removeClass(className)
+      if (condition.ComponentType == 'TwoRowAndTwoColumnsSub') {
+        let className1 = $(`#${id}`).find('.subhead').attr('class').match(reg)[0]
+        $(`#${id}`).find('.subhead').removeClass(className1)
+        $(`#${id}`).find('.subhead').addClass(`am-u-sm-${12-$(this).val()}`)
+        condition.labelGrid = 12 - $(this).val()
+      }
+      if (condition.ComponentType == 'OneRowAndThreeColumns'){
+        let className1 = $(`#${id}`).find('.subhead').attr('class').match(reg)[0]
+        $(`#${id}`).find('.subhead').removeClass(className1)
+        parseInt(condition.labelGrid) + parseInt($(this).val()) > 12 ? 
+        $(`#${id}`).find('.subhead').addClass(`am-u-sm-0`):
+        $(`#${id}`).find('.subhead').addClass(`am-u-sm-${12-$(this).val()-condition.labelGrid}`);
+        parseInt(condition.labelGrid) + parseInt($(this).val()) >= 12? $(this).val(12-condition.labelGrid): '';
+      }
+      $(`#${id}`).find('.gridContent').addClass(`am-u-sm-${$(this).val()}`)
+      condition.inputGrid = $(this).val()
+      $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+     }
+    return inputGrid
+  },
   grid (id) {
     var numinpt = $(`#${id}`).attr('class').replace(/[^0-9]/ig,"")
     if (!numinpt) {

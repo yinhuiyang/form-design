@@ -214,6 +214,9 @@ h3{
 .subhead{
 	font-size: 13px;
 	color: #999;
+	overflow: hidden;
+	word-wrap: break-word;
+	word-break: normal;
 }
 .selecd-box{
 	margin: 0
@@ -735,6 +738,10 @@ h3{
 	padding: 0;
 	margin: 0;
 }
+.am-form-row .subhead{
+	padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
 .am-form-row2{
 	display: flex;
 }
@@ -754,7 +761,7 @@ h3{
 	width: 50%;
 }
 .label{
-	width: 100%;
+	/* width: 100%; */
 }
 .am-form-row3{
 	display: flex;
@@ -764,4 +771,47 @@ h3{
 	padding: 0;
 	margin: 0;
 	padding-top: 7px;
+}
+
+.am-u-sm-0{
+	display: none;
+}
+.am-form-field.am-u-sm-0{
+  width: 0;
+}
+.am-form-field.am-u-sm-1{
+  width: 8.33333333%;
+}
+.am-form-field.am-u-sm-2{
+  width: 16.66666667%;
+}
+.am-form-field.am-u-sm-3{
+  width: 25%;
+}
+.am-form-field.am-u-sm-4{
+	width: 33.33333333%;
+}
+.am-form-field.am-u-sm-5{
+  width: 41.66666667%;
+}
+.am-form-field.am-u-sm-6{
+  width: 50%;
+}
+.am-form-field.am-u-sm-7{
+  width: 58.33333333%;
+}
+.am-form-field.am-u-sm-8{
+  width: 66.66666667%;
+}
+.am-form-field.am-u-sm-9{
+  width: 75%;
+}
+.am-form-field.am-u-sm-10{
+  width: 83.33333333%;
+}
+.am-form-field.am-u-sm-11{
+  width: 91.66666667%;
+}
+.am-form-field.am-u-sm-12{
+  width: 100%;
 }

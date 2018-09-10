@@ -8,15 +8,15 @@ Object.assign(design,{
   </div>`,
   checkboxHtml1:`
   <div class="group" data-xhtml="checkbox" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"><div class="am-form-group am-form-row3">
-    <h3 class="title am-u-sm-3"><span></span></h3>
-    <div class="label nameValue"></div>
+    <h3 class="title"><span></span></h3>
+    <div class="label nameValue gridContent"></div>
   </div>
   <div class="delete"><i class="am-icon-trash"></i></div>
   </div>`,
   checkboxHtml2:`
   <div class="group" data-xhtml="checkbox" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"><div class="am-form-group am-form-row3">
-    <h3 class="title am-u-sm-3"><span></span></h3>
-    <div class="am-form-input9">
+    <h3 class="title "><span></span></h3>
+    <div class="gridContent">
       <div class="label nameValue"></div>
       <div class="subhead"></div>
     </div>
@@ -27,17 +27,17 @@ Object.assign(design,{
   <div class="group" data-xhtml="checkbox" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"><div class="am-form-group">
     <h3 class="title"><span></span></h3>
     <div class="am-form-row3">
-      <div class="label nameValue"></div>
-      <div class="subhead am-u-sm-4"></div>
+      <div class="label nameValue gridContent"></div>
+      <div class="subhead"></div>
     </div>
   </div>
   <div class="delete"><i class="am-icon-trash"></i></div>
   </div>`,
   checkboxHtml4: `
   <div class="group" data-xhtml="checkbox" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"><div class="am-form-group am-form-row3">
-    <h3 class="title am-u-sm-3"><span></span></h3>
-    <div class="label nameValue"></div>
-    <div class="subhead am-u-sm-4"></div>
+    <h3 class="title "><span></span></h3>
+    <div class="label nameValue gridContent"></div>
+    <div class="subhead"></div>
   </div>
   <div class="delete"><i class="am-icon-trash"></i></div>
   </div>`,
@@ -54,6 +54,8 @@ Object.assign(design,{
     type: 'checkbox',
     name: '0checkbox',
     subhead: '',
+    labelGrid: '',
+    inputGrid: '',
     grid: '12',
     ComponentType: 'ThreeRowsAndOneColumn',
     data: {
@@ -77,12 +79,42 @@ Object.assign(design,{
       html = $(this.checkboxHtml)
     } else if (page.ComponentType == 'OneRowAndTwoColumns'){
       html = $(this.checkboxHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
       html = $(this.checkboxHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
       html = $(this.checkboxHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
     }else if (page.ComponentType == 'OneRowAndThreeColumns') {
       html = $(this.checkboxHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
     }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
       html = $(this.checkboxHtml5)
     }
@@ -95,7 +127,14 @@ Object.assign(design,{
     if (page.data.ifWrite){
       html.find('.title').append('<sup class="am-text-danger">*</sup>')
     }
-    html.attr('data-xdata', JSON.stringify({ifWrite: page.data.ifWrite, ifShow: page.data.ifShow, ifEditor:page.data.ifEditor, ComponentType: page.ComponentType}))
+    html.attr('data-xdata', JSON.stringify({
+      ifWrite: page.data.ifWrite, 
+      ifShow: page.data.ifShow, 
+      ifEditor:page.data.ifEditor, 
+      ComponentType: page.ComponentType,
+      labelGrid: page.labelGrid,
+      inputGrid: page.inputGrid,
+    }))
     page.data.value.forEach(element => {
       let label = `<label class="am-checkbox">
           <input type="checkbox"  value="${element.value}" data-am-ucheck  disabled>${element.name}
