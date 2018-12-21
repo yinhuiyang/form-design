@@ -28,6 +28,7 @@
           name: '_suggestion',
           subhead: '',
           grid: '12',
+          ComponentType:"ThreeRowsAndOneColumn",
           data: {
             value: '',
             ifWrite: false,
@@ -37,7 +38,7 @@
         }
       ]
   },
-  preview_flag: false, // true预览 ，false为真实提交
+  preview_flag: true, // true预览 ，false为真实提交
   $formBoxHTml: {},
   Mobile: false,
   init (form) {
@@ -92,12 +93,21 @@
     let elattribute = ''
     var data = this.formData.data || {}
     var attribute = this.formData.attribute || {}
-    form.panels.forEach(element => { 
-      eldata =  data[element.name] || {}
-      elattribute =  attribute[element.name] || {}
+    form.panels.forEach(element => {
+      if (element.name == '') {
+        eldata = {}
+        element.content.forEach(el => {
+          data[el.name]? eldata[el.name] = data[el.name] : ''
+          attribute[el.name]? elattribute[el.name] =  attribute[el.name] : ''
+        })
+      } else {
+        eldata =  data[element.name] || {}
+        elattribute =  attribute[element.name] || {}
+      }
+      
       let $formHtml = this.uphtml[element.type](element, eldata, elattribute)
       if (element.type !== 'table') {
-        $formHtml = this.addChild($formHtml,element)
+        $formHtml = this.addChild($formHtml,element, eldata, elattribute)
       }
       // $formHtml.find('fieldset').html(childHtml)
       this.addHTml($html.find('.form').attr('id'), $formHtml)
@@ -197,15 +207,8 @@
   addHTml (id,html) {
     $(`#${id}`).append(html)
   },
-  addChild ($formHtml,elem) {
-    let ChildHtml = ''
-    var data = this.formData.data || {}
-    var attribute = this.formData.attribute || {}
-    let eldata =  ''
-    let elattribute = ''
+  addChild ($formHtml,elem, eldata, elattribute) {
     let grid = 0
-    elattribute =  attribute[elem.name] || {}
-    eldata =  data[elem.name] || {}
     let gridHtml = `<div class="am-g"></div>`
     let $gridHtml = $(gridHtml)
     elem.content.forEach((value, i) => {
@@ -244,6 +247,7 @@
       if ($(elem).attr('data-xhtml') == 'table') {
         data[$(elem).attr('name')] =_this.getdataTable(elem)
       }else {
+        !$(elem).attr('name') ? Object.assign(data, _this.getdatachild(elem)) :
         data[$(elem).attr('name')] = _this.getdatachild(elem)
       }
     })
@@ -437,20 +441,21 @@
   }
 }
 authorize.form ={
-  formHtml:  `<div class="am-panel am-panel-default group" data-xhtml="form">
-  <header class="am-panel-hd">
-    <h3 class="am-panel-title"></h3>
+  formHtml(page){ return `<div class="am-panel am-panel-default group" data-xhtml="form">
+  <header class="am-panel-hd" data-am-collapse="{target: '#collapse-${page.id}'}">
+    <h3 class="am-panel-title paneldown"><span></span> <i class="am-icon-chevron-down"></i></h3>
   </header>
-  <div class="am-panel-bd" style="min-height: 100px;height: auto;">
+  <div class="am-panel-bd am-collapse am-in" style="min-height: 100px;height: auto;" id="collapse-${page.id}">
     <form action="" class="am-form" id="">
       <fieldset>
       </fieldset>
     </form>
   </div>
-  </div>`,
+  </div>`},
   loadForm (page) {
-    let $html = $(this.form.formHtml)
-    $html.find('h3').text(page.title)
+    let $html = $(this.form.formHtml(page))
+    $html.find('h3 span').text(page.title)
+    $html.addClass('group-'+parseInt(page.panelSize || '14px'))
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('form').attr('id', page.id+1)
     $html.find('.am-panel-hd').css({"background": page.background, 'color': '#fff'})
@@ -549,9 +554,9 @@ authorize.phoneTable={
     $html.find('.addTh').click(function(){
       _this.phoneTable.addtr.call(this, _this,  page, elattribute)
     })
-    $html.find('.iconDelete').click(function () {
+    $html.on('click','.iconDelete',function () {
       if ($('.tbody .tr').length > 1) {
-        $('.tbody .tr.active').remove()
+        $(this).parent().remove()
       } else {
         alert('已经是最后一个了')
       }
@@ -657,13 +662,13 @@ authorize.phoneTable={
           <div class ="phone-label">
             <label for="" class="title "><span></span>:</label>
           </div>
-          <input type="text"class="phone-item" />
+          <input type="text"class="phone-item"  readonly="readonly"/>
         </div>
         
       </div>`)
       $tdHtml.find('.title span').text(el.titleTh)
       $tdHtml.find('input').attr('name', el.name)
-      el.data.value = el.data.value.replace(/\#\{getToday\(\)\}/g, new Date().Format(/^Y+.m+.d+/i.exec(el.data.option.format)[0]))
+      el.data.value = el.data.value.replace(/\#\{getToday\(\)\}/g, authorize.Format(new Date(), /^Y+.m+.d+/i.exec(el.data.option.format)[0]))
       if (tDdata) {
         $tdHtml.find('input').attr({'value': tDdata})
       } else {
@@ -873,7 +878,7 @@ authorize.table = {
       let $datetimepicker = $(`<div class="am-form-group"><input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker readonly"/></div>`)
       $datetimepicker.find('input').attr('name', el.name)
       // $datetimepicker.find('input').attr({'value': el.data.})
-      el.data.value = el.data.value.replace(/\#\{getToday\(\)\}/g, new Date().Format(/^Y.m.d/i.exec(el.data.option.format)[0]))
+      el.data.value = el.data.value.replace(/\#\{getToday\(\)\}/g, authorize.Format(new Date(), /^Y.m.d/i.exec(el.data.option.format)[0]))
       if (tDdata) {
         $datetimepicker.find('input').attr({'value': tDdata})
       } else {
@@ -889,6 +894,7 @@ authorize.table = {
       if (!tDattribute.ifEditor) {
         $datetimepicker.find('input').attr('disabled', true)
       } else {
+        el.data.option.step = 60
         $.datetimepicker.setLocale(el.data.option.lang);
         $datetimepicker.find('input').datetimepicker(el.data.option)
       }
@@ -900,10 +906,88 @@ authorize.text = {
   textHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="text">
       <label for="" class="title"><span></span>:</label>
       <div class="subhead"></div>
-      <input type="text" id="" ="" placeholder="" value="" data-validation-message="" pattern=""/>
+      <input type="text"  class="" placeholder="" value="" data-validation-message="" pattern=""/>
       </div>`,
+  textHtml1: `<div class="am-form-group group am-u-sm-12 " data-xhtml="text">
+    <div class="authorize-form-row">
+      <label for="" class="title"><span></span>:</label>
+      <input type="text" class="gridContent" placeholder="" value="" data-validation-message="" pattern="" />
+    </div>
+  </div>`,
+  textHtml2: `<div class="am-form-group group am-u-sm-12" data-xhtml="text">
+  <div class="authorize-form-row2">
+    <label for="" class="title am-u-sm-3"><span></span>:</label>
+    <div class="gridContent">
+      <input type="text"  class="" placeholder="" value="" data-validation-message="" pattern="" />
+      <div class="subhead"></div>
+    </div>
+  </div>
+</div>`,
+textHtml3:`<div class="am-form-group group am-u-sm-12" data-xhtml="text">
+<div class="">
+  <label for="" class="title"><span></span>:</label>
+  <div class="authorize-form-row">
+  <input type="text" class="gridContent" placeholder="" value="" data-validation-message="" pattern="" />
+  <div class="subhead  am-u-sm-4"></div>
+  </div>
+</div>
+</div>`,
+textHtml4: `<div class="am-form-group group am-u-sm-12 " data-xhtml="text">
+<div class="authorize-form-row">
+  <label for="" class="title am-u-sm-3"><span></span>:</label>
+  <input type="text" class="gridContent" placeholder="" value="" data-validation-message="" pattern=""/>
+  <div class="subhead  am-u-sm-3"></div>
+</div>
+</div>`,
+textHtml5: `<div class="am-form-group group am-u-sm-12" data-xhtml="text">
+<label for="" class="title"><span></span>:</label>
+<input type="text" class="" placeholder="" value="" data-validation-message="" pattern=""/>
+</div>`,
   loadText (page, eldata, elattribute) {
-    let $html = $(this.text.textHtml)
+    let $html = ''
+    if (page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.text.textHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.text.textHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.text.textHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.text.textHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.text.textHtml5)
+    } else {
+      $html = $(this.text.textHtml)
+    }
     page.data.value = page.data.value.replace(/^\#{user.name}$/g, this.formData.cache.user.name|| page.data.value)
     page.data.value = page.data.value.replace(/^\#{org.orgName}$/g, this.formData.cache.org.orgName|| page.data.value)
     $html.find('.title span').text(page.title)
@@ -950,8 +1034,89 @@ authorize.textarea = {
     <div class="subhead"></div>
     <textarea id=""></textarea>
     </div>`,
+  textareaHtml1:`<div class="am-form-group group am-u-sm-12" data-xhtml="textarea">
+    <div class="authorize-form-row2">
+      <label for="" class="title"><span></span>:</label>
+      <textarea id="" class="gridContent"></textarea>
+    </div>
+  </div>`,
+  textareaHtml2:`<div class="am-form-group group am-u-sm-12" data-xhtml="textarea">
+    <div class="authorize-form-row2">
+      <label for="" class="title  am-u-sm-3"><span></span>:</label>
+      <div class="gridContent">
+        <textarea id="" ></textarea>
+        <div class="subhead"></div>
+      </div>
+    </div>
+  </div>`,
+  textareaHtml3:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="textarea">
+    <div >
+      <label for="" class="title"><span></span>:</label>
+      <div class="authorize-form-row2">
+        <textarea id="" class="gridContent"></textarea>
+        <div class="subhead am-u-sm-4"></div>
+      </div>
+    </div>
+  </div>`,
+  textareaHtml4:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="textarea">
+    <div  class="authorize-form-row2">
+      <label for="" class="title am-u-sm-3"><span></span>:</label>
+      <textarea id="" class="gridContent"></textarea>
+      <div class="subhead am-u-sm-4"></div>
+    </div>
+  </div>`,
+  textareaHtml5: `
+    <div class="am-form-group group am-u-sm-12" data-xhtml="textarea">
+      <label for="" class="title"><span></span>:</label>
+      <textarea id=""></textarea>
+    </div>`,
   loadTextarea (page, eldata, elattribute) {
-    let $html = $(this.textarea.textareaHtml)
+    let $html = ''
+    if(page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.textarea.textareaHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.textarea.textareaHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.textarea.textareaHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.textarea.textareaHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.textarea.textareaHtml5)
+    } else {
+      $html = $(this.textarea.textareaHtml)
+    }
     $html.find('.title span').text(page.title)
     // $html.attr({'id': page.id})
     $html.addClass(`am-u-md-${page.grid}`)
@@ -995,14 +1160,97 @@ authorize.radio={
   <div class="subhead"></div>
   <div class="label"></div>
   <div>`,
+  radioHtml1:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="radio">
+    <div class="authorize-form-row3">
+      <h3 class="title"><span></span>:</h3>
+      <div class="label gridContent"></div>
+    </div>
+  <div>`,
+  radioHtml2:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="radio">
+    <div class="authorize-form-row3">
+      <h3 class="title"><span></span>:</h3>
+      <div class="gridContent">
+        <div class="label"></div>
+        <div class="subhead"></div>
+      </div>
+    </div>
+  <div>`,
+  radioHtml3:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="radio">
+    <div>
+      <h3 class="title"><span></span>:</h3>
+      <div class="authorize-form-row3">
+        <div class="label gridContent"></div>
+        <div class="subhead"></div>
+      </div>
+    </div>
+  <div>`,
+  radioHtml4:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="radio">
+    <div class="authorize-form-row3">
+      <h3 class="title "><span></span>:</h3>
+      <div class="label gridContent"></div>
+      <div class="subhead"></div>
+    </div>
+  <div>`,
+  radioHtml5:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="radio">
+    <h3 class="title"><span></span>:</h3>
+    <div class="label"></div>
+  <div>`,
   loadRadio (page, eldata, elattribute) {
-    let $html = $(this.radio.radioHtml)
+    let $html = ''
+    if(page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.radio.radioHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.radio.radioHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.radio.radioHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.radio.radioHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.radio.radioHtml5)
+    } else {
+      $html = $(this.radio.radioHtml)
+    }
     $html.addClass(`am-u-md-${page.grid}`)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('.title span').html(page.title)
     $html.find('.subhead').text(page.subhead)
     page.data.value.forEach(v => {
-      let label = `<label class="am-radio">
+      let label = `<label class="${page.labelArrange == 'transverse'?'am-radio-inline':'am-radio'}">
         <input type="radio" name="${page.name}" value="${v.value}" data-am-ucheck> ${v.value}
         </label>`
       let $label = $(label)
@@ -1045,14 +1293,97 @@ authorize.checkbox ={
     <div class="subhead"></div>
     <div class="label"></div>
   </div>`,
+  checkboxHtml1: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="checkbox">
+    <div class="authorize-form-row3">
+      <h3 class="title"><span></span></h3>
+      <div class="label gridContent"></div>
+    </div>
+  </div>`,
+  checkboxHtml2: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="checkbox">
+    <div class="authorize-form-row3">
+      <h3 class="title"><span></span></h3>
+      <div class="gridContent">
+        <div class="label"></div>
+        <div class="subhead"></div>
+      </div>
+    </div>
+  </div>`,
+  checkboxHtml3: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="checkbox">
+    <div >
+      <h3 class="title"><span></span></h3>
+      <div class="authorize-form-row3">
+        <div class="label gridContent"></div>
+        <div class="subhead "></div>
+      </div>
+    </div>
+  </div>`,
+  checkboxHtml4: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="checkbox">
+    <div class="authorize-form-row3">
+      <h3 class="title"><span></span></h3>
+      <div class="label gridContent"></div>
+      <div class="subhead"></div>
+    </div>
+  </div>`,
+  checkboxHtml5: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="checkbox">
+    <h3 class="title"><span></span></h3>
+    <div class="label"></div>
+  </div>`,
   loadCheckbox(page, eldata, elattribute) {
-    let $html = $(this.checkbox.checkboxHtml)
+    let $html = ''
+    if (page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.checkbox.checkboxHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.checkbox.checkboxHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.checkbox.checkboxHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.checkbox.checkboxHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.checkbox.checkboxHtml5)
+    } else {
+      $html = $(this.checkbox.checkboxHtml)
+    }
     $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').html(page.title)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('.subhead').text(page.subhead)
     page.data.value.forEach(v => {
-      let label =  `<label class="am-checkbox">
+      let label =  `<label class="${page.labelArrange == 'transverse'?'am-checkbox-inline':'am-checkbox'}">
         <input type="checkbox" name="${page.name}" value="${v.value}" data-am-ucheck> ${v.value}
         </label>`
       let $label = $(label)
@@ -1101,8 +1432,94 @@ authorize.select = {
     <select data-am-selected="{btnWidth: '100%'}">
     </select>
     </div>`,
+  selectHtml1:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="select">
+    <div class="authorize-form-row">
+      <label for="" class="title am-u-sm-3"><span></span>:</label>
+      <select data-am-selected="{btnWidth: '100%'}">
+      </select>
+    </div>
+  </div>`,
+  selectHtml2:`
+  <div class="am-form-group group am-u-sm-12" data-xhtml="select">
+    <div class="authorize-form-row2">
+      <label for="" class="title"><span></span>:</label>
+      <div class="gridContent">
+        <select data-am-selected="{btnWidth: '100%'}">
+        </select>
+        <div class="subhead"></div>
+      </div>
+    </div>
+  </div>`,
+  selectHtml3: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="select">
+    <div>
+    <label for="" class="title"><span></span></label>
+    <div class="authorize-form-row">
+      <select data-am-selected="{btnWidth: '100%'}">
+      </select>
+      <div class="subhead am-u-sm-4"></div>
+    </div>
+    </div>
+    </div>`,
+  selectHtml4: `<div class="am-form-group group am-u-sm-12" data-xhtml="select">
+    <div class="authorize-form-row">
+      <label for="" class="title am-u-sm-3"><span></span>:</label>
+      <select data-am-selected="{btnWidth: '100%'}">
+      </select>
+      <div class="subhead am-u-sm-4"></div>
+    </div>
+  </div>`,
+  selectHtml5: `<div class="am-form-group group am-u-sm-12" data-xhtml="select">
+  <label for="" class="title"><span></span></label>
+  <select data-am-selected="{btnWidth: '100%'}">
+  </select>
+  </div>`,
   loadSelect (page, eldata, elattribute) {
-    let $html = $(this.select.selectHtml)
+    let $html = ''
+    if(page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.select.selectHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('select').attr('data-am-selected',`{btnWidth:'${(100/12*page.inputGrid)}%'}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.select.selectHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.select.selectHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('select').attr('data-am-selected',`{btnWidth:'${(100/12*page.inputGrid)}%'}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.select.selectHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('select').attr('data-am-selected',`{btnWidth:'${(100/12*page.inputGrid)}%'}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.select.selectHtml5)
+    } else {
+      $html = $(this.select.selectHtml)
+    }
     $html.addClass(`am-u-md-${page.grid}`)
     $html.attr({'id': page.id, 'name': page.name})
     $html.find('.title span').html(page.title)
@@ -1148,11 +1565,90 @@ authorize.datetimepicker = {
   datetimepickerHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="datetimepicker">
     <label for="doc-vld-name" class="title"><span></span></label>
     <div class="subhead"></div>
-        <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker readonly"/>
-    </div>`,
+    <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker "  readonly= 'readonly'/>
+  </div>`,
+  datetimepickerHtml1:`<div class="am-form-group group am-u-sm-12" data-xhtml="datetimepicker">
+    <div class="authorize-form-row">  
+      <label for="doc-vld-name" class="title"><span></span></label>
+      <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker gridContent"  readonly= 'readonly'/>
+    </div>
+  </div>`,
+  datetimepickerHtml2: `<div class="am-form-group group am-u-sm-12" data-xhtml="datetimepicker">
+  <div class="authorize-form-row2">  
+    <label for="doc-vld-name" class="title"><span></span></label>
+    <div class="gridContent">
+      <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker "  readonly= 'readonly'/>
+      <div class="subhead"></div>
+    </div>
+    
+  </div>
+</div>`,
+  datetimepickerHtml3:`<div class="am-form-group group am-u-sm-12" data-xhtml="datetimepicker">
+    <div class="">  
+      <label for="doc-vld-name" class="title"><span></span></label>
+      <div class="authorize-form-row">
+        <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker gridContent"  readonly= 'readonly'/>
+        <div class="subhead am-u-sm-4"></div>
+      </div>
+    </div>
+  </div>`,
+  datetimepickerHtml4:`<div class="am-form-group group am-u-sm-12" data-xhtml="datetimepicker">
+    <div class="authorize-form-row">  
+      <label for="doc-vld-name" class="title"><span></span></label>
+      <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker gridContent"  readonly= 'readonly'/>
+      <div class="subhead"></div>
+    </div>
+  </div>`,
+  datetimepickerHtml5:`<div class="am-form-group group am-u-sm-12" data-xhtml="datetimepicker">
+  <label for="doc-vld-name" class="title"><span></span></label>
+  <input  type="text" id=""  placeholder="" class="am-form-field nameValue input datetimepicker "  readonly= 'readonly'/>
+</div>`,
   loadDatetimepicker (page, eldata, elattribute) {
-    let $html = $(this.datetimepicker.datetimepickerHtml)
-    page.data.value = page.data.value.replace(/\#\{getToday\(\)\}/g, new Date().Format(/^Y.m.d/i.exec(page.data.option.format)[0]))
+    let $html = ''
+    if (page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.datetimepicker.datetimepickerHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.datetimepicker.datetimepickerHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.datetimepicker.datetimepickerHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.datetimepicker.datetimepickerHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.datetimepicker.datetimepickerHtml5)
+    } else {
+      $html = $(this.datetimepicker.datetimepickerHtml)
+    }
+    page.data.value = page.data.value.replace(/\#\{getToday\(\)\}/g, authorize.Format(new Date(), /^Y.m.d/i.exec(page.data.option.format)[0]))
     $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').html(page.title)
     $html.attr({'id': page.id, 'name': page.name})
@@ -1188,6 +1684,7 @@ authorize.datetimepicker = {
         $html.find('input').attr('disabled', true)
       } else {
         if (!this.Mobile) {
+          page.data.option.step = 60
           $.datetimepicker.setLocale(page.data.option.lang);
           $html.find('input').datetimepicker(page.data.option)
         } else {
@@ -1201,6 +1698,7 @@ authorize.datetimepicker = {
 }
 authorize.file = {
   fileHtml: `<div class="am-form-group group am-u-sm-12" data-xhtml="file">
+    <div>
       <label for="" class="title"><span></span></label>
       <div class="subhead"></div>
       <div class="upload-btn">
@@ -1208,12 +1706,135 @@ authorize.file = {
         <span>选择文件</span>
         <input type="file" id="" data-required="" class="am-form-field file-input nameValue" multiple="multiple"/>
       </div>
+    </div>
+      <div class="file-list">
+      </div>
+    </div>`,
+  fileHtml1: `
+    <div class="am-form-group group am-u-sm-12" data-xhtml="file">
+      <div class="authorize-form-row4">
+        <label for="" class="title"><span></span></label>
+        <div class="gridContent">
+          <div class="upload-btn">
+            <i class="am-icon-cloud-upload"></i>
+            <span>选择文件</span>
+            <input type="file" id="" data-required="" class="am-form-field file-input nameValue" multiple="multiple"/>
+          </div>
+          <div class="file-list">
+          </div>
+        </div>
+      </div>
+  </div>`,
+  fileHtml2: `
+    <div class="am-form-group group am-u-sm-12" data-xhtml="file">
+      <div class="authorize-form-row4">
+        <label for="" class="title"><span></span></label>
+        <div class="gridContent">
+          <div class="upload-btn">
+            <i class="am-icon-cloud-upload"></i>
+            <span>选择文件</span>
+            <input type="file" id="" data-required="" class="am-form-field file-input nameValue" multiple="multiple"/>
+          </div>
+          <div class="subhead"></div>
+          <div class="file-list">
+          </div>
+        </div>
+      </div>
+  </div>`,
+  fileHtml3: `
+    <div class="am-form-group group am-u-sm-12" data-xhtml="file">
+      <div>
+        <label for="" class="title"><span></span></label>
+        <div class="authorize-form-row">
+          <div class="gridContent">
+            <div class="upload-btn">
+              <i class="am-icon-cloud-upload"></i>
+              <span>选择文件</span>
+              <input type="file" id="" data-required="" class="am-form-field file-input nameValue" multiple="multiple"/>
+            </div>
+          </div>
+          
+          <div class="subhead"></div>
+        </div>
+      </div>
+      <div class="file-list">
+      </div>
+  </div>`,
+  fileHtml4: `
+    <div class="am-form-group group am-u-sm-12" data-xhtml="file">
+      <div class="authorize-form-row4">
+        <label for="" class="title"><span></span></label>
+        <div class="gridContent">
+          <div class="upload-btn">
+            <i class="am-icon-cloud-upload"></i>
+            <span>选择文件</span>
+            <input type="file" id="" data-required="" class="am-form-field file-input nameValue" multiple="multiple"/>
+          </div>
+          <div class="file-list">
+          </div>
+        </div>
+        <div class="subhead"></div>
+      </div>
+  </div>`,
+  fileHtml5: `<div class="am-form-group group am-u-sm-12" data-xhtml="file">
+    <div>
+      <label for="" class="title"><span></span></label>
+      <div class="upload-btn">
+        <i class="am-icon-cloud-upload"></i>
+        <span>选择文件</span>
+        <input type="file" id="" data-required="" class="am-form-field file-input nameValue" multiple="multiple"/>
+      </div>
+    </div>
       <div class="file-list">
       </div>
     </div>`,
   loadFile (page, eldata, elattribute) {
-    let $html = $(this.file.fileHtml) 
+    let $html = ''
+    if (page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.file.fileHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.file.fileHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.file.fileHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.file.fileHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.file.fileHtml5)
+    } else {
+      $html = $(this.file.fileHtml5)
+    }
     let _this = this
+    page.id += "fileAuthorize"
     $html.addClass(`am-u-md-${page.grid}`)
     $html.find('.title span').text(page.title)
     $html.find('.subhead').text(page.subhead)
@@ -1316,19 +1937,19 @@ authorize.file = {
           $fileItem.attr('data-dataurl', JSON.stringify(file))
           $fileItem.find('i').click(function () {
             $(this).parent().parent().remove()
-            if ($(filethis).parent().parent().find('.file-item').length === 0) {
-              $(filethis).parent().parent().find('input').val('')
+            if ($('#'+page.id).find('.file-item').length === 0) {
+              $('#'+page.id).find('input').val('')
               if (!page.data.ifWrite) {return}
-              $(filethis).parent().parent().find('.am-alert').remove()
-              $(filethis).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
-              $(filethis).parent().parent().addClass('am-form-error')
-              $(filethis).parent().parent().removeClass('am-form-success')
+              $('#'+page.id).find('.am-alert').remove()
+              $('#'+page.id).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+              $('#'+page.id).addClass('am-form-error')
+              $('#'+page.id).removeClass('am-form-success')
             }
           })
-          $(filethis).parent().parent().find('.am-alert').remove()
-          $(filethis).parent().parent().addClass('am-form-success')
-          $(filethis).parent().parent().removeClass('am-form-error')
-          $(filethis).parent().parent().find('.file-list').append($fileItem)
+          $('#'+page.id).find('.am-alert').remove()
+          $('#'+page.id).addClass('am-form-success')
+          $('#'+page.id).removeClass('am-form-error')
+          $('#'+page.id).find('.file-list').append($fileItem)
         }
       }
     })
@@ -1370,19 +1991,19 @@ authorize.file = {
           $fileItem.attr('data-dataurl', JSON.stringify(data))
           $fileItem.find('i').click(function () {
             $(this).parent().parent().remove()
-            if ($(filethis).parent().parent().find('.file-item').length === 0) {
-              $(filethis).parent().parent().find('input').val('')
+            if ($('#'+page.id).find('.file-item').length === 0) {
+              $('#'+page.id).find('input').val('')
               if (!page.data.ifWrite) {return}
-              $(filethis).parent().parent().find('.am-alert').remove()
-              $(filethis).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
-              $(filethis).parent().parent().addClass('am-form-error')
-              $(filethis).parent().parent().removeClass('am-form-success')
+              $('#'+page.id).find('.am-alert').remove()
+              $('#'+page.id).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+              $('#'+page.id).addClass('am-form-error')
+              $('#'+page.id).removeClass('am-form-success')
             }
           })
-          $(filethis).parent().parent().find('.am-alert').remove()
-          $(filethis).parent().parent().addClass('am-form-success')
-          $(filethis).parent().parent().removeClass('am-form-error')
-          $(filethis).parent().parent().find('.file-list').append($fileItem)
+          $('#'+page.id).find('.am-alert').remove()
+          $('#'+page.id).addClass('am-form-success')
+          $('#'+page.id).removeClass('am-form-error')
+          $('#'+page.id).find('.file-list').append($fileItem)
         }
       }
   }
@@ -1400,8 +2021,125 @@ authorize.image = {
     <div class="file-list">
     </div>
   </div>`,
+  imageHtml1: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="image">
+    <div class="authorize-form-row4">
+      <label for="" class="title"><span></span></label>
+      <div class="gridContent">
+        <div class="upload-btn">
+          <i class="am-icon-image"></i>
+          <span>选择图片</span>
+          <input type="file" id="" data-required="" accept=".jpg,.jpeg,.png,.gif" class="am-form-field file-input nameValue" multiple="multiple"/>
+        </div>
+        <div class="file-list"></div>
+      </div> 
+    </div>
+  </div>`,
+  imageHtml2: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="image">
+    <div class="authorize-form-row4">
+      <label for="" class="title"><span></span></label>
+      <div class="gridContent">
+        <div class="upload-btn">
+          <i class="am-icon-image"></i>
+          <span>选择图片</span>
+          <input type="file" id="" data-required="" accept=".jpg,.jpeg,.png,.gif" class="am-form-field file-input nameValue" multiple="multiple"/>
+        </div>
+        <div class="subhead"></div>
+        <div class="file-list"></div>
+      </div> 
+    </div>
+  </div>`,
+  imageHtml3: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="image">
+    <div>
+      <label for="" class="title"><span></span></label>
+      <div class="authorize-form-row">
+        <div class="gridContent">
+          <div class="upload-btn">
+            <i class="am-icon-image"></i>
+            <span>选择图片</span>
+            <input type="file" id="" data-required="" accept=".jpg,.jpeg,.png,.gif" class="am-form-field file-input nameValue" multiple="multiple"/>
+          </div>
+        </div>
+        
+        <div class="subhead"></div>
+      </div>
+    </div>  
+  
+    <div class="file-list">
+    </div>
+  </div>`,
+  imageHtml4: `
+  <div class="am-form-group group am-u-sm-12" data-xhtml="image">
+    <div class="authorize-form-row4">
+      <label for="" class="title"><span></span></label>
+      <div class="gridContent>
+        <div class="upload-btn">
+          <i class="am-icon-image"></i>
+          <span>选择图片</span>
+          <input type="file" id="" data-required="" accept=".jpg,.jpeg,.png,.gif" class="am-form-field file-input nameValue" multiple="multiple"/>
+        </div>
+        <div class="file-list"></div>
+      </div>
+      <div class="subhead"></div>   
+    </div>
+  </div>`,
+  imageHtml5: `<div class="am-form-group group am-u-sm-12" data-xhtml="image">
+    <label for="" class="title"><span></span></label>
+    <div class="upload-btn">
+      <i class="am-icon-image"></i>
+      <span>选择图片</span>
+      <input type="file" id="" data-required="" accept=".jpg,.jpeg,.png,.gif" class="am-form-field file-input nameValue" multiple="multiple"/>
+    </div>
+    <div class="file-list">
+    </div>
+  </div>`,
   loadImage (page, eldata, elattribute) {
-    let $html = $(this.image.imageHtml)
+    let $html = ''
+    if (page.ComponentType == 'OneRowAndTwoColumns'){
+      $html = $(this.image.imageHtml1)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    } else if (page.ComponentType == 'TwoRowAndTwoColumns') {
+      $html = $(this.image.imageHtml2)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+        page.inputGrid = 9
+      } else {
+        page.inputGrid = 12 - parseInt(page.labelGrid)
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowAndTwoColumnsSub') {
+      $html = $(this.image.imageHtml3)
+      if (!page.inputGrid && page.inputGrid != '0'){
+        page.inputGrid = 8
+      }
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.inputGrid}`)
+    }else if (page.ComponentType == 'OneRowAndThreeColumns') {
+      $html = $(this.image.imageHtml4)
+      if (!page.labelGrid&& page.labelGrid != '0'){
+        page.labelGrid = 3
+      }
+      if (!page.inputGrid&& page.inputGrid != '0'){
+        page.inputGrid = 6
+      }
+      $html.find('.title').addClass(`am-u-sm-${page.labelGrid}`)
+      $html.find('.gridContent').addClass(`am-u-sm-${page.inputGrid}`)
+      $html.find('.subhead').addClass(`am-u-sm-${12-page.labelGrid-page.inputGrid}`)
+    }else if (page.ComponentType == 'TwoRowsAndOneColumn') {
+      $html = $(this.image.imageHtml5)
+    } else {
+      $html = $(this.image.imageHtml)
+    }
     $html.addClass(`am-u-md-${page.grid}`)
     if (elattribute[page.name]) {
       page.data.ifWrite = elattribute[page.name].ifWrite
@@ -1409,6 +2147,7 @@ authorize.image = {
       page.data.ifEditor = elattribute[page.name].ifEditor
     }
     let _this = this
+    page.id += 'imageAuthorize'
     $html.find('.title span').text(page.title)
     $html.find('.subhead').text(page.subhead)
     $html.attr({'id': page.id, 'name': page.name})
@@ -1523,16 +2262,16 @@ authorize.image = {
         _this.image.btnImg($fileItem, reader.result)
         $fileItem.find('i').click(function () {
           $(this).parent().parent().remove()
-          if (!$(thisImage).parent().parent().find('.file-item').length){
-            $(thisImage).parent().parent().find('input').val('')
+          if (!$(`#${page.id}`).find('.file-item').length){
+            $(`#${page.id}`).find('input').val('')
             if (!page.data.ifWrite) {return}
-              $(thisImage).parent().parent().find('.am-alert').remove()
-              $(thisImage).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
-              $(thisImage).parent().parent().addClass('am-form-error')
-              $(thisImage).parent().parent().removeClass('am-form-success')
+            $(`#${page.id}`).find('.am-alert').remove()
+            $(`#${page.id}`).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+            $(`#${page.id}`).addClass('am-form-error')
+            $(`#${page.id}`).removeClass('am-form-success')
           }
         })
-        $(thisImage).parent().parent().find('.file-list').append($fileItem)
+        $(`#${page.id}`).find('.file-list').append($fileItem)
       }
     } 
   },
@@ -1572,16 +2311,16 @@ authorize.image = {
           _this.image.btnImg($fileItem, reader.result)
           $fileItem.find('i').click(function () {
             $(this).parent().parent().remove()
-            if (!$(thisImage).parent().parent().find('.file-item').length){
-              $(thisImage).parent().parent().find('input').val('')
+            if (!$(`#${page.id}`).find('.file-item').length){
+              $(`#${page.id}`).find('input').val('')
               if (!page.data.ifWrite) {return}
-                $(thisImage).parent().parent().find('.am-alert').remove()
-                $(thisImage).parent().parent().append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
-                $(thisImage).parent().parent().addClass('am-form-error')
-                $(thisImage).parent().parent().removeClass('am-form-success')
+              $(`#${page.id}`).find('.am-alert').remove()
+              $(`#${page.id}`).append(`<div class="am-alert am-alert-danger" style="display: block;">请选择文件</div>`)
+              $(`#${page.id}`).addClass('am-form-error')
+              $(`#${page.id}`).removeClass('am-form-success')
             }
           })
-          $(thisImage).parent().parent().find('.file-list').append($fileItem)
+          $(`#${page.id}`).find('.file-list').append($fileItem)
         }
       }
     })
@@ -1627,6 +2366,9 @@ authorize.user={
       $html.find('.user-content').css('background', '#eee')
     }
     let li =''
+    if (typeof page.data.value == 'string') {
+      page.data.value = JSON.parse(page.data.value)
+    }
     page.data.value.forEach(v => {
       if (v.userID == '#{user.name}') {
         v.name = this.formData.cache.user.name
@@ -1686,14 +2428,14 @@ authorize.user={
       ]
       function getuser (page) {
         let li = ''
-      //  $.ajax({
-      // //分页查询用户信息
-      //    url: "/ddio/data/getUserByPage.do",
-      //    type: 'POST',
-      //    data: {pageIndex:data,pageSize: 3},
-      //    async: false, 
-      //    success: function (res) {
-      //      resData = res.value.list
+       $.ajax({
+      //分页查询用户信息
+         url: window.DDIO_GET_USERBYPAGE_URL || "/ddio/data/getUserByPage.do",
+         type: 'POST',
+         data: {pageIndex:page,pageSize: 3},
+         async: false, 
+         success: function (res) {
+           resData = res.value.list
           let liItem = ``
           if(resData.length == 0) {
             return ''
@@ -1707,20 +2449,20 @@ authorize.user={
           })
           let $liItem = $(liItem)
           li = $liItem
-      //    }
-      //  })
+         }
+       })
        return li
       }
       function getSearch(name) {
         let li = ''
-        // $.ajax({
-        // //根据用户名查询用户信息
-        //   url:'/ddio/data/userByName.do',
-        //   type: 'POST',
-        //   data: {name: data},
-        //   async: false,
-        //   success: function (res) {
-        //     resData = res.value
+        $.ajax({
+        //根据用户名查询用户信息
+          url:window.DDIO_GET_USERBYNAME_URL || '/ddio/data/getUserByName.do',
+          type: 'POST',
+          data: {name: name},
+          async: false,
+          success: function (res) {
+            resData = res.value
             let liItem = ''
             if(resData.length == 0) {
               return ''
@@ -1732,8 +2474,8 @@ authorize.user={
             </li>`
             })
             li = liItem
-        //   }
-        // })
+          }
+        })
         return li
     }
     $defaultHtml.find('.list-ul').append(getuser(1))
@@ -1825,7 +2567,7 @@ authorize.user={
     $defaultHtml.find('.previous').click(function () {
       page--
       if(page<1) {
-        app.alert('已经是第一页了')
+        authorize.app.alert('已经是第一页了')
         page = 1
       }
       $('#user-box .list-ul').html(getuser(page))
@@ -1844,13 +2586,14 @@ authorize.user={
           $(`input[value=${$(v).text().trim()}]`)[0]?$(`input[value = ${$(v).text()}]`)[0].checked = true :''
        })
       } else {
-        app.alert('已经是最后一页了')
+        authorize.app.alert('已经是最后一页了')
         page --
       }
     })
     $('body').append($defaultHtml)
   }
 }
+
 authorize.organize={
   organizeHtml:`<div class="am-form-group group am-u-sm-12" data-xhtml="organize">
     <label for="" class="title"><span>选择用户</span></label>
@@ -1891,6 +2634,9 @@ authorize.organize={
       $html.find('.user-content').css('background', '#eee')
     }
     let li =''
+    if (typeof page.data.value == 'string') {
+      page.data.value = JSON.parse(page.data.value)
+    }
     page.data.value.forEach(v => {
       if (v.orgID == '#{org.orgName}') {
         v = this.formData.cache.org
@@ -1955,14 +2701,14 @@ authorize.organize={
     ]
     function getorg() {
       let ul = ''
-      // $.ajax({
-      // //查询所有根组织机构信息
-      //   url:'/ddio/data/rootOrg.do',
-      //   type: 'POST',
-      //   data: '',
-      //   async: false,
-      //   success: function (res) {
-      //     resData = res.value
+      $.ajax({
+      //查询所有根组织机构信息
+        url:window.DDIO_GET_ROOTORG_URL || '/ddio/data/getRootOrg.do',
+        type: 'POST',
+        data: '',
+        async: false,
+        success: function (res) {
+          resData = res.value
             let orgul = `<ul>`
              orgul += `<li class="org-item">
                <i class="am-icon-plus goOrg"></i>
@@ -1971,19 +2717,19 @@ authorize.organize={
             orgul += `</ul>`
             sessionStorage.setItem('orgPageArr',JSON.stringify([resData]))
             ul = orgul
-      //   }
-      // })
+        }
+      })
       return ul
     }
     function getorgChild(orgId) {
       let _this = this
-      // $.ajax({
-      //   //根据ID查询组织机构
-      //   url:'/ddio/data/orgList.do',
-      //   type: 'POST',
-      //   data: {id: orgId},
-      //   success: function (res) {
-      //     resDataChild = res.value
+      $.ajax({
+        //根据ID查询组织机构
+        url: window.DDIO_GET_ORGLIST_URL || '/ddio/data/getOrgList.do',
+        type: 'POST',
+        data: {id: orgId},
+        success: function (res) {
+          resDataChild = res.value
             if (!resDataChild.length) {
               $(_this).attr({'class': 'am-icon-minus'})
               return
@@ -2001,8 +2747,8 @@ authorize.organize={
             orgPageArr.push(resDataChild)
             sessionStorage.orgPageArr = JSON.stringify(orgPageArr)
             $('#tab1').html(Ul)
-      //   }
-      // })
+        }
+      })
     }
     $defaultHtml.find('#tab1').html(getorg())
     $defaultHtml.on('click', '#tab1 .org-item div', function () {
@@ -2071,35 +2817,424 @@ authorize.organize={
 
 
 
+ // ifChoice选择类型： 'radio' 、'checkbox'.
+ // orgData已选择的组织数据
+// sureFn选择后确定的回调函数， function (data) {}, data为选择的组织数据
+// 例：authorizeObj.userChoice({
+//   ifChoice:'radio',
+//   userArr:[
+//     {name:"loo1", userID:"21256832676"}
+//   ], 
+//   sureFn:function (data){
+//     console.log(JSON.stringify(data))
+//   }
+// })
+authorize.userChoice = function ({ifChoice,userArr, sureFn}) {
+  let userChoiceName = 'userChoiceName' + authorize.app.getNumber()
+  let defaultHtml = `<div id="user-box">
+          <div class="user-model">
+            <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
+            <div class="ul-box">
+              <ul class="list-selecred">
+              </ul>
+            </div>
+            <div class="user-list">
+              <div class="list-search">
+                <input class="input-search">
+                <i class="am-icon-search search"></i>
+                <div class="searchListBox" style="display: none">
+                  <ul class="searchListUl">
+                    <li class="searchItem">linlinlin</li>
+                    <li class="searchItem">linlinlin</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="list-name">
+                <ul class="list-ul">
+                </ul>
+              </div>
+            </div>
+            <div class="btn-box">
+              <div>
+                <button type="button" class="am-btn am-btn-default am-radius previous">上一页</button>
+                <button type="button" class="am-btn am-btn-default am-radius next">下一页</button>
+              </div>
+              <div>
+                <button type="button" class="am-btn am-btn-default am-radius back" >取消</button>
+                <button type="button" class="am-btn am-btn-success am-radius sure">确定</button>
+              </div>
+            </div>
+          </div>
+        </div>`
+      let $defaultHtml = $(defaultHtml)
+      let resData = [
+        {name:"loo1", userID:"21256832676"},
+        {name:"loo2", userID:"21256832675"},
+        {name:"loo4", userID:"21256832677"},
+        {name:"loo3", userID:"21256832673"},
+        {name:"loo5", userID:"21256832674"}
+      ]
+      function getuser (page) {
+        let li = ''
+       $.ajax({
+      //分页查询用户信息
+         url: window.DDIO_GET_USERBYPAGE_URL || "/ddio/data/getUserByPage.do",
+         type: 'POST',
+         data: {pageIndex:page,pageSize: 3},
+         async: false, 
+         success: function (res) {
+           resData = res.value.list
+          let liItem = ``
+          if(resData.length == 0) {
+            return ''
+          }
+          resData.forEach(data => {
+            liItem += `<li class="list-item">
+              <label class="am-${ifChoice}">
+              ${data.name} <input type="${ifChoice}" name="${userChoiceName}" data-value=${JSON.stringify(data)} class ="nameValue" value="${data.name}" data-am-ucheck>
+              </label>
+            </li>`
+          })
+          let $liItem = $(liItem)
+          li = $liItem
+         }
+       })
+       return li
+      }
+      function getSearch(name) {
+        let li = ''
+        $.ajax({
+        //根据用户名查询用户信息
+          url:window.DDIO_GET_USERBYNAME_URL || '/ddio/data/getUserByName.do',
+          type: 'POST',
+          data: {name: name},
+          async: false,
+          success: function (res) {
+            resData = res.value
+            let liItem = ''
+            if(resData.length == 0) {
+              return ''
+            }
+            resData.forEach(data => {
+              liItem +=  `<li class="searchItem">
+              <span data-value=${JSON.stringify(data)}>${data.name}</span>
+              </label>
+            </li>`
+            })
+            li = liItem
+          }
+        })
+        return li
+    }
+    $defaultHtml.find('.list-ul').append(getuser(1))
+    if (!userArr) {
+      userArr = []
+    }
+    userArr.forEach(v =>{
+      let li = `<li><span class="userName" data-value=${JSON.stringify(v)} value="${v.name}">${v.name}</span> <span class="del-user">x</span></li>`
+      $defaultHtml.find(`input[value = ${v.name}]`)[0]?$defaultHtml.find(`input[value = ${v.name}]`)[0].checked = true : ''
+      $defaultHtml.find('.list-selecred').append(li)
+    })
+    $defaultHtml.on('change', 'label input', function(){
+      if (this.checked) {
+        $(this).parent().parent().parent().find('li').removeClass('actve')
+        $(this).parent().parent().addClass('actve')
+        if ($(this).attr('type') == 'radio'){
+          radioListFn.call(this)
+        } else {
+          checkboxListFn.call(this)
+        }
+      } else {
+        $(this).parent().parent().removeClass('actve')
+        if ($(this).attr('type') == 'checkbox'){
+          $(`span[value=${$(this).val()}]`).parent().remove()
+        }
+      }
+    })
+    function radioListFn () {
+      let value = $(this).attr('data-value')
+      let li=`<li><span class="userName" data-value= ${value}>${$(this).val()}</span> <span class="del-user">x</span></li>`
+      $('.ul-box .list-selecred').html(li)
+    }
+    function checkboxListFn () {
+      let value = $(this).attr('data-value')
+      let li = `<li><span class="userName" data-value=${value} value="${$(this).val()}">${$(this).val()}</span> <span class="del-user">x</span></li>`
+      $('.ul-box .list-selecred').append(li)
+    }
+    $defaultHtml.find('.ul-box .list-selecred').on('click', '.del-user', function (e) {
+      e.stopPropagation()
+      $(this).parent().remove()
+      let val = $(this).parent().find('.userName').text()
+      $(`input[value = ${val}]`)[0]?$(`input[value = ${val}]`)[0].checked = false: ''
+    })
+    function getSearchList (name) {
+      $('.searchListBox .searchListUl').html(getSearch(name))
+      $('.searchListBox').show()
+    }
+    $defaultHtml.find('.input-search').keydown(function (event) {
+      if(event.keyCode==13){
+        getSearchList($(this).val())                           
+      }
+    })
+    $defaultHtml.find('.input-search').on('input',function () {
+      getSearchList($(this).val())
+    })
+    $defaultHtml.find('.input-search').blur(function () {
+      setTimeout(function(){  
+        // input框失去焦点，隐藏下拉框  
+        $('.searchListBox').hide() 
+      }, 300);
+    })
+    $defaultHtml.find('.searchListUl').on('click', '.searchItem', function () {
+      let li = `<li><span class="userName" data-value=${$(this).attr('data-value')} value="${$(this).text()}">${$(this).text()}</span> <span class="del-user">x</span></li>`
+      if (ifChoice == 'checkbox') {
+        $('.ul-box .list-selecred').append(li)
+      } else {
+        $('.ul-box .list-selecred').html(li)
+      }
+      $(`input[value = ${$(this).text()}]`)[0]?$(`input[value = ${$(this).text()}]`)[0].checked = true: ''
+    })
+    $defaultHtml.find('.back').click(function (){
+      $('#user-box').remove()
+    })
+    let page = 1
+    $defaultHtml.find('.previous').click(function () {
+      page--
+      if(page<1) {
+        authorize.app.alert('已经是第一页了')
+        page = 1
+      }
+      $('#user-box .list-ul').html(getuser(page))
+      $('#user-box .list-selecred .userName').each((i,v) => {
+          $(`input[value=${$(v).text().trim()}]`)[0]?$(`input[value = ${$(v).text()}]`)[0].checked = true :''
+       })
+    })
+    $defaultHtml.find('.next').click(function () {
+      page++
+      // if(page > 5) {
+      // }
+      let li = getuser(page)
+      if (li) {
+        $('#user-box .list-ul').html(li)
+        $('#user-box .list-selecred .userName').each((i,v) => {
+          $(`input[value=${$(v).text().trim()}]`)[0]?$(`input[value = ${$(v).text()}]`)[0].checked = true :''
+       })
+      } else {
+        authorize.app.alert('已经是最后一页了')
+        page --
+      }
+    })
+    $defaultHtml.find('.sure').click(function (){
+      // let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+      let ulLiData = []
+      $('.userName').each((i, v) => {
+        ulLiData.push(JSON.parse($(v).attr('data-value')))
+      })
+      sureFn(ulLiData)
+      // if (!$('.userName')[0]) {
+      //   ulLi = '<div class="user-btn">点击选择用户</div>'
+      // }
+      // $(`#${userData.id}`).find('.user-content').html(ulLi)
+      // $(`#${userData.id}`).find('.am-alert').remove()
+      $('#user-box').remove()
+    })
+    $('body').append($defaultHtml)
+}
 
-Date.prototype.Format = function(fmt)   
+ // ifChoice选择类型： 'radio' 、'checkbox'.
+ // orgData已选择的组织数据
+// sureFn选择后确定的回调函数， function (data) {}, data为选择的组织数据
+// 例：authorizeObj.organizeChoice({ 
+//       orgData: [
+      //     {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"}
+      //   ],
+      //   sureFn:function (data){
+      //     console.log(JSON.stringify(data))
+      //   },
+      //   ifChoice: 'radio'
+      // })
+authorize.organizeChoice = function ({ifChoice,orgData, sureFn}){
+  let defaultHtml = `<div id="organize-box">
+      <div class="organize-model">
+        <div class="user-title"><span>用户列表</span> <i class="am-icon-close back"></i></div>
+        <div class="ul-box">
+          <ul class="list-selecred">
+            <li><span class="userName">林泽成</span> <span class="del-user">x</span></li>
+          </ul>
+        </div>
+        <div class="user-list">
+          <div class="am-tabs" data-am-tabs>
+            <ul class="am-tabs-nav am-nav am-nav-tabs">
+              <li class="am-active"><a href="#tab1">部门</a></li>
+              
+            </ul>
+        
+            <div class="am-tabs-bd am-tabs-bd-ofv" style="height:309px">
+              <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-box">
+          <div>
+            
+          </div>
+          <div>
+            <button type="button" class="am-btn am-btn-default am-radius back" >取消</button>
+            <button type="button" class="am-btn am-btn-success am-radius sure">确定</button>
+          </div>
+        </div>
+      </div>
+    </div>`
+    let $defaultHtml = $(defaultHtml)
+    let datali = ''
+    if (!orgData){
+      orgData = []
+    }
+    orgData.forEach(v => {
+      datali +=`<li><span class="userName" data-value=${JSON.stringify(v)} value="${v.orgName}">${v.orgName}</span> <span class="del-user">x</span></li>`
+    })
+    $defaultHtml.find('.list-selecred').html(datali)
+    let resData = {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"}
+        
+    let resDataChild= [
+      {"orgID":"19","enterpriseID":"1267","orgCode":"10011007","orgName":"t003"},
+      {"orgID":"12","enterpriseID":"1267","orgCode":"100110031001","orgName":"g011"},
+      {"orgID":"13","enterpriseID":"1267","orgCode":"100110041001","orgName":"g021"},
+      {"orgID":"15","enterpriseID":"1267","orgCode":"100110031002","orgName":"g012"},
+      {"orgID":"16","enterpriseID":"1267","orgCode":"100110031003","orgName":"g013"},
+      {"orgID":"14","enterpriseID":"1267","orgCode":"1001100310011001","orgName":"g0111"}
+    ]
+    function getorg() {
+      let ul = ''
+      $.ajax({
+      //查询所有根组织机构信息
+        url:window.DDIO_GET_ROOTORG_URL || '/ddio/data/getRootOrg.do',
+        type: 'POST',
+        data: '',
+        async: false,
+        success: function (res) {
+          resData = res.value
+            let orgul = `<ul>`
+             orgul += `<li class="org-item">
+               <i class="am-icon-plus goOrg"></i>
+               <div data-value=${JSON.stringify(resData)}><span>${resData.orgName}</span></div>
+             </li>`
+            orgul += `</ul>`
+            sessionStorage.setItem('orgPageArr',JSON.stringify([resData]))
+            ul = orgul
+        }
+      })
+      return ul
+    }
+    function getorgChild(orgId) {
+      let _this = this
+      $.ajax({
+        //根据ID查询组织机构
+        url: window.DDIO_GET_ORGLIST_URL || '/ddio/data/getOrgList.do',
+        type: 'POST',
+        data: {id: orgId},
+        success: function (res) {
+          resDataChild = res.value
+            if (!resDataChild.length) {
+              $(_this).attr({'class': 'am-icon-minus'})
+              return
+            }
+            let Ul =`<div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
+              <ul>`
+            resDataChild.forEach((v) => {
+              Ul += `<li class="org-item">
+                <i class="am-icon-plus goOrg"></i>
+                <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
+              </li>`
+            })
+            Ul += '</ul>'
+            let orgPageArr = JSON.parse(sessionStorage.orgPageArr)
+            orgPageArr.push(resDataChild)
+            sessionStorage.orgPageArr = JSON.stringify(orgPageArr)
+            $('#tab1').html(Ul)
+        }
+      })
+    }
+    $defaultHtml.find('#tab1').html(getorg())
+    $defaultHtml.on('click', '#tab1 .org-item div', function () {
+      let val = $(this).text()
+      let valData =$(this).attr('data-value')
+      let li =`<li><span class="userName" data-value=${valData}  value="${val}">${val}</span> <span class="del-user">x</span></li>`
+      if (ifChoice == 'radio') {
+        $('.list-selecred').html(li)
+      } else {
+        if (!$(`span[value=${val}]`)[0]) {
+          $('.list-selecred').append(li)
+        }
+      }
+    })
+    $defaultHtml.find('.list-selecred').on('click', '.del-user', function () {
+      $(this).parent().remove()
+    })
+    $defaultHtml.find('#tab1').on('click', '.goOrg', function () {
+      let orgId = JSON.parse($(this).parent().find('div').attr('data-value')).orgID
+      getorgChild.call(this, orgId)
+    })
+    $defaultHtml.find('#tab1').on('click', '.org-back', function () {
+      let orghtmlarr = JSON.parse(sessionStorage.orgPageArr)
+      let orgarr = orghtmlarr[orghtmlarr.length-2]
+      orghtmlarr.pop()
+      sessionStorage.orgPageArr = JSON.stringify(orghtmlarr)
+      let orghtml = ''
+      if (!orgarr.length) {
+        orghtml= `<ul>
+          <li class="org-item">
+            <i class="am-icon-plus goOrg"></i>
+            <div data-value=${JSON.stringify(orgarr)}><span>${orgarr.orgName}</span></div>
+          </li>
+        </ul>`
+      } else {
+        orghtml =`<div class="org-back"><i class="am-icon-reply"></i> <span>上一级</span></div>
+              <ul>`
+        orgarr.forEach((v) => {
+          orghtml += `<li class="org-item">
+            <i class="am-icon-plus goOrg"></i>
+            <div data-value=${JSON.stringify(v)}><span>${v.orgName}</span></div>
+          </li>`
+        })
+        orghtml += '</ul>'
+      }
+      $('#tab1').html(orghtml)
+    })
+    $defaultHtml.find('.back').click(function (){
+      $('#organize-box').remove()
+    })
+    $defaultHtml.find('.sure').click(function (){
+      let ulLiData = []
+      $('#organize-box .userName').each((i, v) => {
+        ulLiData.push(JSON.parse($(v).attr("data-value")))
+      })
+      sureFn(ulLiData)
+      $('#organize-box').remove()
+    })
+    $('body').append($defaultHtml)
+}
+
+authorize.Format =  function(detaTime,fmt)   
 { //author: meizz
   var o = {   
-    "M+" : this.getMonth()+1,                 //月份
-    "d+" : this.getDate(),                    //日
-    "h+" : this.getHours(),                   //小时
-    "m+" : this.getMinutes(),                 //分
-    "s+" : this.getSeconds(),                 //秒
-    "q+" : Math.floor((this.getMonth()+3)/3), //季度
-    "S"  : this.getMilliseconds()             //毫秒
+    "M+" : detaTime.getMonth()+1,                 //月份
+    "d+" : detaTime.getDate(),                    //日
+    "h+" : detaTime.getHours(),                   //小时
+    "m+" : detaTime.getMinutes(),                 //分
+    "s+" : detaTime.getSeconds(),                 //秒
+    "q+" : Math.floor((detaTime.getMonth()+3)/3), //季度
+    "S"  : detaTime.getMilliseconds()             //毫秒
   };   
   if(/(y+)/i.test(fmt))   
-    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+""));   
+    fmt=fmt.replace(RegExp.$1, (detaTime.getFullYear()+""));   
   for(var k in o)   
     if(new RegExp("("+ k +")", 'i').test(fmt))   
   fmt = fmt.replace(RegExp.$1,  (("00"+ o[k]).substr((""+ o[k]).length)));   
   return fmt;   
-}  
-window.authorizeApi = function (json) {
-  var authorizeobject = []
-  $.extend(true, authorizeobject, authorize)
-  authorizeobject.init(json)
-  return authorizeobject
 }
-})()
 
-
-;(function () {
   var numberindex = 0;
   var app = {}
 	app.getNumber = function() {
@@ -2120,7 +3255,7 @@ window.authorizeApi = function (json) {
 
 	app.alert = function(msg, confirmCallback, title) {
 		var $modal = $(alert_html).clone();
-		var id = "app-modal-alert-" + app.getNumber();
+		var id = "app-modal-alert-" + this.getNumber();
 		$modal.attr('id', id);
 		$('body').append($modal);
 		msg = msg || "信息";
@@ -2133,5 +3268,12 @@ window.authorizeApi = function (json) {
 			}
 		});
 	};
-  window.app = app;
-})();
+  authorize.app = app;
+
+window.authorizeApi = function (json) {
+  var authorizeobject = []
+  $.extend(true, authorizeobject, authorize)
+  authorizeobject.init(json)
+  return authorizeobject
+}
+})()

@@ -416,6 +416,7 @@ h3{
 }
 .input-content {
 	clear: both;
+	font-size: 12px;
 }
 .input-content:after{
 	content: "";
@@ -815,3 +816,4 @@ h3{
 .am-form-field.am-u-sm-12{
   width: 100%;
 }
+

@@ -35,7 +35,7 @@ Object.assign(design,{
   <div class="group" data-xhtml="radio" data-xdata = "{ifWrite: flase, ifShow: true, ifEditor: true}"><div class="am-form-group am-form-row3">
       <h3 class="title am-u-sm-3"><span></span></h3>
       <div class="label gridContent"></div>
-      <div class="subhead am-u-sm-4"></div>
+      <div class="subhead"></div>
     </div>
     <div class="delete"><i class="am-icon-trash"></i></div>
   </div>`,
@@ -57,6 +57,7 @@ Object.assign(design,{
     inputGrid: '',
     grid: '12',
     ComponentType: 'ThreeRowsAndOneColumn',
+    labelArrange: 'longitudinal',
     data: {
       value: [{value:'选项一', name: '选项一'}, {value:'选项二', name: '选项二'},{value:'选项三', name: '选项三'}],
       ifWrite: false,
@@ -132,9 +133,10 @@ Object.assign(design,{
       ComponentType: page.ComponentType,
       labelGrid: page.labelGrid,
       inputGrid: page.inputGrid,
+      labelArrange: page.labelArrange
     }))
     page.data.value.forEach(element => {
-      let label = `<label class="am-radio">
+      let label = `<label class="${page.labelArrange == 'transverse'?'am-radio-inline':'am-radio'}">
           <input type="radio" name="${page.name}" class ="nameValue" value="${element.value}" data-am-ucheck  disabled>${element.name}
         </label>`
       let $label = $(label)

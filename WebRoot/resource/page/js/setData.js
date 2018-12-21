@@ -29,6 +29,19 @@ var setData = {
     </select>`
     return html
   },
+  panelSize () {
+    let html = `<div class="setElementTitle">
+    <span>面板尺寸</span>
+  </div>
+  <select id="panelSize" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+    <option value="12px">12px</option>
+    <option value="14px" selected>14px</option>
+    <option value="15px">15px</option>
+    <option value="17px">17px</option>
+    <option value="20px">20px</option>
+  </select>`
+   return html
+  },
   titleTh (id,value) {
     let titleHtml = `<div class="setElementTitle">
         <span>标题</span>
@@ -294,6 +307,18 @@ var setData = {
     }
     return html
   },
+  iFinline (labelArrange) {
+    let html= `
+    <div class="setElementTitle">
+      <span>选项排列</span>
+    </div>
+    <div class="choice">
+    <div class="choice-btn choice-left ${labelArrange == 'longitudinal' ?'choice-selected':''}" id="longitudinal">纵排</div>
+    <div class="choice-btn choice-right ${labelArrange == 'transverse' ?'choice-selected':''}" id="transverse">横排</div>
+    </div>
+    `
+    return html
+  },
   ComponentType () {
     let html = `<div class="setElementTitle">
       <span>组件类型</span>
@@ -320,7 +345,7 @@ var setData = {
         inputHtml += `<textarea  id="default" rows="2" maxlength="${condition.maxLangth}" onchange="${iptvalue};iptvalue.call(this, '${id}')" oninput="${iptvalue};iptvalue.call(this, '${id}')"  placeholder="" class="am-form-field">${$('#'+id).find('.input').val()}</textarea>`
       }else if($(`#${id}`).attr('data-xhtml') == 'datetimepicker'){
         inputHtml += `<input type="text" id="default" class="am-form-field custom datetimepicker" onchange="${iptvalue};iptvalue.call(this, '${id}')" value="${$('#'+id).find('.input').val()}"/>`
-        +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
+        +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}", "${type}")'></i>`
       } else if ($(`#${id}`).attr('data-xhtml') == 'table') {
         if (type == 'data-text') {
           condition = JSON.parse($('#'+id).find('th.active').attr('data-text'))
@@ -328,7 +353,7 @@ var setData = {
           +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
         } else {
           inputHtml += `<input type="text" id="default" onchange="${iptvalue};iptvalue.call(this, '${id}')" class="am-form-field custom" oninput="${iptvalue};iptvalue.call(this, '${id}')" value="${(JSON.parse($('#'+id).find('th.active').attr(type))).value}"/>`
-          +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}")'></i>`
+          +`<i class="am-icon-question icon-bz" onclick='${defaultFn};defaultFn("${id}", "${type}")'></i>`
         }
       }else{
         let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
@@ -397,7 +422,7 @@ var setData = {
         $('#'+id).find('.input').attr('placeholder', $(this).val())
       }
     }
-    function defaultFn(id) {
+    function defaultFn(id, type) {
       let html = `<div class="am-modal am-modal-no-btn" tabindex="-1" id="">
         <div class="am-modal-dialog">
           <div class="am-modal-hd">默认函数
@@ -419,8 +444,10 @@ var setData = {
       </div>`
       let $html = $(html)
       if ($(`#${id}`).attr("data-xhtml") === "datetimepicker" || $("#"+id).find("th.active").attr("data-type") == "datetimepicker") {
+        let dateDta=(JSON.parse($("#"+id).attr(type)|| $("#"+id).find("th.active").attr(type)))
+        let step=dateDta.step|| dateDta.option.step
         $.datetimepicker.setLocale("ch");
-        $html.find(".datetimepicker-time").datetimepicker({lang: "ch", step: 1, datepicker:false,timepicker:true, format:"H:i"})
+        $html.find(".datetimepicker-time").datetimepicker({lang: "ch", step: step, datepicker:false,timepicker:true, format:"H:i"})
       }
       $html.modal()
       $html.attr("id", "your-defaultFn_" + app.getNumber())
@@ -521,6 +548,13 @@ var setData = {
             <span style="width: 70px;margin-left: 5px;margin-top: 14px;">自定义</span>
             <input type="text" id="text" class="am-form-field custom" value="" placeholder="自定义"/>
           </div>
+        </div>
+        <div style="display: flex;margin-top: 10px;" id="stepBox">
+          <span style="width: 50px;margin-left: 20px;">间隔</span>
+          <select id="stepSelect" data-am-selected="{btnWidth: '100%', btnSize: 'sm'}">
+              <option value="60">整点</option>
+              <option value="1" >分钟</option>
+          </select>
         </div>`
     return textHtml
   },

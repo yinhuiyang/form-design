@@ -5,14 +5,15 @@ Object.assign(design, {
     id: '1000',
     content: [],
     name: '',
-    background: '#f5f5f5'
+    background: '#f5f5f5',
+    panelSize: '14px'
   },
-  panelHtml: `<div class="group" data-xhtml="form" data-titleBackground = "">
+  panelHtml: `<div class="group" data-xhtml="form" data-titleBackground = "" dtat-panelSize="">
             <div class="am-panel am-panel-default nameValue" id='' ">
             <header class="am-panel-hd">
-              <h3 class="am-panel-title " id="title"><span></span></h3>
+              <h3 class="am-panel-title paneldown" id="title"><span></span> <i class="am-icon-chevron-down"></i></h3>
             </header>
-            <div class="am-panel-bd input-content am-g"  style="min-height: 100px;height: auto;">
+            <div class="am-panel-bd input-content am-g" style="min-height: 100px;height: auto;">
             </div>
           </div>
           <div class="delete"><i class="am-icon-trash"></i></div>
@@ -32,6 +33,10 @@ Object.assign(design, {
     if (page.background == '#f5f5f5') {
       html.find('.am-panel-hd').css({'color': '#444'})
     }
+    if(!page.panelSize){
+      page.panelSize = '14px'
+    }
+    html.attr('data-panelSize', page.panelSize)
     return html[0]
   }
 })

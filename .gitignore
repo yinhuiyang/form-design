@@ -13,7 +13,7 @@ tmp/
 .classpath
 .loadpath
 .tern-project
-
+node_modules/
 ## External tool builders
 .externalToolBuilders/
 

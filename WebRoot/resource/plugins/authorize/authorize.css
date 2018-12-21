@@ -454,3 +454,352 @@ fieldset [class*=am-u-]+[class*=am-u-]:last-child{
 .am-g .am-g{
   width: 100%;
 }
+.paneldown{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+div[class*=group-] .am-radio .am-ucheck-icons{
+  top: 5px
+}
+div[class*=group-] .am-checkbox .am-ucheck-icons{
+  top: 5px
+}
+
+.group-12 label span{
+	font-size: 12px;
+}
+.group-12 h3 span{
+	font-size: 12px;
+}
+.group-12 .am-radio, .group-12 .am-checkbox{
+	font-size: 12px;
+}
+.group-12 .user-content li span{
+  font-size: 12px;
+}
+.group-12 .am-ucheck-icons i{
+  font-size: 12px;
+}
+.group-12 .am-selected span{
+  font-size: 12px;
+}
+.group-12 .am-selected i{
+  font-size: 12px;
+}
+.group-12 .upload-btn{
+	height: 30px;
+}
+.group-12.am-panel .upload-btn{
+	height: 23px;
+}
+.group-12 .upload-btn i{
+	font-size: 12px;
+}
+.group-12 .upload-btn span{
+	font-size: 12px;
+}
+.group-12 .user-radio .user-btn{
+	font-size: 12px;
+	line-height: 30px;
+}
+.group-12 .user-checkbox .user-btn{
+	font-size: 12px;
+	line-height: 60px;
+}
+.group-12 .user-radio{
+	height: 30px;
+}
+.group-12 .user-radio.user-checkbox{
+	height: 60px;
+}
+.group-12 .am-form input[type=number],
+.group-12 .am-form input[type=search],
+.group-12 .am-form input[type=text],
+.group-12 .am-form input[type=password],
+.group-12 .am-form input[type=datetime],
+.group-12 .am-form input[type=datetime-local],
+.group-12 .am-form input[type=date],
+.group-12 .am-form input[type=month],
+.group-12 .am-form input[type=time],
+.group-12 .am-form input[type=week],
+.group-12 .am-form input[type=email],
+.group-12 .am-form input[type=url],
+.group-12 .am-form input[type=tel],
+.group-12 .am-form input[type=color],
+.group-12 .am-form select,
+.group-12 .am-form textarea,
+.group-12 .am-form-field{
+	font-size: 12px;
+}
+
+.group-14 label span{
+	font-size: 14px;
+}
+.group-14 h3 span{
+	font-size: 14px;
+}
+.group-14 .am-radio, .group-14 .am-checkbox{
+	font-size: 14px;
+}
+.group-14 .user-content li span{
+  font-size: 14px;
+}
+.group-14 .am-ucheck-icons i{
+  font-size: 14px;
+}
+.group-14 .am-selected span{
+  font-size: 14px;
+}
+.group-14 .am-selected i{
+  font-size: 14px;
+}
+.group-14 .upload-btn{
+	height: 40px;
+}
+.group-14 .upload-btn i{
+	font-size: 14px;
+}
+.group-14.am-panel .upload-btn{
+	height: 30px;
+}
+.group-14 .upload-btn span{
+	font-size: 14px;
+}
+.group-14 .user-radio .user-btn{
+	font-size: 14px;
+	line-height: 40px;
+}
+.group-14 .user-checkbox .user-btn{
+	font-size: 14px;
+	line-height: 80px;
+}
+.group-14 .user-radio{
+	height: 40px;
+}
+.group-14 .user-radio.user-checkbox{
+	height: 80px;
+}
+.group-14 .am-form input[type=number],
+.group-14 .am-form input[type=search],
+.group-14 .am-form input[type=text],
+.group-14 .am-form input[type=password],
+.group-14 .am-form input[type=datetime],
+.group-14 .am-form input[type=datetime-local],
+.group-14 .am-form input[type=date],
+.group-14 .am-form input[type=month],
+.group-14 .am-form input[type=time],
+.group-14 .am-form input[type=week],
+.group-14 .am-form input[type=email],
+.group-14 .am-form input[type=url],
+.group-14 .am-form input[type=tel],
+.group-14 .am-form input[type=color],
+.group-14 .am-form select,
+.group-14 .am-form textarea,
+.group-14 .am-form-field{
+	font-size: 14px;
+}
+
+.group-15 label span{
+	font-size: 15px;
+}
+.group-15 h3 span{
+	font-size: 15px;
+}
+.group-15 .am-radio, .group-15 .am-checkbox{
+	font-size: 15px;
+}
+.group-15 .user-content li span{
+  font-size: 15px;
+}
+.group-15 .am-ucheck-icons i{
+  font-size: 15px;
+}
+.group-15 .am-selected span{
+  font-size: 15px;
+}
+.group-15 .am-selected i{
+  font-size: 15px;
+}
+.group-15 .upload-btn{
+	height: 45px;
+}
+.group-15.am-panel .upload-btn{
+	height: 35px;
+}
+.group-15 .upload-btn i{
+	font-size: 15px;
+}
+.group-15 .upload-btn span{
+	font-size: 15px;
+}
+.group-15 .user-radio .user-btn{
+	font-size: 15px;
+	line-height: 45px;
+}
+.group-15 .user-checkbox .user-btn{
+	font-size: 15px;
+	line-height: 90px;
+}
+.group-15 .user-radio{
+	height: 45px;
+}
+.group-15 .user-radio.user-checkbox{
+	height: 90px;
+}
+.group-15 .am-form input[type=number],
+.group-15 .am-form input[type=search],
+.group-15 .am-form input[type=text],
+.group-15 .am-form input[type=password],
+.group-15 .am-form input[type=datetime],
+.group-15 .am-form input[type=datetime-local],
+.group-15 .am-form input[type=date],
+.group-15 .am-form input[type=month],
+.group-15 .am-form input[type=time],
+.group-15 .am-form input[type=week],
+.group-15 .am-form input[type=email],
+.group-15 .am-form input[type=url],
+.group-15 .am-form input[type=tel],
+.group-15 .am-form input[type=color],
+.group-15 .am-form select,
+.group-15 .am-form textarea,
+.group-15 .am-form-field{
+	font-size: 15px;
+}
+
+.group-17 label span{
+	font-size: 17px;
+}
+.group-17 h3 span{
+	font-size: 17px;
+}
+.group-17 .am-radio, .group-17 .am-checkbox{
+	font-size: 17px;
+}
+.group-17 .user-content li span{
+  font-size: 17px;
+}
+.group-17 .am-ucheck-icons i{
+  font-size: 17px;
+}
+.group-17 .am-selected span{
+  font-size: 17px;
+}
+.group-17 .am-selected i{
+  font-size: 17px;
+}
+.group-17 .upload-btn{
+  height: 50px;
+  width: 135px;
+}
+.group-17 .upload-btn i{
+	font-size: 17px;
+}
+.group-17.am-panel .upload-btn{
+	height: 45px;
+}
+.group-17 .upload-btn span{
+	font-size: 17px;
+}
+.group-17 .user-radio .user-btn{
+	font-size: 17px;
+	line-height: 50px;
+}
+.group-17 .user-checkbox .user-btn{
+	font-size: 17px;
+	line-height: 100px;
+}
+.group-17 .user-radio{
+	height: 50px;
+}
+.group-17 .user-radio.user-checkbox{
+	height: 100px;
+}
+.group-17 .am-form input[type=number],
+.group-17 .am-form input[type=search],
+.group-17 .am-form input[type=text],
+.group-17 .am-form input[type=password],
+.group-17 .am-form input[type=datetime],
+.group-17 .am-form input[type=datetime-local],
+.group-17 .am-form input[type=date],
+.group-17 .am-form input[type=month],
+.group-17 .am-form input[type=time],
+.group-17 .am-form input[type=week],
+.group-17 .am-form input[type=email],
+.group-17 .am-form input[type=url],
+.group-17 .am-form input[type=tel],
+.group-17 .am-form input[type=color],
+.group-17 .am-form select,
+.group-17 .am-form textarea,
+.group-17 .am-form-field{
+	font-size: 17px;
+}
+
+
+.group-20 label span{
+	font-size: 20px;
+}
+.group-20 h3 span{
+	font-size: 20px;
+}
+.group-20 .am-radio, .group-20 .am-checkbox{
+	font-size: 20px;
+}
+.group-20 .user-content li span{
+  font-size: 20px;
+}
+.group-20 .am-ucheck-icons i{
+  font-size: 20px;
+}
+.group-20 .am-selected span{
+  font-size:20px;
+}
+.group-20 .am-selected i{
+  font-size: 20px;
+}
+.group-20 .upload-btn{
+  height: 58px;
+  width: 140px;
+}
+.group-20.am-panel .upload-btn{
+	height: 50px;
+}
+.group-20 .upload-btn i{
+	font-size: 20px;
+}
+.group-20 .upload-btn span{
+	font-size: 20px;
+}
+.group-20 .user-radio .user-btn{
+	font-size: 20px;
+	line-height: 60px;
+}
+.group-20 .user-checkbox .user-btn{
+	font-size: 20px;
+	line-height: 110px;
+}
+.group-20 .user-radio{
+	height: 60px;
+}
+.group-20 .user-radio.user-checkbox{
+	height: 110px;
+}
+.group-20 .am-form input[type=number],
+.group-20 .am-form input[type=search],
+.group-20 .am-form input[type=text],
+.group-20 .am-form input[type=password],
+.group-20 .am-form input[type=datetime],
+.group-20 .am-form input[type=datetime-local],
+.group-20 .am-form input[type=date],
+.group-20 .am-form input[type=month],
+.group-20 .am-form input[type=time],
+.group-20 .am-form input[type=week],
+.group-20 .am-form input[type=email],
+.group-20 .am-form input[type=url],
+.group-20 .am-form input[type=tel],
+.group-20 .am-form input[type=color],
+.group-20 .am-form select,
+.group-20 .am-form textarea,
+.group-20 .am-form-field{
+	font-size: 20px;
+}

@@ -166,6 +166,7 @@ var design = {
       })
       $('body').append($html)
       let formTmp = _this.getFrom()
+      console.log(formTmp)
       formTmp.title = _this.formTitle
       formTmp.id = _this.formId
       let formList = {
@@ -182,7 +183,6 @@ var design = {
       var authorizeObj  = new authorizeApi(formList) // 绑定json
       authorizeObj.preview_flag = true
       authorizeObj.loadbind('#formList')
-      console.log(formTmp)
       
     })
   },
@@ -199,6 +199,7 @@ var design = {
       from.panels[i].type = $(this).attr('data-xhtml')
       from.panels[i].name = $(elem).children('.nameValue').attr('name')
       from.panels[i].background = $(this).attr('data-titleBackground')
+      from.panels[i].panelSize = $(this).attr('data-panelSize')
       // if(app.isEmpty(from.panels[i].name) 
       //   || app.isEmpty(from.panels[i].title)){
       //   app.alert("布局组件存在标题或字段名称为空")
@@ -327,6 +328,9 @@ var design = {
       if ($(el).attr('data-xhtml') == 'text' || $(el).attr('data-xhtml') == 'textarea') {
         content[i].maxLangth = ifField.maxLangth
         content[i].minLangth = ifField.minLangth
+      }
+      if ($(el).attr('data-xhtml') == 'radio' || $(el).attr('data-xhtml') == 'checkbox') {
+        content[i].labelArrange = ifField.labelArrange
       }
       if(app.isEmpty(content[i].name) 
         || app.isEmpty(content[i].title)){
@@ -551,12 +555,23 @@ var design = {
     form () {
       let id = $(this).attr('id')
       let background = $(this).attr('data-titleBackground')
+      let panelSize = $(this).attr('data-panelSize')
       let html = setData.title(id,'基础面板', $(`#${id}`).find('#title span').text())+
                 setData.underline()+
                 setData.setFormNmae(id, $(`#${id} .nameValue`).attr('name'))+
                 setData.underline()+
+                setData.panelSize()+
+                setData.underline()+
                 setData.background()
       $('.set-content').html(html)
+      $(this).addClass('group-'+parseInt(panelSize))
+      $('#panelSize').val(panelSize)
+      $('#panelSize').change(function () {
+        let size = $('#'+id).attr('data-panelSize')
+        $('#'+id).removeClass('group-'+parseInt(size))
+        $('#'+id).attr('data-panelSize', $(this).val())
+        $('#'+id).addClass('group-'+parseInt($(this).val()))
+      })
       $('#backgroundFrom').val(background)
       $('#backgroundFrom').change(function(){
         $('#'+id).find('.am-panel-hd').css({"background":$(this).val(), 'color': '#fff'})
@@ -577,6 +592,8 @@ var design = {
                 setData.grid(id)+
                 setData.underline()+
                 setData.ComponentType()+
+                setData.underline()+
+                setData.iFinline(condition.labelArrange)+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
                 setData.radio(id)+
@@ -602,6 +619,22 @@ var design = {
         let html = _this.updata.radio(page)
         $('#'+ id).replaceWith(html)
         $("#"+id).click()
+      })
+      $('#longitudinal').click(function () {
+        if($(this).attr('class').indexOf('choice-selected') > -1) {
+          return
+        }
+        $(this).addClass('choice-selected')
+        $('#transverse').removeClass('choice-selected')
+        arrange('longitudinal')
+      })
+      $('#transverse').click(function () {
+        if($(this).attr('class').indexOf('choice-selected') > -1) {
+          return
+        }
+        $(this).addClass('choice-selected')
+        $('#longitudinal').removeClass('choice-selected')
+        arrange('transverse')
       })
       $('#selecd-ul').on('click', '.minus',function () {
         $(this).parent().remove()
@@ -640,14 +673,27 @@ var design = {
       function radioData () {
         let label = ''
         // console.log($('#'+id).find('.nameValue')[0])
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
         $('#selecd-ul li').each((i, elemt) => {
           // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
-          label += `<label class="am-radio">
+          label += `<label class="${condition.labelArrange == 'transverse'?'am-radio-inline':'am-radio'}">
             <input type="radio" name="${$('#'+id).find('.nameValue').attr('name')}" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
             ${$(elemt).find('.circle').attr('class').indexOf('am-icon-dot-circle-o')>-1? 'checked': ''} class ="nameValue">${$(elemt).find('input').val()}
           </label>`
         })
         $(`#${id} .label`).html(label)
+      }
+      function arrange (labelArrange) {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.labelArrange = labelArrange
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (labelArrange == 'transverse') {
+          $('#'+id).find('label').removeClass('am-radio')
+          $('#'+id).find('label').addClass('am-radio-inline')
+        } else {
+          $('#'+id).find('label').removeClass('am-radio-inline')
+          $('#'+id).find('label').addClass('am-radio')
+        }
       }
     },
     text (_this) {
@@ -788,7 +834,7 @@ var design = {
       setData.underline()+
       setData.datatimeFormat(id)+
       setData.underline()+
-      setData.textInput(id)+
+      setData.textInput(id, 'data-option')+
       setData.underline()+
       setData.ifField(id, condition)
       
@@ -820,7 +866,11 @@ var design = {
       
       let pickerType = ($('#'+id).attr('data-type'))
       $('#pickerType').val(pickerType)
-
+      if (pickerType == 'datepicker') {
+        $('#stepBox').hide()
+      }
+      let step = (JSON.parse($('#'+id).attr('data-option'))).step
+      $('#stepSelect').val(step)
       $('#format').html(setData.dateformatOption(pickerType));
       $('#format').val(format)
   
@@ -847,14 +897,17 @@ var design = {
           format="Y-m-d H:i"
           datepicker=true
           timepicker=true
+          $('#stepBox').show()
         } else if($(this).val() === 'datepicker'){
           format="Y-m-d"
           datepicker=true
           timepicker=false
+          $('#stepBox').hide()
         }else if($(this).val() == 'timepicker') {
           format="H:i"
           datepicker=false
           timepicker=true
+          $('#stepBox').show()
         }
         $('#format').html(setData.dateformatOption($(this).val()));
         $('#format').val(format)
@@ -889,7 +942,12 @@ var design = {
         $(`#${id}`).attr('data-option', JSON.stringify(option))
         design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
       })
-
+      $('#stepSelect').change(function () {
+        let option = JSON.parse($(`#${id}`).attr('data-option'))
+        option.step = parseInt($(this).val())
+        $(`#${id}`).attr('data-option', JSON.stringify(option))
+        design.dateTimeJs("default",(JSON.parse($('#'+id).attr('data-option'))));
+      })
       $('#text').on('input', function () {
         let option = JSON.parse($(`#${id}`).attr('data-option'))
         option.format = $(this).val()
@@ -983,6 +1041,8 @@ var design = {
                 setData.grid(id)+
                 setData.underline()+
                 setData.ComponentType()+
+                setData.underline()+
+                setData.iFinline(condition.labelArrange)+
                 setData.subhead(id, $(`#${id}`).find('.subhead').text())+
                 setData.underline()+
                 setData.checkbox(id)+
@@ -1008,6 +1068,22 @@ var design = {
         let html = _this.updata.checkbox(page)
         $('#'+ id).replaceWith(html)
         $("#"+id).click()
+      })
+      $('#longitudinal').click(function () {
+        if($(this).attr('class').indexOf('choice-selected') > -1) {
+          return
+        }
+        $(this).addClass('choice-selected')
+        $('#transverse').removeClass('choice-selected')
+        arrange('longitudinal')
+      })
+      $('#transverse').click(function () {
+        if($(this).attr('class').indexOf('choice-selected') > -1) {
+          return
+        }
+        $(this).addClass('choice-selected')
+        $('#longitudinal').removeClass('choice-selected')
+        arrange('transverse')
       })
       $('#selecd-ul').on('click', '.minus',function () {
         $(this).parent().remove()
@@ -1048,15 +1124,28 @@ var design = {
       })
       function checkData () {
         let label = ''
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
         $('#selecd-ul li').each((i, elemt) => {
           // <span class="am-ucheck-icons"><i class="am-icon-unchecked"></i><i class="am-icon-checked"></i></span> class="am-ucheck-radio"
-          label += `<label class="am-checkbox">
+          label += `<label class="${condition.labelArrange == 'transverse'?'am-checkbox-inline':'am-checkbox'}">
             <input type="checkbox" value="${$(elemt).find('input').val()}" data-am-ucheck   disabled 
             ${$(elemt).find('.square').attr('class').indexOf('am-icon-check-square-o')>-1? 'checked': ''} >${$(elemt).find('input').val()}
           </label>`
         })
         $(`#${id} .label`).html(label)
       } 
+      function arrange (labelArrange) {
+        let condition = JSON.parse($(`#${id}`).attr('data-xdata'))
+        condition.labelArrange = labelArrange
+        $(`#${id}`).attr('data-xdata', JSON.stringify(condition))
+        if (labelArrange == 'transverse') {
+          $('#'+id).find('label').removeClass('am-checkbox')
+          $('#'+id).find('label').addClass('am-checkbox-inline')
+        } else {
+          $('#'+id).find('label').removeClass('am-checkbox-inline')
+          $('#'+id).find('label').addClass('am-checkbox')
+        }
+      }
     },
     select: function (_this) {
       let id = $(this).attr('id')
@@ -1691,12 +1780,12 @@ var design = {
       let lang = textData.option.lang
       $('#lang').val(lang)
       let format = textData.option.format
-      
+      let step = textData.option.step
       let pickerType = textData.pickerType
       $('#pickerType').val(pickerType)
       $('#format').html(setData.dateformatOption(pickerType));
       $('#format').val(format)
-  
+      
       let optiontype = $('#format').val()
       if (format && optiontype) {
         $('#textBox').hide()
@@ -1704,6 +1793,10 @@ var design = {
       } else {
         $('#text').val(format)
       }
+      if (pickerType == 'datepicker') {
+        $('#stepBox').hide()
+      }
+      $('#stepSelect').val(step)
       design.dateTimeJs("default",textData.option)
       $('#lang').change(function (){
         textData.option.lang = $(this).val()
@@ -1758,6 +1851,12 @@ var design = {
         $(thThis).attr('data-datetimepicker', JSON.stringify(textData))
         design.dateTimeJs("default",textData.option);
       })
+      $('#stepSelect').change(function () {
+        let textData = JSON.parse($(thThis).attr('data-datetimepicker'))
+        textData.option.step = parseInt($(this).val())
+        $(thThis).attr('data-datetimepicker', JSON.stringify(textData))
+        design.dateTimeJs("default",textData.option);
+      })
       $('#text').on('input', function () {
         textData.option.format = $(this).val()
         $(thThis).attr('data-datetimepicker', JSON.stringify(textData))
@@ -1786,6 +1885,9 @@ var design = {
       if ($(el).attr('data-xhtml') == 'text' || $(el).attr('data-xhtml') == 'textarea') {
         content.maxLangth = ifField.maxLangth
         content.minLangth = ifField.minLangth
+      }
+      if ($(el).attr('data-xhtml') == 'radio' || $(el).attr('data-xhtml') == 'checkbox') {
+        content.labelArrange = ifField.labelArrange
       }
       let obj = this.getElementData[$(el).attr('data-xhtml')].call(this, el)
       if (obj.data) {

@@ -63,7 +63,7 @@ Object.assign(design, {
       data:{
         value: '',
         pickerType:'allpicker',
-        option: {lang: 'ch', step: 1,datepicker:true,timepicker:true,format:'Y-m-d H:i'},
+        option: {lang: 'ch', step: 60,datepicker:true,timepicker:true,format:'Y-m-d H:i'},
         ifWrite: false,
         ifShow: true,
         ifEditor: true
