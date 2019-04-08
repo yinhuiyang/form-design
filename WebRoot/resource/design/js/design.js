@@ -117,18 +117,17 @@ var design = {
       datepicker:true,
     }*/
   },
-  toolbarFn () {
-    var _this = this
+  toolbarFn () {   //工具条操作
+    var _this = this //保留this
     $('#backBtn').off('click').on('click', function () {
-      $(`#${_this.step[_this.step.length-1]}`).remove()
-      _this.step.pop()
+      $(`#${_this.step[_this.step.length-1]}`).remove() //移除该文本节点和子节点
+      _this.step.pop() //删除最后一项数据
     })
     $('#refresh').off('click').on('click', function () {
-      _this.loadinit(_this.form)
+      _this.loadinit(_this.form) //渲染当前数据
     })
     $('#preserve').off('click').on('click',function () {
       _this.param = {}
-
       let formTmp = _this.getFrom()
       if(!formTmp){
           return false
@@ -192,7 +191,6 @@ var design = {
     var checkPanelName = {}
     var panelName = []
     $('.view-content').children('.group').each(function(i, elem) {
-
       from.panels[i] = {}
       from.panels[i].title = $(this).find('#title span').text()
       from.panels[i].id = this.id
